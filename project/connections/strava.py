@@ -22,6 +22,16 @@ class Strava(object):
         )
 
     @staticmethod
+    def deauth(user_id, connection_id):
+        obj = UserConnection.objects.get(user_id=user_id, connection_id=connection_id)
+        data = {
+            'access_token': obj.get_access_token(),
+        }
+        resp = requests.post('https://www.strava.com/oauth/deauthorize', data).json()
+        obj.delete()
+        return
+
+    @staticmethod
     def exchange(user_id, connection_id, code):
         data = {
             'client_id': settings.STRAVA_CLIENT_ID,
@@ -44,7 +54,7 @@ class Strava(object):
             'client_secret': settings.STRAVA_SECRET,
             'refresh_token': connection.refresh_token,
             'grant_type': 'refresh_token',
-        } 
+        }
         resp = requests.post('https://www.strava.com/api/v3/oauth/token', data).json()
         connection.access_token = resp.get('access_token', None)
         connection.refresh_token = resp.get('refresh_token', None)

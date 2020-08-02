@@ -1,3 +1,5 @@
+from importlib import import_module
+
 from django.contrib.auth.models import User
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
@@ -33,3 +35,9 @@ class UserConnection(TimeStampedModel):
     access_token = models.CharField(max_length=255, blank=True, null=True)
     refresh_token = models.CharField(max_length=255, blank=True, null=True)
     expires_at = models.DateTimeField(blank=True, null=True)
+
+    def get_access_token(self):
+        module = import_module(self.connection.library)
+        Lib = getattr(module, self.connection.class_str)
+        connect = Lib()
+        return connect.access_token(self.id)

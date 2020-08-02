@@ -27,25 +27,32 @@ class UserConnections(ExactUserRequiredAPI):
 
 class ConnectionSignUp(LoginRequired, TemplateView):
     template_name = 'snippets/connections.html'
+    user = None
+    connection = None
+    connect = None
+
+    def setup_view(self):
+        self.user = get_object_or_404(User, pk=self.kwargs['user_id'])
+        self.connection = get_object_or_404(Connection, pk=self.kwargs['pk'])
+        module = import_module(self.connection.library)
+        Lib = getattr(module, self.connection.class_str)
+        self.connect = Lib()
 
     def get(self, request, *args, **kwargs):
-        user = get_object_or_404(User, pk=self.kwargs['user_id'])
-        connection = get_object_or_404(Connection, pk=self.kwargs['pk'])
-        module = import_module(connection.library)
-        Lib = getattr(module, connection.class_str)
-        connect = Lib()
-
-        return HttpResponseRedirect(connect.sign_up(user.id, connection.pk))
+        self.setup_view()
+        return HttpResponseRedirect(self.connect.sign_up(self.user.id, self.connection.pk))
 
 
-class ConnectionRedirect(LoginRequired, TemplateView):
-    template_name = 'snippets/connections.html'
+class ConnectionDeAuth(ConnectionSignUp):
+    def get(self, request, *args, **kwargs):
+        self.setup_view()
+        self.connect.deauth(self.user.id, self.connection.id)
+        return HttpResponseRedirect(reverse_lazy('front:profile'))
+
+
+class ConnectionRedirect(ConnectionSignUp):
 
     def get(self, request, *args, **kwargs):
-        user = get_object_or_404(User, pk=self.kwargs['user_id'])
-        connection = get_object_or_404(Connection, pk=self.kwargs['pk'])
-        module = import_module(connection.library)
-        Lib = getattr(module, connection.class_str)
-        connect = Lib()
-        connect.exchange(user.id, connection.id, self.request.GET['code'])
+        self.setup_view()
+        self.connect.exchange(self.user.id, self.connection.id, self.request.GET['code'])
         return HttpResponseRedirect(reverse_lazy('front:profile'))
