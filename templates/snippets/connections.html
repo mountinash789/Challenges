@@ -4,16 +4,16 @@
         <div class="row mb-2">
     {% endif %}
 
-    <div class="col-3">
+    <div class="col-xl-3 col-lg-6">
         <div class="card border-danger">
             <img src="{{ connection.get_image }}" class="card-img-top" alt="">
             <div class="card-body">
                 <h5 class="card-title">{{ connection.name }}</h5>
                 <p class="card-text">{{ connection.description }}</p>
                 {% if not connection|user_connected:user_id %}
-                    <a href="#" class="btn btn-success btn-sm col-12">Connect</a>
+                    <a href="{% url 'api:connection_url' user_id connection.pk %}" target="_blank" class="btn btn-success btn-sm col-12">Connect</a>
                 {% else %}
-                    <a href="#" class="btn btn-danger btn-sm col-12">Disconnect</a>
+                    <a href="{% url 'api:connection_deauth' user_id connection.pk %}" class="btn btn-danger btn-sm col-12">Disconnect</a>
                 {% endif %}
             </div>
         </div>

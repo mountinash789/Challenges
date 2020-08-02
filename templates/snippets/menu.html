@@ -12,6 +12,12 @@
             Profile
         </a>
     </li>
+    <li class="nav-item">
+        <a class="nav-link {% if view_name == 'front:activities' %}active{% endif %}" href="{% url 'front:activities' %}">
+            <i data-feather="activity"></i>
+            Activities
+        </a>
+    </li>
     <!--                    <li class="nav-item">-->
     <!--                        <a class="nav-link" href="#">-->
     <!--                            <span data-feather="file"></span>-->
