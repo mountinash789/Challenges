@@ -1,3 +1,4 @@
+from datetime import timedelta
 from importlib import import_module
 
 from django.contrib.auth.models import User
@@ -35,9 +36,36 @@ class UserConnection(TimeStampedModel):
     access_token = models.CharField(max_length=255, blank=True, null=True)
     refresh_token = models.CharField(max_length=255, blank=True, null=True)
     expires_at = models.DateTimeField(blank=True, null=True)
+    last_pulled = models.DateTimeField(blank=True, null=True)
 
     def get_access_token(self):
         module = import_module(self.connection.library)
         Lib = getattr(module, self.connection.class_str)
         connect = Lib()
         return connect.access_token(self.id)
+
+
+class ActivityType(TimeStampedModel):
+    description = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return self.description
+
+
+class Activity(TimeStampedModel):
+
+    @property
+    def duration_seconds_formatted(self):
+        a = timedelta(seconds=int(self.duration_seconds) or 0)
+        return str(a)
+
+    def view_button(self, size='sm'):
+        return '<a href="#" class="btn btn-{} btn-primary"><i data-feather="eye"></i> View</a>'.format(size)
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE,blank=True, null=True)
+    description = models.CharField(max_length=255, blank=True, null=True)
+    activity_type = models.ForeignKey(ActivityType, on_delete=models.CASCADE, blank=True, null=True)
+    date = models.DateTimeField(blank=True, null=True)
+    duration_seconds = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    distance_meters = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_elevation_gain = models.DecimalField(max_digits=10, decimal_places=2, default=0)

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block css %}
+<!--<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css" rel="stylesheet">-->
+<link href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/responsive/2.2.5/css/responsive.bootstrap4.min.css" rel="stylesheet">
+
+{% endblock %}
+{% block js %}
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.5/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.5/js/responsive.bootstrap4.min.js"></script>
+<script>
+    let AJAX_URL = '{{ data_url }}';
+    let table_id = 'id_{{ table_id }}';
+</script>
+<script src="{{ js_path }}"></script>
+<script>
+    $(document).ready(function() {
+        $(`#${table_id}`).DataTable(config);
+    } );
+</script>
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ page_header }}</h1>
+    <!--                <div class="btn-toolbar mb-2 mb-md-0">-->
+    <!--                    <div class="btn-group mr-2">-->
+    <!--                        <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>-->
+    <!--                        <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>-->
+    <!--                    </div>-->
+    <!--                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">-->
+    <!--                        <span data-feather="calendar"></span>-->
+    <!--                        This week-->
+    <!--                    </button>-->
+    <!--                </div>-->
+</div>
+<div class="row">
+    <div class="col-12">
+        <table class="table table-striped table-bordered dt-responsive nowrap" id="id_{{ table_id }}">
+            <thead>
+            <tr>
+                {% for header in headers %}
+                <th>{{ header }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+{% endblock %}
