@@ -1,10 +1,11 @@
 import requests
+from dateutil.parser import parse
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.urls import reverse_lazy
 from django.utils import timezone
 
-from backend.models import UserConnection
+from backend.models import UserConnection, Activity, ActivityType
 
 
 class Strava(object):
@@ -18,7 +19,7 @@ class Strava(object):
                                                                                          'pk': connection_id})),
             'code',
             'auto',
-            'read_all',
+            'activity:read_all',
         )
 
     @staticmethod
@@ -68,3 +69,45 @@ class Strava(object):
             return connection.access_token
         else:
             return self.refresh(user_connection_id)
+
+    def get_data(self, user_connection_id, all_time=False):
+        connection = UserConnection.objects.get(pk=user_connection_id)
+        endpoint = 'https://www.strava.com/api/v3/athlete/activities'
+
+        data = []
+        complete = False
+        params = {'per_page': 100, 'page': 1}
+        if connection.last_pulled and not all_time:
+            params['after'] = connection.last_pulled.timestamp()
+        while not complete:
+            resp = requests.get(endpoint, params,
+                                headers={'Authorization': 'Bearer {}'.format(connection.get_access_token())}).json()
+            data.extend(resp)
+            if len(resp) == 100:
+                params['page'] = params['page'] + 1
+                print(params)
+            else:
+                complete = True
+        connection.last_pulled = timezone.now()
+        connection.save()
+
+        self.parse_activities(data, connection.user_id)
+
+    @staticmethod
+    def get_activity_type(activity_type):
+        obj, created = ActivityType.objects.get_or_create(description=activity_type)
+        return obj
+
+    def parse_activities(self, activities, user_id):
+        for activity in activities:
+            obj, created = Activity.objects.get_or_create(
+                id=activity['upload_id']
+            )
+            obj.user_id = user_id
+            obj.description = activity['name']
+            obj.activity_type = self.get_activity_type(activity['type'])
+            obj.date = parse(activity['start_date'])
+            obj.duration_seconds = activity['elapsed_time']
+            obj.distance_meters = activity['distance']
+            obj.total_elevation_gain = activity['total_elevation_gain']
+            obj.save()

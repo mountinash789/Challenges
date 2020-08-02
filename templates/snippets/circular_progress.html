@@ -1,0 +1,36 @@
+{% load static %}
+<link href="{% static 'css/progress.css' %}" rel="stylesheet">
+<script src="{% static 'js/progress.js' %}"></script>
+
+<div class="col-xl-3 col-lg-6 mb-4">
+    <div class="bg-white rounded-lg p-5 shadow-lg">
+        <h2 class="h6 font-weight-bold text-center mb-4">Overall progress</h2>
+
+        <!-- Progress bar 1 -->
+        <div class="progress mx-auto" data-value='80'>
+          <span class="progress-left">
+                        <span class="progress-bar border-primary"></span>
+          </span>
+            <span class="progress-right">
+                        <span class="progress-bar border-primary"></span>
+          </span>
+            <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                <div class="h2 font-weight-bold">80<sup class="small">%</sup></div>
+            </div>
+        </div>
+        <!-- END -->
+
+        <!-- Demo info -->
+        <div class="row text-center mt-4">
+            <div class="col-6 border-right">
+                <div class="h4 font-weight-bold mb-0">28%</div>
+                <span class="small text-gray">Last week</span>
+            </div>
+            <div class="col-6">
+                <div class="h4 font-weight-bold mb-0">60%</div>
+                <span class="small text-gray">Last month</span>
+            </div>
+        </div>
+        <!-- END -->
+    </div>
+</div>

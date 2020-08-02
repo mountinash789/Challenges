@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.views import redirect_to_login
 from django.http import HttpResponse
+from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -33,3 +34,7 @@ class ExactUserRequired(RaiseException):
 class ExactUserRequiredAPI(ExactUserRequired, APIView):
     def raise_exception(self):
         return HttpResponse(status=401)
+
+
+def local_time(datetime):
+    return timezone.localtime(datetime)
