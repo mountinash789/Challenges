@@ -1,0 +1,28 @@
+{% load model_tags %}
+{% for connection in connections %}
+    {% if forloop.first or forloop.counter0|divisibleby:4 %}
+        <div class="row mb-2">
+    {% endif %}
+
+    <div class="col-3">
+        <div class="card border-danger">
+            <img src="{{ connection.get_image }}" class="card-img-top" alt="">
+            <div class="card-body">
+                <h5 class="card-title">{{ connection.name }}</h5>
+                <p class="card-text">{{ connection.description }}</p>
+                {% if not connection|user_connected:user_id %}
+                    <a href="#" class="btn btn-success btn-sm col-12">Connect</a>
+                {% else %}
+                    <a href="#" class="btn btn-danger btn-sm col-12">Disconnect</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if forloop.counter|divisibleby:4 or forloop.last %}
+        </div>
+    {% endif %}
+{% empty %}
+<p>No Connections available.</p>
+{% endfor %}
+
