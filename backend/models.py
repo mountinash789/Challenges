@@ -13,6 +13,8 @@ class Connection(TimeStampedModel):
     image_url = models.URLField(blank=True, null=True)
     connection_url = models.CharField(max_length=100, blank=True, null=True)
     active = models.BooleanField(default=False)
+    library = models.CharField(max_length=100, blank=True, null=True)
+    class_str = models.CharField(max_length=100, blank=True, null=True)
 
     def get_image(self):
         if self.image:
@@ -28,3 +30,6 @@ class Connection(TimeStampedModel):
 class UserConnection(TimeStampedModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     connection = models.ForeignKey(Connection, on_delete=models.CASCADE)
+    access_token = models.CharField(max_length=255, blank=True, null=True)
+    refresh_token = models.CharField(max_length=255, blank=True, null=True)
+    expires_at = models.DateTimeField(blank=True, null=True)
