@@ -86,7 +86,7 @@ class ActivitiesList(ActivitiesMixin, ExactUserRequired, BaseDatatableView):
                 '</div>',
             ]
             data.append([
-                item.description,
+                item.truncated_description,
                 item.activity_type.description,
                 local_time(item.date).strftime('%d/%m/%Y %H:%M:%S'),
                 item.duration_seconds_formatted,

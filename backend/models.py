@@ -62,6 +62,14 @@ class Activity(TimeStampedModel):
     def view_button(self, size='sm'):
         return '<a href="#" class="btn btn-{} btn-primary"><i data-feather="eye"></i> View</a>'.format(size)
 
+    @property
+    def truncated_description(self):
+        length = 20
+        val = self.description
+        if len(val) > length:
+            val = '{}...'.format(val[:length])
+        return val
+
     user = models.ForeignKey(User, on_delete=models.CASCADE,blank=True, null=True)
     description = models.CharField(max_length=255, blank=True, null=True)
     activity_type = models.ForeignKey(ActivityType, on_delete=models.CASCADE, blank=True, null=True)

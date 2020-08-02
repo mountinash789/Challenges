@@ -1,6 +1,7 @@
 let config = {
     "processing": true,
     "serverSide": true,
+    "fixedHeader": true,
     "ajax": AJAX_URL,
     "order": [[ 2, "desc" ]],
     "columnDefs": [
