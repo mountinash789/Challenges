@@ -30,9 +30,7 @@ jobs:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
         DEBUG: true
       run: |
-        coverage erase
         python manage.py test
-        coverage report
     - name: Python Django Coverage GitHub Action
       uses: dc740/django-coveragepy-github-action@0.9
       with:
