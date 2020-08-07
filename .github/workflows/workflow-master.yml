@@ -32,6 +32,9 @@ jobs:
       run: |
         python manage.py test
     - name: Python Django Coverage GitHub Action
+      env: 
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        DEBUG: true
       uses: dc740/django-coveragepy-github-action@0.9
       with:
         django-app: 'project'
