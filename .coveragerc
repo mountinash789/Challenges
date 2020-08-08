@@ -3,6 +3,7 @@ source = .
 omit =
     */node_modules/*
     */*migrations*
+    */htmlcov/*
 branch = True
 plugins =
     django_coverage_plugin
