@@ -3,6 +3,10 @@
 {% block css %}
 {% endblock %}
 {% block js %}
+<script>
+    let GET_ACTIVITES_URL = "{% url 'api:load_activites' user.id %}";
+</script>
+<script src="{% static 'js/load_activities.js' %}"></script>
 {% endblock %}
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">

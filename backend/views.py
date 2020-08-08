@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from backend.models import Connection, Activity
+from backend.tasks import get_activities
 from project.utils import ExactUserRequiredAPI, LoginRequired, ExactUserRequired, local_time
 
 
@@ -95,3 +96,11 @@ class ActivitiesList(ActivitiesMixin, ExactUserRequired, BaseDatatableView):
             ])
 
         return data
+
+
+class ActivitiesLoad(ExactUserRequiredAPI):
+
+    def get(self, request, *args, **kwargs):
+        user_id = self.kwargs['user_id']
+        get_activities(user_id)
+        return Response({})
