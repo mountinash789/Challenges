@@ -1,9 +1,7 @@
 from django.contrib.auth.views import LoginView
-from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, FormView
+from django.views.generic import TemplateView
 
-from backend.tasks import get_activities
 from backend.views import ActivitiesMixin
 from project.utils import LoginRequired
 from frontend.forms import LoginForm
@@ -13,7 +11,6 @@ class HomePage(LoginRequired, TemplateView):
     template_name = 'dashboard.html'
 
     def get(self, request, *args, **kwargs):
-        get_activities(self.request.user.id)
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -68,4 +65,3 @@ class ActivitiesPage(ActivitiesMixin, LoginRequired, TemplateView):
             'Actions',
         ]
         return context
-
