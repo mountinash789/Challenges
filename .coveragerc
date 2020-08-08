@@ -4,11 +4,11 @@ omit =
     */node_modules/*
     */*migrations*
     */htmlcov/*
+    */project/wsgi.py
+    */project/asgi.py
 branch = True
-plugins =
-    django_coverage_plugin
 
 [report]
-fail_under = 10
+fail_under = 100
 show_missing = True
 skip_covered = True
