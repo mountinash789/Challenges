@@ -1,6 +1,3 @@
-import django
-django.setup()
-
 from datetime import timedelta
 
 from django.core.files.uploadedfile import SimpleUploadedFile
