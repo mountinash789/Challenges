@@ -1,10 +1,11 @@
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, FormView
 
 from backend.views import ActivitiesMixin
 from project.utils import LoginRequired
-from frontend.forms import LoginForm
+from frontend.forms import LoginForm, RegisterForm
 
 
 class HomePage(LoginRequired, TemplateView):
@@ -40,9 +41,15 @@ class ProfilePage(LoginRequired, TemplateView):
         self.user = self.request.user
         return super().get(request, *args, **kwargs)
 
+    def get_users_name(self):
+        full_name = self.user.get_full_name()
+        if len(full_name) == 0:
+            return self.user.username
+        return full_name
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['page_header'] = context['page_title'] = self.user.get_full_name()
+        context['page_header'] = context['page_title'] = self.get_users_name()
         context['objects'] = [1, 2, 3, 4, 5]
         return context
 
@@ -65,3 +72,22 @@ class ActivitiesPage(ActivitiesMixin, LoginRequired, TemplateView):
             'Actions',
         ]
         return context
+
+
+class RegistrationView(FormView):
+    template_name = 'base_form.html'
+    form_class = RegisterForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_header'] = context['page_title'] = 'Create an account'
+        return context
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+
+
+    def get_success_url(self):
+        url = reverse_lazy('front:profile')
+        return url or reverse_lazy('front:home')
