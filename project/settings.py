@@ -152,5 +152,5 @@ MESSAGE_TAGS = {
 
 try:
     from project.local_settings import *
-except ImportError:
+except ImportError:  # pragma: no cover
     pass
