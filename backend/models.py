@@ -70,10 +70,51 @@ class Activity(TimeStampedModel):
             val = '{}...'.format(val[:length])
         return val
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE,blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     description = models.CharField(max_length=255, blank=True, null=True)
     activity_type = models.ForeignKey(ActivityType, on_delete=models.CASCADE, blank=True, null=True)
     date = models.DateTimeField(blank=True, null=True)
     duration_seconds = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     distance_meters = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_elevation_gain = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+
+class TargetType(TimeStampedModel):
+    description = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.description
+
+
+class ChallengeTarget(TimeStampedModel):
+    description = models.CharField(max_length=255)
+    tracked_activity_type = models.ManyToManyField(ActivityType)
+    target_value = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    target_type = models.ForeignKey(TargetType, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.description
+
+
+class Challenge(TimeStampedModel):
+    name = models.CharField(max_length=255)
+    targets = models.ManyToManyField(ChallengeTarget)
+    start = models.DateTimeField()
+    end = models.DateTimeField()
+
+    def __str__(self):
+        return self.name
+
+    def instructions(self):
+        html = '<ul>'
+        for challenge in self.targets.all():
+            html += '<li>{}</li>'.format(challenge.description)
+        html += '</ul>'
+
+
+class ChallengeSubscription(TimeStampedModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '{} has signed up to {}'.format(self.user.get_full_name(), self.challenge)
