@@ -1,4 +1,5 @@
 from dateutil.parser import parse
+from django.urls import reverse_lazy
 
 from backend.models import UserConnection, ActivityType, Activity
 
@@ -7,6 +8,23 @@ class TestConnection(object):
     """
     tets connection library to simulate the tasks to get activites from third parties
     """
+
+    @staticmethod
+    def sign_up(user_id, connection_id):
+        return reverse_lazy('front:profile')
+
+    @staticmethod
+    def deauth(user_id, connection_id):
+        obj = UserConnection.objects.get(user_id=user_id, connection_id=connection_id)
+        obj.delete()
+        return
+
+    @staticmethod
+    def exchange(user_id, connection_id, code):
+        obj, created = UserConnection.objects.get_or_create(user_id=user_id, connection_id=connection_id)
+        obj.access_token = 'test'
+        obj.refresh_token = 'test'
+        obj.save()
 
     def access_token(self, user_connection_id):
         return 'test_access_token'

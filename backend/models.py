@@ -66,7 +66,7 @@ class Activity(TimeStampedModel):
     def truncated_description(self):
         length = 20
         val = self.description
-        if len(val) > length:
+        if val and len(val) > length:
             val = '{}...'.format(val[:length])
         return val
 
