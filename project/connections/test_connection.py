@@ -8,6 +8,9 @@ class TestConnection(object):
     tets connection library to simulate the tasks to get activites from third parties
     """
 
+    def access_token(self, user_connection_id):
+        return 'test_access_token'
+
     def get_data(self, user_connection_id, all_time=False):
         connection = UserConnection.objects.get(pk=user_connection_id)
         data = [
@@ -19,7 +22,7 @@ class TestConnection(object):
                 'elapsed_time': 1200,
                 'distance': 1609,
                 'total_elevation_gain': 20,
-             },
+            },
             {
                 'upload_id': 2312313,
                 'name': 'Evening Run',
@@ -28,7 +31,7 @@ class TestConnection(object):
                 'elapsed_time': 600,
                 'distance': 1609,
                 'total_elevation_gain': 20,
-             },
+            },
         ]
         self.parse_activities(data, connection.user_id)
 

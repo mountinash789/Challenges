@@ -38,7 +38,7 @@ class UserConnection(TimeStampedModel):
     expires_at = models.DateTimeField(blank=True, null=True)
     last_pulled = models.DateTimeField(blank=True, null=True)
 
-    def get_access_token(self):  # pragma: no cover
+    def get_access_token(self):
         module = import_module(self.connection.library)
         Lib = getattr(module, self.connection.class_str)
         connect = Lib()

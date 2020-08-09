@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from django.test import TestCase
@@ -61,3 +62,20 @@ class ActivityTestCase(TestCase):
     def test_truncated_description__lt_20(self):
         self.activity.description = 'This is  a name'
         self.assertEqual(self.activity.truncated_description, self.activity.description)
+
+
+class UserConnectionTestCase(TestCase):
+
+    def setUp(self):
+        self.user = baker.make(User)
+        self.connection = baker.make('backend.Connection', library='project.connections.test_connection',
+                                     class_str='TestConnection')
+        self.user_connection = baker.make('backend.UserConnection', user=self.user, connection=self.connection)
+
+    def tearDown(self):
+        self.user.delete()
+        self.connection.delete()
+        self.user_connection.delete()
+
+    def test_get_access_token(self):
+        self.assertEqual(self.user_connection.get_access_token(), 'test_access_token')
