@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 
 from backend.views import UserConnections, ConnectionSignUp, ConnectionRedirect, ConnectionDeAuth, ActivitiesList, \
     ActivitiesLoad
@@ -14,4 +14,6 @@ urlpatterns = [
          name='connection_redirect'),
     path('<int:user_id>/activities/load/', ActivitiesLoad.as_view(), name='load_activites'),
     path('<int:user_id>/activities/', ActivitiesList.as_view(), name='activities'),
+    path('challenge/', include('backend.urls.challenge', namespace='challenge')),
 ]
+ß

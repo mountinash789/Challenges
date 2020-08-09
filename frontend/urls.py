@@ -1,8 +1,7 @@
-from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.urls import path, include
 
 from frontend.views import HomePage, LoginPage, ProfilePage, ActivitiesPage, RegistrationView
-from django.contrib.auth import views as auth_views
 
 app_name = 'frontend'
 urlpatterns = [

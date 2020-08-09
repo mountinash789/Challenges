@@ -2,13 +2,12 @@ from importlib import import_module
 
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from backend.models import Connection, Activity
 from backend.tasks import get_activities
