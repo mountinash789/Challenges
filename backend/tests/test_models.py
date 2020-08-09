@@ -79,3 +79,63 @@ class UserConnectionTestCase(TestCase):
 
     def test_get_access_token(self):
         self.assertEqual(self.user_connection.get_access_token(), 'test_access_token')
+
+
+class TargetTypeTestCase(TestCase):
+
+    def setUp(self):
+        self.target_type = baker.make('backend.TargetType', description='Elevation')
+
+    def tearDown(self):
+        self.target_type.delete()
+
+    def test_description(self):
+        self.assertEqual(self.target_type.__str__(), 'Elevation')
+
+
+class ChallengeTargetTestCase(TestCase):
+
+    def setUp(self):
+        self.challenge_target= baker.make('backend.ChallengeTarget', description='100k Run')
+
+    def tearDown(self):
+        self.challenge_target.delete()
+
+    def test_description(self):
+        self.assertEqual(self.challenge_target.__str__(), '100k Run')
+
+
+class ChallengeTestCase(TestCase):
+
+    def setUp(self):
+        self.targets_set = baker.make('backend.ChallengeTarget', _quantity=5)
+        self.challenge = baker.make('backend.Challenge', name='100k Run', targets=self.targets_set)
+
+    def tearDown(self):
+        self.challenge.delete()
+
+    def test_name(self):
+        self.assertEqual(self.challenge.__str__(), '100k Run')
+
+    def test_instructions(self):
+        html = '<ul>'
+        for challenge in self.targets_set:
+            html += '<li>{}</li>'.format(challenge.description)
+        html += '</ul>'
+        self.assertEqual(self.challenge.instructions(), html)
+
+
+class ChallengeSubscription(TestCase):
+
+    def setUp(self):
+        self.user = baker.make(User, first_name='Joe', last_name='Bloggs')
+        self.challenge = baker.make('backend.Challenge', name='100k Run')
+        self.sub = baker.make('backend.ChallengeSubscription', user=self.user, challenge=self.challenge)
+
+    def tearDown(self):
+        self.challenge.delete()
+
+    def test_name(self):
+        name = self.sub.__str__()
+        self.assertTrue('Joe Bloggs' in name)
+        self.assertTrue('100k Run' in name)

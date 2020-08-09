@@ -107,9 +107,10 @@ class Challenge(TimeStampedModel):
 
     def instructions(self):
         html = '<ul>'
-        for challenge in self.targets.all():
+        for challenge in self.targets.all().order_by('created'):
             html += '<li>{}</li>'.format(challenge.description)
         html += '</ul>'
+        return html
 
 
 class ChallengeSubscription(TimeStampedModel):
