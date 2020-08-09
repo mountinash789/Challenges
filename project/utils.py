@@ -2,7 +2,6 @@ from django.contrib import messages
 from django.contrib.auth.views import redirect_to_login
 from django.http import HttpResponse
 from django.utils import timezone
-from rest_framework.response import Response
 from rest_framework.views import APIView
 
 

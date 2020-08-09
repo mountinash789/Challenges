@@ -1,11 +1,10 @@
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView
 
 from backend.views import ActivitiesMixin
-from project.utils import LoginRequired
 from frontend.forms import LoginForm, RegisterForm
+from project.utils import LoginRequired
 
 
 class HomePage(LoginRequired, TemplateView):
