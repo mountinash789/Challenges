@@ -62,7 +62,7 @@ class Activity(TimeStampedModel):
         return str(a)
 
     def view_button(self, size='sm'):
-        return '<a href="#" class="btn btn-{} btn-primary"><i data-feather="eye"></i> View</a>'.format(size)
+        return '<a href="#" class="btn btn-{} btn-primary"><i class="fas fa-eye"></i> View</a>'.format(size)
 
     @property
     def truncated_description(self):
@@ -120,8 +120,8 @@ class Challenge(TimeStampedModel):
         if subscriptions.count() == 0:
             url = reverse_lazy('api:challenge:subscribe', kwargs={'pk': self.id, 'user_id': user_id})
             return '<span id="id_challenge_sub_{}"><button type="button" data-link="{}" class="btn btn-sm ' \
-                   'btn-primary btn-ajax"><i data-feather="eye"></i> Join</button><span>'.format(self.id, url)
-        return '<button class="btn btn-sm btn-success disabled"><i data-feather="eye"></i> Joined!</button>'
+                   'btn-primary btn-ajax"><i class="fas fa-eye"></i> Join</button><span>'.format(self.id, url)
+        return '<button class="btn btn-sm btn-success disabled"><i class="fas fa-eye"></i> Joined!</button>'
 
 
 class ChallengeSubscription(TimeStampedModel):

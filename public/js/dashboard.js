@@ -7,7 +7,6 @@ $( document ).ready(function() {
                 data: {'id': $(item).attr('id')},
                 success: function(result){
                     $(`#${result['id']}`).html(result['html']);
-                    feather.replace();
                 }
             });
         }

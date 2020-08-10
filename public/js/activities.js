@@ -9,6 +9,5 @@ let config = {
         { "orderable": false, "searchable": false,  "targets": 5 }
     ],
     "initComplete": function(settings, json) {
-        feather.replace();
     },
 }

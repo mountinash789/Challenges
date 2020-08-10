@@ -11,7 +11,6 @@ let config = {
         { "orderable": true, "searchable": false,  "targets": [0] },
     ],
     "initComplete": function(settings, json) {
-        feather.replace();
         $('.btn-ajax').click(function(){
             $.ajax({
                 url: $(this).attr('data-link'),

@@ -51,7 +51,7 @@ class ActivityTestCase(TestCase):
                          str(timedelta(seconds=int(self.activity.duration_seconds) or 0)))
 
     def test_view_button(self):
-        html = '<a href="#" class="btn btn-{} btn-primary"><i data-feather="eye"></i> View</a>'.format('sm')
+        html = '<a href="#" class="btn btn-{} btn-primary"><i class="fas fa-eye"></i> View</a>'.format('sm')
         self.assertEqual(self.activity.view_button(), html)
 
     def test_truncated_description__gt_20(self):

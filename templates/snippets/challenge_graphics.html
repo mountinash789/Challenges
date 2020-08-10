@@ -13,10 +13,10 @@
 
                     <h2 class="h6 font-weight-bold mb-4">{{ target.target }}
                         <span style="float:right">
-                            <span data-feather="{{ target.target_type.icon }}"></span>
-                            {% for activity_type in target.activity_type.all %}
-                                <span data-feather="{{ activity_type.icon }}"></span>
+                            {% for activity_type in target.target.tracked_activity_type.all %}
+                                <i class="fas fa-{{ activity_type.icon }}"></i>
                             {% endfor %}
+                            <i class="fas fa-{{ target.target.target_type.icon }}"></i>
                         </span>
 
                     </h2>
