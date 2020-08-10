@@ -2,7 +2,7 @@ from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView
 
-from backend.views import ActivitiesMixin
+from backend.views.backend import ActivitiesMixin
 from frontend.forms import LoginForm, RegisterForm
 from project.utils import LoginRequired
 
@@ -85,7 +85,6 @@ class RegistrationView(FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
-
 
     def get_success_url(self):
         url = reverse_lazy('front:profile')

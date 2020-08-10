@@ -1,10 +1,11 @@
 from django.urls import path
 
-from backend.views import UserConnections
+from backend.views.challenge import ChallengesCurrent, ChallengesPast, ChallengeGraphic, ChallengesSubscribe
 
 app_name = 'backend'
 urlpatterns = [
-    path('current/', UserConnections.as_view(), name='user_connections'),
-    path('past/', UserConnections.as_view(), name='user_connections'),
-    path('<int:pk>/graphics/', UserConnections.as_view(), name='user_connections'),
+    path('current/', ChallengesCurrent.as_view(), name='current'),
+    path('past/', ChallengesPast.as_view(), name='past'),
+    path('<int:pk>/subscribe/<int:user_id>/', ChallengesSubscribe.as_view(), name='subscribe'),
+    path('<int:pk>/graphics/', ChallengeGraphic.as_view(), name='graphic'),
 ]

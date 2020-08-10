@@ -3,6 +3,7 @@ from importlib import import_module
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.urls import reverse_lazy
 from django_extensions.db.models import TimeStampedModel
 
 
@@ -111,6 +112,14 @@ class Challenge(TimeStampedModel):
             html += '<li>{}</li>'.format(challenge.description)
         html += '</ul>'
         return html
+
+    def subscribe_button(self, user_id):
+        subscriptions = self.challengesubscription_set.filter(user_id=user_id)
+        if subscriptions.count() == 0:
+            url = reverse_lazy('api:challenge:subscribe', kwargs={'pk': self.id, 'user_id': user_id})
+            return '<span id="id_challenge_sub_{}"><button type="button" data-link="{}" class="btn btn-sm ' \
+                   'btn-primary btn-ajax"><i data-feather="eye"></i> Join</button><span>'.format(self.id, url)
+        return '<button class="btn btn-sm btn-success disabled"><i data-feather="eye"></i> Joined!</button>'
 
 
 class ChallengeSubscription(TimeStampedModel):

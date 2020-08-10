@@ -1,7 +1,7 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path, include
 
-from frontend.views import HomePage, LoginPage, ProfilePage, ActivitiesPage, RegistrationView
+from frontend.views.frontend import HomePage, LoginPage, ProfilePage, ActivitiesPage, RegistrationView
 
 app_name = 'frontend'
 urlpatterns = [
@@ -12,4 +12,5 @@ urlpatterns = [
     path('', HomePage.as_view(), name='home'),
     path('profile/', ProfilePage.as_view(), name='profile'),
     path('activities/', ActivitiesPage.as_view(), name='activities'),
+    path('challenge/', include('frontend.urls.challenge', namespace='challenge')),
 ]

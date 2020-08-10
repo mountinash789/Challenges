@@ -1,4 +1,5 @@
 {% with request.resolver_match.view_name as view_name %}
+{% with request.resolver_match.namespaces as namespaces %}
 <ul class="nav flex-column">
     <li class="nav-item">
         <a class="nav-link {% if view_name == 'front:home' %}active{% endif %}" href="{% url 'front:home' %}">
@@ -13,10 +14,33 @@
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link {% if view_name == 'front:activities' %}active{% endif %}" href="{% url 'front:activities' %}">
+        <a class="nav-link {% if view_name == 'front:activities' %}active{% endif %}"
+           href="{% url 'front:activities' %}">
             <i data-feather="activity"></i>
             Activities
         </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#" data-toggle="collapse" data-target="#id_challenges_sub">
+            <i data-feather="wind"></i>
+            Challenges
+        </a>
+        <span id="id_challenges_sub" class="collapse {% if 'challenge' in namespaces %}show{% endif %}">
+        <ul class="nav flex-column level-two">
+            <li class="nav-item">
+                <a class="nav-link {% if view_name == 'front:challenge:current' %}active{% endif %}" href="{% url 'front:challenge:current' %}">
+                    <span data-feather="chevrons-up"></span>
+                    Current
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if view_name == 'front:challenge:past' %}active{% endif %}" href="{% url 'front:challenge:past' %}">
+                    <span data-feather="chevrons-left"></span>
+                    Past
+                </a>
+            </li>
+        </ul>
+            </span>
     </li>
     <!--                    <li class="nav-item">-->
     <!--                        <a class="nav-link" href="#">-->
@@ -82,4 +106,5 @@
     <!--                        </a>-->
     <!--                    </li>-->
 </ul>
+{% endwith %}
 {% endwith %}

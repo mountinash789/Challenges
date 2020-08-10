@@ -1,7 +1,7 @@
 from django.urls import path, include
 
-from backend.views import UserConnections, ConnectionSignUp, ConnectionRedirect, ConnectionDeAuth, ActivitiesList, \
-    ActivitiesLoad
+from backend.views.backend import UserConnections, ConnectionSignUp, ConnectionRedirect, ConnectionDeAuth, \
+    ActivitiesList, ActivitiesLoad
 
 app_name = 'backend'
 urlpatterns = [
@@ -16,4 +16,3 @@ urlpatterns = [
     path('<int:user_id>/activities/', ActivitiesList.as_view(), name='activities'),
     path('challenge/', include('backend.urls.challenge', namespace='challenge')),
 ]
-ß
