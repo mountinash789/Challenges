@@ -2,8 +2,9 @@ let config = {
     "processing": true,
     "serverSide": true,
     "fixedHeader": true,
+    "pageLength": 25,
     "ajax": AJAX_URL,
-    "order": [[ 0, "desc" ]],
+    "order": [[ 0, "asc" ]],
     "columnDefs": [
         { "orderable": false, "searchable": false,  "targets": [2, 3, 4, 5] },
         { "orderable": true, "searchable": true,  "targets": [1] },

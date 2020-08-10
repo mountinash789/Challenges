@@ -24,6 +24,8 @@ class ChallengesMixin(object):
         qs = self.model.objects.filter()
         if self.past:
             qs = qs.filter(end__lt=timezone.now())
+        else:
+            qs = qs.filter(end__gte=timezone.now())
         return qs
 
 
