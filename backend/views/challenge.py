@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from rest_framework.response import Response
@@ -67,4 +68,15 @@ class ChallengesSubscribe(ExactUserRequiredAPI):
 
 
 class ChallengeGraphic(ExactUserRequiredAPI):
-    pass
+    template_name = 'snippets/challenge_graphics.html'
+
+    def get(self, request, *args, **kwargs):
+        user_id = self.kwargs['user_id']
+        challenge_id = self.kwargs['pk']
+        challenge = Challenge.objects.get(pk=challenge_id)
+        user = User.objects.get(pk=user_id)
+        sub = ChallengeSubscription.objects.get(user=user, challenge=challenge)
+        return Response({
+            'id': 'id_challenge_status_{}'.format(challenge_id),
+            'html': render_to_string(self.template_name, {'user': user, 'challenge': challenge}),
+        })

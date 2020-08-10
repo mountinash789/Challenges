@@ -7,5 +7,5 @@ urlpatterns = [
     path('current/', ChallengesCurrent.as_view(), name='current'),
     path('past/', ChallengesPast.as_view(), name='past'),
     path('<int:pk>/subscribe/<int:user_id>/', ChallengesSubscribe.as_view(), name='subscribe'),
-    path('<int:pk>/graphics/', ChallengeGraphic.as_view(), name='graphic'),
+    path('<int:pk>/graphics/<int:user_id>/', ChallengeGraphic.as_view(), name='graphic'),
 ]
