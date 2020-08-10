@@ -81,10 +81,11 @@ class ChallengeGraphic(ExactUserRequiredAPI):
         activities = Activity.objects.filter(activity_type__in=target.tracked_activity_type.all(),
                                              date__range=(self.challenge.start, self.challenge.end),
                                              user=self.user)
-        if target.target_type.description == 'Elevation':
-            return activities.aggregate(total=Sum('total_elevation_gain'))['total']
-        elif target.target_type.description == 'Distance':
-            return activities.aggregate(total=Sum('distance_meters'))['total']
+        return activities.aggregate(total=Sum(target.target_type.field))['total'] or 0
+        # if target.target_type.description == 'Elevation':
+        #     return activities.aggregate(total=Sum('total_elevation_gain'))['total']
+        # elif target.target_type.description == 'Distance':
+        #     return activities.aggregate(total=Sum('distance_meters'))['total']
 
     def target_data(self):
         data = []

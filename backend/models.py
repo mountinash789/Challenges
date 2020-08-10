@@ -84,6 +84,7 @@ class Activity(TimeStampedModel):
 class TargetType(TimeStampedModel):
     description = models.CharField(max_length=255)
     icon = models.CharField(max_length=20, blank=True, null=True)
+    field = models.CharField(max_length=255)
 
     def __str__(self):
         return self.description
