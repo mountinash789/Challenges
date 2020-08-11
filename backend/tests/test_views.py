@@ -1,10 +1,15 @@
+from dateutil.parser import parse
+from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 
 from django.test import TestCase
+from django.utils import timezone
 from model_bakery import baker
 
 from backend.models import UserConnection
+from backend.views.challenge import ChallengeGraphic
+from project.utils import end_of_day, start_of_day, month_start_end
 
 
 class UserConnectionsTest(TestCase):
@@ -157,3 +162,163 @@ class ActivitiesLoadTest(TestCase):
         response = self.client.get(self.path)
 
         self.assertEqual(response.status_code, 200)
+
+
+class ChallengesCurrentTest(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='agdusgdiu39u21n')
+        self.path = reverse_lazy('api:challenge:current')
+
+    def tearDown(self):
+        self.user.delete()
+
+    def test_redirect_if_not_logged_in(self):
+        response = self.client.get(self.path)
+        self.assertRedirects(response, '/login/?next={}'.format(self.path))
+
+    def test_logged_in(self):
+        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        response = self.client.get(self.path)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['recordsTotal'], 0)
+
+    def test_challenge_in_future_no_challenges(self):
+        start, end = month_start_end(timezone.now() - relativedelta(months=2))
+        baker.make('backend.Challenge', start=start, end=end)
+        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        response = self.client.get(self.path)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['recordsTotal'], 0)
+
+    def test_challenge_in_future_has_challenges(self):
+        start, end = month_start_end(timezone.now() + relativedelta(months=2))
+        baker.make('backend.Challenge', start=start, end=end)
+        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        response = self.client.get(self.path)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['recordsTotal'], 1)
+
+
+class ChallengesPastTest(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='agdusgdiu39u21n')
+        self.path = reverse_lazy('api:challenge:past')
+
+    def tearDown(self):
+        self.user.delete()
+
+    def test_redirect_if_not_logged_in(self):
+        response = self.client.get(self.path)
+        self.assertRedirects(response, '/login/?next={}'.format(self.path))
+
+    def test_logged_in(self):
+        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        response = self.client.get(self.path)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['recordsTotal'], 0)
+
+    def test_challenge_in_future_no_challenges(self):
+        start, end = month_start_end(timezone.now() - relativedelta(months=2))
+        baker.make('backend.Challenge', start=start, end=end)
+        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        response = self.client.get(self.path)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['recordsTotal'], 1)
+
+    def test_challenge_in_future_has_challenges(self):
+        start, end = month_start_end(timezone.now() + relativedelta(months=2))
+        baker.make('backend.Challenge', start=start, end=end)
+        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        response = self.client.get(self.path)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['recordsTotal'], 0)
+
+
+class ChallengesSubscribeTestCase(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='agdusgdiu39u21n')
+        self.challenge = baker.make('backend.Challenge')
+        self.path = reverse_lazy('api:challenge:subscribe', kwargs={'user_id': self.user.id, 'pk': self.challenge.id})
+
+    def tearDown(self):
+        self.user.delete()
+        self.challenge.delete()
+
+    def test_redirect_if_not_logged_in(self):
+        response = self.client.get(self.path)
+        self.assertEqual(response.status_code, 401)
+
+    def test_subscribe(self):
+        self.assertEqual(self.challenge.challengesubscription_set.count(), 0)
+        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        response = self.client.get(self.path)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['id'], 'id_challenge_sub_{}'.format(self.challenge.id))
+        self.assertEqual(self.challenge.challengesubscription_set.count(), 1)
+
+
+class ChallengeGraphicTestCase(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='agdusgdiu39u21n')
+        self.activity_types = [baker.make('backend.ActivityType')]
+        self.challenge = baker.make('backend.Challenge')
+        self.path = reverse_lazy('api:challenge:graphic', kwargs={'user_id': self.user.id, 'pk': self.challenge.id})
+        baker.make('backend.ChallengeSubscription', user=self.user, challenge=self.challenge)
+
+    def tearDown(self):
+        self.user.delete()
+        self.challenge.delete()
+
+    def test_redirect_if_not_logged_in(self):
+        response = self.client.get(self.path)
+        self.assertEqual(response.status_code, 401)
+
+    def test_response_0_activities(self):
+        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        response = self.client.get(self.path)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['id'], 'id_challenge_status_{}'.format(self.challenge.id))
+
+    def test_response_gte80_activities(self):
+        target = [
+            baker.make('backend.ChallengeTarget', target_type=baker.make('backend.TargetType', description='Distance',
+                                                                         field='distance_meters'),
+                       target_value=1000, tracked_activity_type=self.activity_types)]
+        dis_challenge = baker.make('backend.Challenge', name='100k Run', targets=target)
+        baker.make('backend.ChallengeSubscription', user=self.user, challenge=dis_challenge)
+        baker.make('backend.Activity', date=dis_challenge.start, user=self.user,
+                   activity_type=self.activity_types[0], distance_meters=1000)
+        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        response = self.client.get(
+            reverse_lazy('api:challenge:graphic', kwargs={'user_id': self.user.id, 'pk': dis_challenge.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['id'], 'id_challenge_status_{}'.format(dis_challenge.id))
+        dis_challenge.delete()
+
+    def test_response_gte20_activities(self):
+        target = [
+            baker.make('backend.ChallengeTarget', target_type=baker.make('backend.TargetType', description='Elevation',
+                                                                         field='total_elevation_gain'),
+                       target_value=1000, tracked_activity_type=self.activity_types)]
+        elev_challenge = baker.make('backend.Challenge', name='100k Run', targets=target)
+        baker.make('backend.ChallengeSubscription', user=self.user, challenge=elev_challenge)
+        baker.make('backend.Activity', date=elev_challenge.start, user=self.user,
+                   activity_type=self.activity_types[0], total_elevation_gain=300)
+        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        response = self.client.get(
+            reverse_lazy('api:challenge:graphic', kwargs={'user_id': self.user.id, 'pk': elev_challenge.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['id'], 'id_challenge_status_{}'.format(elev_challenge.id))
+        elev_challenge.delete()

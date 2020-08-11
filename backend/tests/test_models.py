@@ -4,7 +4,10 @@ from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from django.test import TestCase
+from django.urls import reverse_lazy
 from model_bakery import baker
+
+from backend.models import ChallengeSubscription
 
 
 class ConnectionTestCase(TestCase):
@@ -110,9 +113,11 @@ class ChallengeTestCase(TestCase):
     def setUp(self):
         self.targets_set = baker.make('backend.ChallengeTarget', _quantity=5)
         self.challenge = baker.make('backend.Challenge', name='100k Run', targets=self.targets_set)
+        self.user = baker.make(User)
 
     def tearDown(self):
         self.challenge.delete()
+        self.user.delete()
 
     def test_name(self):
         self.assertEqual(self.challenge.__str__(), '100k Run')
@@ -124,8 +129,20 @@ class ChallengeTestCase(TestCase):
         html += '</ul>'
         self.assertEqual(self.challenge.instructions(), html)
 
+    def test_subscribe_button_subscribed(self):
+        cs = ChallengeSubscription(user=self.user, challenge=self.challenge)
+        cs.save()
+        html = '<button class="btn btn-sm btn-success disabled"><i class="fas fa-eye"></i> Joined!</button>'
+        self.assertEqual(self.challenge.subscribe_button(self.user.id), html)
 
-class ChallengeSubscription(TestCase):
+    def test_subscribe_button(self):
+        url = reverse_lazy('api:challenge:subscribe', kwargs={'pk': self.challenge.id, 'user_id': self.user.id})
+        html = '<span id="id_challenge_sub_{}"><button type="button" data-link="{}" class="btn btn-sm ' \
+               'btn-primary btn-ajax"><i class="fas fa-eye"></i> Join</button><span>'.format(self.challenge.id, url)
+        self.assertEqual(self.challenge.subscribe_button(self.user.id), html)
+
+
+class ChallengeSubscriptionTestCase(TestCase):
 
     def setUp(self):
         self.user = baker.make(User, first_name='Joe', last_name='Bloggs')

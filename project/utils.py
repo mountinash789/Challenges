@@ -1,7 +1,11 @@
+import calendar
+import datetime
+
 from django.contrib import messages
 from django.contrib.auth.views import redirect_to_login
 from django.http import HttpResponse
 from django.utils import timezone
+from django.utils.timezone import make_aware
 from rest_framework.views import APIView
 
 
@@ -35,5 +39,19 @@ class ExactUserRequiredAPI(ExactUserRequired, APIView):
         return HttpResponse(status=401)
 
 
-def local_time(datetime):
-    return timezone.localtime(datetime)
+def local_time(dt):
+    return timezone.localtime(dt)
+
+
+def start_of_day(dt):
+    return make_aware(datetime.datetime.combine(dt, datetime.time.min))
+
+
+def end_of_day(dt):
+    return make_aware(datetime.datetime.combine(dt, datetime.time.max))
+
+
+def month_start_end(dt):
+    first_day = dt.date().replace(day=1)
+    last_day = dt.date().replace(day=calendar.monthrange(dt.date().year, dt.date().month)[1])
+    return start_of_day(first_day), end_of_day(last_day)
