@@ -101,7 +101,7 @@ class Strava(object):
     def parse_activities(self, activities, user_id):
         for activity in activities:
             obj, created = Activity.objects.get_or_create(
-                id=activity['upload_id']
+                external_id=activity['upload_id']
             )
             obj.user_id = user_id
             obj.description = activity['name']
