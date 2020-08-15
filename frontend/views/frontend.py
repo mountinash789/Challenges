@@ -20,7 +20,7 @@ class HomePage(LoginRequired, TemplateView):
         now = timezone.now()
         context['page_header'] = context['page_title'] = 'Dashboard'
         context['my_challenges'] = ChallengeSubscription.objects.exclude(challenge__end__lt=now).filter(
-            user=self.request.user)
+            user=self.request.user).order_by('challenge__start')
         return context
 
 
