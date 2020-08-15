@@ -1,0 +1,60 @@
+{% load static %}
+<link href="{% static 'css/progress.css' %}" rel="stylesheet">
+<script src="{% static 'js/progress.js' %}"></script>
+<div class="row mb-2">
+    <div class="col-xl-12">
+        {% for target in target_data %}
+        {% if forloop.first or forloop.counter0|divisibleby:4 %}
+        <div class="row mb-2">
+            {% endif %}
+
+            <div class="col-xl-3 col-lg-6 mb-4">
+                <div class="bg-white rounded-lg p-3 shadow-lg">
+
+                    <h2 class="h6 font-weight-bold mb-4">{{ target.target }}
+                        <span style="float:right">
+                            {% for activity_type in target.target.tracked_activity_type.all %}
+                                <i class="fas fa-{{ activity_type.icon }}"></i>
+                            {% endfor %}
+                            <i class="fas fa-{{ target.target.target_type.icon }}"></i>
+                        </span>
+
+                    </h2>
+
+                    <div class="progress mx-auto"
+                         data-value='{% if target.prcnt > 100 %}100{% else %}{{ target.prcnt }}{% endif %}'>
+                              <span class="progress-left">
+                                            <span class="progress-bar border-{{ target.class }}"></span>
+                              </span>
+                        <span class="progress-right">
+                                            <span class="progress-bar border-{{ target.class }}"></span>
+                              </span>
+                        <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                            <div class="h2 font-weight-bold">{{ target.prcnt }}<sup class="small">%</sup></div>
+                        </div>
+                    </div>
+
+                    <div class="row text-center mt-4">
+                        <div class="col-6 border-right">
+                            <div class="h5 font-weight-bold mb-0">{{ target.target_value }}</div>
+                            <span class="small text-gray">Target</span>
+                        </div>
+                        <div class="col-6">
+                            <div class="h5 font-weight-bold mb-0">{{ target.achieved }}</div>
+                            <span class="small text-gray">Achieved</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if forloop.counter|divisibleby:4 or forloop.last %}
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+<hr>
+
+
+
+

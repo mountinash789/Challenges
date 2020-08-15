@@ -74,3 +74,8 @@
   top: 0;
   left: 0;
 }
+
+.vertical {
+    border-left: 6px solid green;
+  height: 100%;
+}

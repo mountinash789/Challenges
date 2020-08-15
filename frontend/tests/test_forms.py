@@ -1,9 +1,4 @@
-import django
-django.setup()
 from django.contrib.auth.models import User
-from model_bakery import baker
-
-
 from django.test import TestCase
 
 from frontend.forms import LoginForm, RegisterForm

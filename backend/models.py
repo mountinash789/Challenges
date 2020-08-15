@@ -3,6 +3,7 @@ from importlib import import_module
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.urls import reverse_lazy
 from django_extensions.db.models import TimeStampedModel
 
 
@@ -47,6 +48,7 @@ class UserConnection(TimeStampedModel):
 
 class ActivityType(TimeStampedModel):
     description = models.CharField(max_length=255, blank=True, null=True)
+    icon = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
         return self.description
@@ -60,7 +62,7 @@ class Activity(TimeStampedModel):
         return str(a)
 
     def view_button(self, size='sm'):
-        return '<a href="#" class="btn btn-{} btn-primary"><i data-feather="eye"></i> View</a>'.format(size)
+        return '<a href="#" class="btn btn-{} btn-primary"><i class="fas fa-eye"></i> View</a>'.format(size)
 
     @property
     def truncated_description(self):
@@ -70,10 +72,63 @@ class Activity(TimeStampedModel):
             val = '{}...'.format(val[:length])
         return val
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE,blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    external_id = models.CharField(max_length=255, blank=True, null=True)
     description = models.CharField(max_length=255, blank=True, null=True)
     activity_type = models.ForeignKey(ActivityType, on_delete=models.CASCADE, blank=True, null=True)
     date = models.DateTimeField(blank=True, null=True)
     duration_seconds = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     distance_meters = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_elevation_gain = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+
+class TargetType(TimeStampedModel):
+    description = models.CharField(max_length=255)
+    icon = models.CharField(max_length=20, blank=True, null=True)
+    field = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.description
+
+
+class ChallengeTarget(TimeStampedModel):
+    description = models.CharField(max_length=255)
+    tracked_activity_type = models.ManyToManyField(ActivityType)
+    target_value = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    target_type = models.ForeignKey(TargetType, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.description
+
+
+class Challenge(TimeStampedModel):
+    name = models.CharField(max_length=255)
+    targets = models.ManyToManyField(ChallengeTarget)
+    start = models.DateTimeField()
+    end = models.DateTimeField()
+
+    def __str__(self):
+        return self.name
+
+    def instructions(self):
+        html = '<ul>'
+        for challenge in self.targets.all().order_by('created'):
+            html += '<li>{}</li>'.format(challenge.description)
+        html += '</ul>'
+        return html
+
+    def subscribe_button(self, user_id):
+        subscriptions = self.challengesubscription_set.filter(user_id=user_id)
+        if subscriptions.count() == 0:
+            url = reverse_lazy('api:challenge:subscribe', kwargs={'pk': self.id, 'user_id': user_id})
+            return '<span id="id_challenge_sub_{}"><button type="button" data-link="{}" class="btn btn-sm ' \
+                   'btn-primary btn-ajax"><i class="fas fa-eye"></i> Join</button><span>'.format(self.id, url)
+        return '<button class="btn btn-sm btn-success disabled"><i class="fas fa-eye"></i> Joined!</button>'
+
+
+class ChallengeSubscription(TimeStampedModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '{} has signed up to {}'.format(self.user.get_full_name(), self.challenge)

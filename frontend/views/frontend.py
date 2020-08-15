@@ -1,11 +1,12 @@
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.generic import TemplateView, FormView
 
-from backend.views import ActivitiesMixin
-from project.utils import LoginRequired
+from backend.models import ChallengeSubscription
+from backend.views.backend import ActivitiesMixin
 from frontend.forms import LoginForm, RegisterForm
+from project.utils import LoginRequired
 
 
 class HomePage(LoginRequired, TemplateView):
@@ -16,7 +17,10 @@ class HomePage(LoginRequired, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        now = timezone.now()
         context['page_header'] = context['page_title'] = 'Dashboard'
+        context['my_challenges'] = ChallengeSubscription.objects.exclude(challenge__end__lt=now).filter(
+            user=self.request.user)
         return context
 
 
@@ -86,7 +90,6 @@ class RegistrationView(FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
-
 
     def get_success_url(self):
         url = reverse_lazy('front:profile')

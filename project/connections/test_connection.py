@@ -1,5 +1,6 @@
 from dateutil.parser import parse
 from django.urls import reverse_lazy
+from django.utils.timezone import make_aware
 
 from backend.models import UserConnection, ActivityType, Activity
 
@@ -66,7 +67,7 @@ class TestConnection(object):
             obj.user_id = user_id
             obj.description = activity['name']
             obj.activity_type = self.get_activity_type(activity['type'])
-            obj.date = parse(activity['start_date'])
+            obj.date = make_aware(parse(activity['start_date']))
             obj.duration_seconds = activity['elapsed_time']
             obj.distance_meters = activity['distance']
             obj.total_elevation_gain = activity['total_elevation_gain']
