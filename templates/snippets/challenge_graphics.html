@@ -1,6 +1,8 @@
 {% load static %}
+<link rel="stylesheet" href="https://swiperjs.com/package/swiper-bundle.min.css">
 <link href="{% static 'css/progress.css' %}" rel="stylesheet">
 <script src="{% static 'js/progress.js' %}"></script>
+
 <div class="row mb-2">
     <div class="col-xl-12">
         {% for target in target_data %}
@@ -21,28 +23,43 @@
 
                     </h2>
 
-                    <div class="progress mx-auto"
-                         data-value='{% if target.prcnt > 100 %}100{% else %}{{ target.prcnt }}{% endif %}'>
+                    <div class="swiper-container" data-id="{{ challenge.id }}_{{ target.target.id }}">
+                        <!-- Additional required wrapper -->
+                        <div class="swiper-wrapper">
+                            <!-- Slides -->
+                            <div class="swiper-slide" data-hash="slide_{{ challenge.id }}_{{ target.target.id }}_1">
+
+                                <div class="progress mx-auto"
+                                     data-value='{% if target.prcnt > 100 %}100{% else %}{{ target.prcnt }}{% endif %}'>
                               <span class="progress-left">
                                             <span class="progress-bar border-{{ target.class }}"></span>
                               </span>
-                        <span class="progress-right">
+                                    <span class="progress-right">
                                             <span class="progress-bar border-{{ target.class }}"></span>
                               </span>
-                        <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
-                            <div class="h2 font-weight-bold">{{ target.prcnt }}<sup class="small">%</sup></div>
-                        </div>
-                    </div>
+                                    <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                        <div class="h2 font-weight-bold">{{ target.prcnt }}<sup class="small">%</sup>
+                                        </div>
+                                    </div>
+                                </div>
 
-                    <div class="row text-center mt-4">
-                        <div class="col-6 border-right">
-                            <div class="h5 font-weight-bold mb-0">{{ target.target_value }}</div>
-                            <span class="small text-gray">Target</span>
+                                <div class="row text-center mt-4">
+                                    <div class="col-6 border-right">
+                                        <div class="h5 font-weight-bold mb-0">{{ target.target_value }}</div>
+                                        <span class="small text-gray">Target</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="h5 font-weight-bold mb-0">{{ target.achieved }}</div>
+                                        <span class="small text-gray">Achieved</span>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="swiper-slide" data-hash="slide_{{ challenge.id }}_{{ target.target.id }}_2">
+                                SLIDE 2
+                            </div>
                         </div>
-                        <div class="col-6">
-                            <div class="h5 font-weight-bold mb-0">{{ target.achieved }}</div>
-                            <span class="small text-gray">Achieved</span>
-                        </div>
+                        <div class="swiper-pagination"></div>
                     </div>
                 </div>
             </div>

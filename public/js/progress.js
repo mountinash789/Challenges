@@ -23,4 +23,21 @@ $( document ).ready(function() {
 
   }
 
+    var sliders = [];
+
+    $('.swiper-container').each(function(index, element){
+        let id = $(this).attr('data-id');
+        $(this).addClass('s'+id);
+        var slider = new Swiper('.s'+id, {
+            hashNavigation: {
+                watchState: true,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+        });
+        sliders.push(slider);
+
+    });
 });
