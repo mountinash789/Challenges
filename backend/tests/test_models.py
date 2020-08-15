@@ -4,7 +4,10 @@ from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from django.test import TestCase
+from django.urls import reverse_lazy
 from model_bakery import baker
+
+from backend.models import ChallengeSubscription
 
 
 class ConnectionTestCase(TestCase):
@@ -51,7 +54,7 @@ class ActivityTestCase(TestCase):
                          str(timedelta(seconds=int(self.activity.duration_seconds) or 0)))
 
     def test_view_button(self):
-        html = '<a href="#" class="btn btn-{} btn-primary"><i data-feather="eye"></i> View</a>'.format('sm')
+        html = '<a href="#" class="btn btn-{} btn-primary"><i class="fas fa-eye"></i> View</a>'.format('sm')
         self.assertEqual(self.activity.view_button(), html)
 
     def test_truncated_description__gt_20(self):
@@ -79,3 +82,77 @@ class UserConnectionTestCase(TestCase):
 
     def test_get_access_token(self):
         self.assertEqual(self.user_connection.get_access_token(), 'test_access_token')
+
+
+class TargetTypeTestCase(TestCase):
+
+    def setUp(self):
+        self.target_type = baker.make('backend.TargetType', description='Elevation')
+
+    def tearDown(self):
+        self.target_type.delete()
+
+    def test_description(self):
+        self.assertEqual(self.target_type.__str__(), 'Elevation')
+
+
+class ChallengeTargetTestCase(TestCase):
+
+    def setUp(self):
+        self.challenge_target= baker.make('backend.ChallengeTarget', description='100k Run')
+
+    def tearDown(self):
+        self.challenge_target.delete()
+
+    def test_description(self):
+        self.assertEqual(self.challenge_target.__str__(), '100k Run')
+
+
+class ChallengeTestCase(TestCase):
+
+    def setUp(self):
+        self.targets_set = baker.make('backend.ChallengeTarget', _quantity=5)
+        self.challenge = baker.make('backend.Challenge', name='100k Run', targets=self.targets_set)
+        self.user = baker.make(User)
+
+    def tearDown(self):
+        self.challenge.delete()
+        self.user.delete()
+
+    def test_name(self):
+        self.assertEqual(self.challenge.__str__(), '100k Run')
+
+    def test_instructions(self):
+        html = '<ul>'
+        for challenge in self.targets_set:
+            html += '<li>{}</li>'.format(challenge.description)
+        html += '</ul>'
+        self.assertEqual(self.challenge.instructions(), html)
+
+    def test_subscribe_button_subscribed(self):
+        cs = ChallengeSubscription(user=self.user, challenge=self.challenge)
+        cs.save()
+        html = '<button class="btn btn-sm btn-success disabled"><i class="fas fa-eye"></i> Joined!</button>'
+        self.assertEqual(self.challenge.subscribe_button(self.user.id), html)
+
+    def test_subscribe_button(self):
+        url = reverse_lazy('api:challenge:subscribe', kwargs={'pk': self.challenge.id, 'user_id': self.user.id})
+        html = '<span id="id_challenge_sub_{}"><button type="button" data-link="{}" class="btn btn-sm ' \
+               'btn-primary btn-ajax"><i class="fas fa-eye"></i> Join</button><span>'.format(self.challenge.id, url)
+        self.assertEqual(self.challenge.subscribe_button(self.user.id), html)
+
+
+class ChallengeSubscriptionTestCase(TestCase):
+
+    def setUp(self):
+        self.user = baker.make(User, first_name='Joe', last_name='Bloggs')
+        self.challenge = baker.make('backend.Challenge', name='100k Run')
+        self.sub = baker.make('backend.ChallengeSubscription', user=self.user, challenge=self.challenge)
+
+    def tearDown(self):
+        self.challenge.delete()
+
+    def test_name(self):
+        name = self.sub.__str__()
+        self.assertTrue('Joe Bloggs' in name)
+        self.assertTrue('100k Run' in name)

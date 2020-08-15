@@ -1,22 +1,46 @@
 {% with request.resolver_match.view_name as view_name %}
+{% with request.resolver_match.namespaces as namespaces %}
 <ul class="nav flex-column">
     <li class="nav-item">
         <a class="nav-link {% if view_name == 'front:home' %}active{% endif %}" href="{% url 'front:home' %}">
-            <i data-feather="home"></i>
+            <i class="fas fa-home"></i>
             Dashboard
         </a>
     </li>
     <li class="nav-item">
         <a class="nav-link {% if view_name == 'front:profile' %}active{% endif %}" href="{% url 'front:profile' %}">
-            <i data-feather="user"></i>
+            <i class="fas fa-user"></i>
             Profile
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link {% if view_name == 'front:activities' %}active{% endif %}" href="{% url 'front:activities' %}">
-            <i data-feather="activity"></i>
+        <a class="nav-link {% if view_name == 'front:activities' %}active{% endif %}"
+           href="{% url 'front:activities' %}">
+            <i class="fas fa-chart-line"></i>
             Activities
         </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#" data-toggle="collapse" data-target="#id_challenges_sub">
+            <i class="fas fa-thumbtack"></i>
+            Challenges
+        </a>
+        <span id="id_challenges_sub" class="collapse {% if 'challenge' in namespaces %}show{% endif %}">
+        <ul class="nav flex-column level-two">
+            <li class="nav-item">
+                <a class="nav-link {% if view_name == 'front:challenge:current' %}active{% endif %}" href="{% url 'front:challenge:current' %}">
+                    <i class="fas fa-caret-square-right"></i>
+                    Current
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if view_name == 'front:challenge:past' %}active{% endif %}" href="{% url 'front:challenge:past' %}">
+                    <i class="fas fa-history"></i>
+                    Past
+                </a>
+            </li>
+        </ul>
+            </span>
     </li>
     <!--                    <li class="nav-item">-->
     <!--                        <a class="nav-link" href="#">-->
@@ -82,4 +106,5 @@
     <!--                        </a>-->
     <!--                    </li>-->
 </ul>
+{% endwith %}
 {% endwith %}

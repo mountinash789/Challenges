@@ -2,9 +2,8 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from model_bakery import baker
 
-from backend.models import UserConnection, Activity
+from backend.models import Activity
 from backend.tasks import get_activities
-from backend.templatetags.model_tags import user_connected
 
 
 class TaskTestCase(TestCase):
