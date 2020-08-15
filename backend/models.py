@@ -73,6 +73,7 @@ class Activity(TimeStampedModel):
         return val
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    external_id = models.CharField(max_length=255, blank=True, null=True)
     description = models.CharField(max_length=255, blank=True, null=True)
     activity_type = models.ForeignKey(ActivityType, on_delete=models.CASCADE, blank=True, null=True)
     date = models.DateTimeField(blank=True, null=True)

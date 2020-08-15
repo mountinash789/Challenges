@@ -9,6 +9,7 @@ let config = {
         { "orderable": false, "searchable": false,  "targets": [2, 3, 4, 5] },
         { "orderable": true, "searchable": true,  "targets": [1] },
         { "orderable": true, "searchable": false,  "targets": [0] },
+        { "responsivePriority": 1, "targets": [1, 5] },
     ],
     "initComplete": function(settings, json) {
         $('.btn-ajax').click(function(){
