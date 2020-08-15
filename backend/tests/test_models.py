@@ -137,7 +137,7 @@ class ChallengeTestCase(TestCase):
 
     def test_subscribe_button(self):
         url = reverse_lazy('api:challenge:subscribe', kwargs={'pk': self.challenge.id, 'user_id': self.user.id})
-        html = '<span id="id_challenge_sub_{}"><button type="button" data-link="{}" class="btn btn-sm ' \
+        html = '<span class="id_challenge_sub_{}"><button type="button" data-link="{}" class="btn btn-sm ' \
                'btn-primary btn-ajax"><i class="fas fa-eye"></i> Join</button><span>'.format(self.challenge.id, url)
         self.assertEqual(self.challenge.subscribe_button(self.user.id), html)
 

@@ -121,7 +121,7 @@ class Challenge(TimeStampedModel):
         subscriptions = self.challengesubscription_set.filter(user_id=user_id)
         if subscriptions.count() == 0:
             url = reverse_lazy('api:challenge:subscribe', kwargs={'pk': self.id, 'user_id': user_id})
-            return '<span id="id_challenge_sub_{}"><button type="button" data-link="{}" class="btn btn-sm ' \
+            return '<span class="id_challenge_sub_{}"><button type="button" data-link="{}" class="btn btn-sm ' \
                    'btn-primary btn-ajax"><i class="fas fa-eye"></i> Join</button><span>'.format(self.id, url)
         return '<button class="btn btn-sm btn-success disabled"><i class="fas fa-eye"></i> Joined!</button>'
 
