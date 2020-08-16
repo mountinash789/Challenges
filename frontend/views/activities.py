@@ -1,6 +1,9 @@
+from django.contrib import messages
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, DetailView
 
+from backend.models import Activity
 from backend.views.activities import ActivitiesMixin
 from project.utils import LoginRequired
 
@@ -23,3 +26,22 @@ class ActivitiesPage(ActivitiesMixin, LoginRequired, TemplateView):
             'Actions',
         ]
         return context
+
+
+class ActivityView(LoginRequired, DetailView):
+    model = Activity
+    template_name = 'activity/view.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.request.user != self.object.user:
+            messages.error(request, 'You can only view your own activities!')
+            return HttpResponseRedirect(reverse_lazy('front:home'))
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_header'] = context['page_title'] = self.object.description
+        context['activity'] = self.object
+        return context
+
