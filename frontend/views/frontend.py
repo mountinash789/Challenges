@@ -4,7 +4,6 @@ from django.utils import timezone
 from django.views.generic import TemplateView, FormView
 
 from backend.models import ChallengeSubscription
-from backend.views.backend import ActivitiesMixin
 from frontend.forms import LoginForm, RegisterForm
 from project.utils import LoginRequired
 
@@ -55,26 +54,6 @@ class ProfilePage(LoginRequired, TemplateView):
         context = super().get_context_data(**kwargs)
         context['page_header'] = context['page_title'] = self.get_users_name()
         context['objects'] = [1, 2, 3, 4, 5]
-        return context
-
-
-class ActivitiesPage(ActivitiesMixin, LoginRequired, TemplateView):
-    template_name = 'datatables.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['page_header'] = context['page_title'] = 'Activities'
-        context['table_id'] = self.__class__.__name__
-        context['js_path'] = '/static/js/activities.js'
-        context['data_url'] = reverse_lazy('api:activities', kwargs={'user_id': self.request.user.id})
-        context['headers'] = [
-            'Description',
-            'Type',
-            'Date',
-            'Duration',
-            'Distance (Km)',
-            'Actions',
-        ]
         return context
 
 
