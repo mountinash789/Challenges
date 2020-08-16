@@ -31,7 +31,7 @@ class ChallengesMixin(object):
 
 class ChallengesCurrent(ChallengesMixin, LoginRequired, BaseDatatableView):
     past = False
-    columns = order_columns = ['id', 'name', 'start', 'end', '', '']
+    columns = order_columns = ['name', 'start', 'end', '', '']
 
     def prepare_results(self, qs):
         data = []
@@ -42,7 +42,6 @@ class ChallengesCurrent(ChallengesMixin, LoginRequired, BaseDatatableView):
                 '</div>',
             ]
             data.append([
-                item.id,
                 item.name,
                 local_time(item.start).strftime('%d/%m/%Y %H:%M:%S'),
                 local_time(item.end).strftime('%d/%m/%Y %H:%M:%S'),
