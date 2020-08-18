@@ -5,6 +5,8 @@ from importlib import import_module
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.urls import reverse_lazy
 from django_extensions.db.models import TimeStampedModel
 
@@ -86,15 +88,15 @@ class Activity(TimeStampedModel):
     def get_absolute_url(self):
         return reverse_lazy('front:activities:view', kwargs={'pk': self.id})
 
-    # todo get and store user age
-    # def age(self):
-    #     today = self.start_date
-    #     born = self.user.profile.dob
-    #     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+    def age(self):
+        if self.user.profile.dob:
+            today = self.date
+            born = self.user.profile.dob
+            return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+        return 30
 
-    @staticmethod
-    def target_heartrates(want_zones=False):
-        target = 220 - 26  # self.age()
+    def target_heartrates(self, want_zones=False):
+        target = 220 - self.age()
         target_min = round((55 * target) / 100.0)  # 55% of target
         target_max = round((85 * target) / 100.0)  # 85% of target
 
@@ -201,3 +203,24 @@ class ChallengeSubscription(TimeStampedModel):
 
     def __str__(self):
         return '{} has signed up to {}'.format(self.user.get_full_name(), self.challenge)
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    dob = models.DateField(blank=True, null=True, help_text='Used to calculate heart rate targets.')
+
+    def __str__(self):
+        return self.user.username
+
+    def get_name(self):
+        name = ' '.join(map(str, [self.user.first_name, self.user.last_name]))
+        if len(name.strip()) > 0:
+            return name
+        return self.user
+
+
+@receiver(post_save, sender=User)
+def create_or_update_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+    instance.profile.save()

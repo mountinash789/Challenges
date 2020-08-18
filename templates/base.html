@@ -16,10 +16,30 @@
             crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
     <script defer src="{% static 'js/all.js' %}"></script>
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+    <script>
+        $(document).ready(function() {
+
+            $('.datepicker').datepicker(
+                {
+                    dateFormat: 'dd/mm/yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "c-50:c"
+                }
+            );
+
+            $(".datepicker-btn").click(function() {
+                $(this).parent().parent().find('.datepicker').datepicker("show")
+            });
+
+        });
+    </script>
     {% block js %}
     {% endblock %}
 
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet">
     {% block css %}
     {% endblock %}
 
@@ -46,6 +66,7 @@
               font-size: 3.5rem;
             }
         }
+
 
     </style>
     <!-- Custom styles for this template -->
