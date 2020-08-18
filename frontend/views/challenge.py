@@ -17,7 +17,6 @@ class CurrentView(ChallengesMixin, LoginRequired, TemplateView):
         context['js_path'] = '/static/js/challenges.js'
         context['data_url'] = reverse_lazy(self.data_url)
         context['headers'] = [
-            '#',
             'Name',
             'Start',
             'End',

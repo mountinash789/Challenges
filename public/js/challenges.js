@@ -4,11 +4,10 @@ let config = {
     "fixedHeader": true,
     "pageLength": 25,
     "ajax": AJAX_URL,
-    "order": [[ 0, "asc" ]],
+    "order": [[ 1, "asc" ]],
     "columnDefs": [
-        { "orderable": false, "searchable": false,  "targets": [2, 3, 4, 5] },
+        { "orderable": false, "searchable": false,  "targets": [2, 3, 4] },
         { "orderable": true, "searchable": true,  "targets": [1] },
-        { "orderable": true, "searchable": false,  "targets": [0] },
     ],
 }
 

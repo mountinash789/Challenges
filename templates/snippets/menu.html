@@ -3,45 +3,56 @@
 <ul class="nav flex-column">
     <li class="nav-item">
         <a class="nav-link {% if view_name == 'front:home' %}active{% endif %}" href="{% url 'front:home' %}">
-            <i class="fas fa-home"></i>
+            <i class="fas fa-home fa-fw"></i>
             Dashboard
         </a>
     </li>
     <li class="nav-item">
         <a class="nav-link {% if view_name == 'front:profile' %}active{% endif %}" href="{% url 'front:profile' %}">
-            <i class="fas fa-user"></i>
+            <i class="fas fa-user fa-fw"></i>
             Profile
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link {% if view_name == 'front:activities' %}active{% endif %}"
-           href="{% url 'front:activities' %}">
-            <i class="fas fa-chart-line"></i>
+        <a class="nav-link {% if view_name == 'front:activities:list' %}active{% endif %}"
+           href="{% url 'front:activities:list' %}">
+            <i class="fas fa-chart-line fa-fw"></i>
             Activities
         </a>
     </li>
     <li class="nav-item">
         <a class="nav-link" href="#" data-toggle="collapse" data-target="#id_challenges_sub">
-            <i class="fas fa-thumbtack"></i>
+            <i class="fas fa-thumbtack fa-fw"></i>
             Challenges
         </a>
         <span id="id_challenges_sub" class="collapse {% if 'challenge' in namespaces %}show{% endif %}">
         <ul class="nav flex-column level-two">
             <li class="nav-item">
-                <a class="nav-link {% if view_name == 'front:challenge:current' %}active{% endif %}" href="{% url 'front:challenge:current' %}">
-                    <i class="fas fa-caret-square-right"></i>
+                <a class="nav-link {% if view_name == 'front:challenge:current' %}active{% endif %}"
+                   href="{% url 'front:challenge:current' %}">
+                    <i class="fas fa-caret-square-right fa-fw"></i>
                     Current
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {% if view_name == 'front:challenge:past' %}active{% endif %}" href="{% url 'front:challenge:past' %}">
-                    <i class="fas fa-history"></i>
+                <a class="nav-link {% if view_name == 'front:challenge:past' %}active{% endif %}"
+                   href="{% url 'front:challenge:past' %}">
+                    <i class="fas fa-history fa-fw"></i>
                     Past
                 </a>
             </li>
         </ul>
             </span>
     </li>
+    {% if user.is_staff %}
+    <li class="nav-item">
+        <a class="nav-link {% if view_name == 'admin:index' %}active{% endif %}"
+           href="{% url 'admin:index' %}">
+            <i class="fas fa-tools fa-fw"></i>
+            Admin
+        </a>
+    </li>
+    {% endif %}
     <!--                    <li class="nav-item">-->
     <!--                        <a class="nav-link" href="#">-->
     <!--                            <span data-feather="file"></span>-->

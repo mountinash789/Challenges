@@ -118,7 +118,7 @@ class ActivitiesListTest(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='agdusgdiu39u21n')
-        self.path = reverse_lazy('api:activities', kwargs={'user_id': self.user.id})
+        self.path = reverse_lazy('api:activities:list', kwargs={'user_id': self.user.id})
 
     def tearDown(self):
         self.user.delete()
@@ -148,7 +148,7 @@ class ActivitiesLoadTest(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='agdusgdiu39u21n')
-        self.path = reverse_lazy('api:load_activites', kwargs={'user_id': self.user.id})
+        self.path = reverse_lazy('api:activities:load_activities', kwargs={'user_id': self.user.id})
 
     def tearDown(self):
         self.user.delete()

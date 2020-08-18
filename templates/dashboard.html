@@ -4,7 +4,7 @@
 {% endblock %}
 {% block js %}
 <script>
-    let GET_ACTIVITES_URL = "{% url 'api:load_activites' user.id %}";
+    let GET_ACTIVITES_URL = "{% url 'api:activities:load_activities' user.id %}";
 </script>
 <script src="{% static 'js/load_activities.js' %}"></script>
 <script src="{% static 'js/dashboard.js' %}"></script>

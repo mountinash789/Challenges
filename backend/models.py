@@ -1,8 +1,12 @@
+import datetime
 from datetime import timedelta
+from decimal import Decimal
 from importlib import import_module
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.urls import reverse_lazy
 from django_extensions.db.models import TimeStampedModel
 
@@ -61,8 +65,14 @@ class Activity(TimeStampedModel):
         a = timedelta(seconds=int(self.duration_seconds) or 0)
         return str(a)
 
+    @property
+    def moving_duration_seconds_formatted(self):
+        a = timedelta(seconds=int(self.moving_duration_seconds) or 0)
+        return str(a)
+
     def view_button(self, size='sm'):
-        return '<a href="#" class="btn btn-{} btn-primary"><i class="fas fa-eye"></i> View</a>'.format(size)
+        return '<a href="{}" class="btn btn-{} btn-primary"><i class="fas fa-eye"></i> View</a>'.format(
+            self.get_absolute_url(), size)
 
     @property
     def truncated_description(self):
@@ -72,14 +82,75 @@ class Activity(TimeStampedModel):
             val = '{}...'.format(val[:length])
         return val
 
+    def distance_km(self):
+        return '{}'.format(self.distance_meters / Decimal(1000))
+
+    def get_absolute_url(self):
+        return reverse_lazy('front:activities:view', kwargs={'pk': self.id})
+
+    def age(self):
+        if self.user.profile.dob:
+            today = self.date
+            born = self.user.profile.dob
+            return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+        return 30
+
+    def target_heartrates(self, want_zones=False):
+        target = 220 - self.age()
+        target_min = round((55 * target) / 100.0)  # 55% of target
+        target_max = round((85 * target) / 100.0)  # 85% of target
+
+        zones = {50: round((50 * target) / 100.0),  # 85% of target
+                 60: round((60 * target) / 100.0),  # 85% of target
+                 70: round((70 * target) / 100.0),  # 85% of target
+                 80: round((80 * target) / 100.0),  # 85% of target
+                 90: round((90 * target) / 100.0), }  # 85% of target
+        if want_zones:
+            return zones
+        return target_min, target_max
+
+    def hr_colours(self, hr):
+        zones = self.target_heartrates(want_zones=True)
+        if hr > zones[90]:
+            return 'danger'
+        elif hr > zones[80]:
+            return 'warning'
+        elif hr > zones[70]:
+            return 'success'
+        elif hr > zones[60]:
+            return 'info'
+        elif hr > zones[50]:
+            return 'secondary'
+
+    def avg_hr_colour(self):
+        if self.avg_heart_rate:
+            hr = self.avg_heart_rate
+            return self.hr_colours(hr)
+        return ''
+
+    def pace(self):
+        mins = self.moving_duration_seconds / 60
+        k = float(self.distance_km())
+        pace_mins = 0
+        if k != 0:
+            pace_mins = float(Decimal(mins) / Decimal(k))
+        pace = datetime.datetime.min + datetime.timedelta(minutes=pace_mins)
+        return round(float('{}.{}{}'.format(pace.minute, pace.second, pace.microsecond)), 2)
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     external_id = models.CharField(max_length=255, blank=True, null=True)
     description = models.CharField(max_length=255, blank=True, null=True)
     activity_type = models.ForeignKey(ActivityType, on_delete=models.CASCADE, blank=True, null=True)
     date = models.DateTimeField(blank=True, null=True)
     duration_seconds = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    moving_duration_seconds = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     distance_meters = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_elevation_gain = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    latitude = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    longitude = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    avg_heart_rate = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    polyline = models.TextField(blank=True, null=True)
+    raw_json = models.TextField(blank=True, null=True)
 
 
 class TargetType(TimeStampedModel):
@@ -132,3 +203,24 @@ class ChallengeSubscription(TimeStampedModel):
 
     def __str__(self):
         return '{} has signed up to {}'.format(self.user.get_full_name(), self.challenge)
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    dob = models.DateField(blank=True, null=True, help_text='Used to calculate heart rate targets.')
+
+    def __str__(self):
+        return self.user.username
+
+    def get_name(self):
+        name = ' '.join(map(str, [self.user.first_name, self.user.last_name]))
+        if len(name.strip()) > 0:
+            return name
+        return self.user
+
+
+@receiver(post_save, sender=User)
+def create_or_update_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+    instance.profile.save()
