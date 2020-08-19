@@ -59,6 +59,7 @@
                                 <div class="px-3">
 
                                     {% if target.farthest %}
+                                    <a href="{{ target.farthest.get_absolute_url }}" style="color:black;">
                                     <div class="row border-secondary stat-cont">
                                         <div class="col-10 col-sm-10 col-lg-10">
                                             <span class="text-secondary">Farthest Distance</span>
@@ -68,9 +69,11 @@
                                             <i class="far fa-caret-square-right fa-fw fa-2x"></i>
                                         </div>
                                     </div>
+                                    </a>
                                     {% endif %}
 
                                     {% if target.highest %}
+                                    <a href="{{ target.highest.get_absolute_url }}" style="color:black;">
                                     <div class="row my-2 border-secondary stat-cont">
                                         <div class="col-10 col-sm-10 col-lg-10">
                                             <span class="text-secondary">Highest Elevation</span>
@@ -80,9 +83,11 @@
                                             <i class="far fa-caret-square-right fa-fw fa-2x"></i>
                                         </div>
                                     </div>
+                                    </a>
                                     {% endif %}
 
                                     {% if target.fastest %}
+                                    <a href="{{ target.fastest.get_absolute_url }}" style="color:black;">
                                     <div class="row my-2 border-secondary stat-cont">
                                         <div class="col-10 col-sm-10 col-lg-10">
                                             <span class="text-secondary">Fastest Pace</span>
@@ -92,9 +97,11 @@
                                             <i class="far fa-caret-square-right fa-fw fa-2x"></i>
                                         </div>
                                     </div>
+                                    </a>
                                     {% endif %}
 
                                     {% if target.longest %}
+                                    <a href="{{ target.longest.get_absolute_url }}" style="color:black;">
                                     <div class="row my-2 border-secondary stat-cont">
                                         <div class="col-10 col-sm-10 col-lg-10">
                                             <span class="text-secondary">Longest Activity</span>
@@ -104,6 +111,7 @@
                                             <i class="far fa-caret-square-right fa-fw fa-2x"></i>
                                         </div>
                                     </div>
+                                    </a>
                                     {% endif %}
                                 </div>
                             </div>

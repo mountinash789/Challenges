@@ -8,6 +8,7 @@ from project.utils import ExactUserRequiredAPI, local_time, ExactUserRequired
 
 
 class ActivitiesMixin(object):
+    model = Activity
     user = None
 
     def get(self, request, *args, **kwargs):
