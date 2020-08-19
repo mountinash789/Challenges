@@ -59,9 +59,9 @@
                                 <div class="px-3">
 
                                     {% if target.farthest %}
-                                    <a href="{{ target.farthest.get_absolute_url }}" style="color:black;">
+                                    <a href="{{ target.farthest.get_absolute_url }}" class="achievement-link">
                                     <div class="row border-secondary stat-cont">
-                                        <div class="col-10 col-sm-10 col-lg-10">
+                                        <div class="col-10 col-sm-10 col-lg-9">
                                             <span class="text-secondary">Farthest Distance</span>
                                             <div class="center h5 font-weight-bold mb-0">{{ target.farthest.distance_km }}km</div>
                                         </div>
@@ -73,9 +73,9 @@
                                     {% endif %}
 
                                     {% if target.highest %}
-                                    <a href="{{ target.highest.get_absolute_url }}" style="color:black;">
+                                    <a href="{{ target.highest.get_absolute_url }}" class="achievement-link">
                                     <div class="row my-2 border-secondary stat-cont">
-                                        <div class="col-10 col-sm-10 col-lg-10">
+                                        <div class="col-10 col-sm-10 col-lg-9">
                                             <span class="text-secondary">Highest Elevation</span>
                                             <div class="center h5 font-weight-bold mb-0">{{ target.highest.total_elevation_gain }}m</div>
                                         </div>
@@ -87,9 +87,9 @@
                                     {% endif %}
 
                                     {% if target.fastest %}
-                                    <a href="{{ target.fastest.get_absolute_url }}" style="color:black;">
+                                    <a href="{{ target.fastest.get_absolute_url }}" class="achievement-link">
                                     <div class="row my-2 border-secondary stat-cont">
-                                        <div class="col-10 col-sm-10 col-lg-10">
+                                        <div class="col-10 col-sm-10 col-lg-9">
                                             <span class="text-secondary">Fastest Pace</span>
                                             <div class="center h5 font-weight-bold mb-0">{{ target.fastest.pace }} /km</div>
                                         </div>
@@ -101,9 +101,9 @@
                                     {% endif %}
 
                                     {% if target.longest %}
-                                    <a href="{{ target.longest.get_absolute_url }}" style="color:black;">
+                                    <a href="{{ target.longest.get_absolute_url }}" class="achievement-link">
                                     <div class="row my-2 border-secondary stat-cont">
-                                        <div class="col-10 col-sm-10 col-lg-10">
+                                        <div class="col-10 col-sm-10 col-lg-9">
                                             <span class="text-secondary">Longest Activity</span>
                                             <div class="center h5 font-weight-bold mb-0">{{ target.longest.moving_duration_seconds_formatted }}</div>
                                         </div>

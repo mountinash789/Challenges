@@ -206,10 +206,15 @@ class ChallengeSubscription(TimeStampedModel):
     def __str__(self):
         return '{} has signed up to {}'.format(self.user.get_full_name(), self.challenge)
 
-    def save(self):
-        for target in self.challenge.targets.all():
-            obj, created = TargetTracking.objects.get_or_create(subscription=self, target=target)
+    @staticmethod
+    def post_save(sender, instance, **kwargs):
+        for target in instance.challenge.targets.all():
+            obj, created = TargetTracking.objects.get_or_create(subscription=instance, target=target)
             obj.calc()
+        return
+
+
+post_save.connect(ChallengeSubscription.post_save, sender=ChallengeSubscription)
 
 
 class TargetTracking(TimeStampedModel):

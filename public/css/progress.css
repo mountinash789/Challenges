@@ -111,3 +111,11 @@
     cursor: pointer;
     opacity: 0.7;
 }
+
+.achievement-link {
+    color:black;
+}
+.achievement-link:hover {
+    color:black;
+    text-decoration: none;
+}
