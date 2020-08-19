@@ -7,7 +7,7 @@ from django.utils import timezone
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from rest_framework.response import Response
 
-from backend.models import Challenge, ChallengeSubscription, Activity
+from backend.models import Challenge, ChallengeSubscription, Activity, TargetTracking
 from project.utils import LoginRequired, ExactUserRequiredAPI, local_time
 
 
@@ -89,6 +89,7 @@ class ChallengeGraphic(ExactUserRequiredAPI):
     def target_data(self):
         data = []
         for target in self.challenge.targets.all():
+
             colour_class = 'danger'
             target_value = target.target_value
             achieved = round(self.get_achieved(target), 0)
@@ -124,5 +125,6 @@ class ChallengeGraphic(ExactUserRequiredAPI):
         return Response({
             'id': 'id_challenge_status_{}'.format(challenge_id),
             'html': render_to_string(self.template_name, {'user': self.user, 'challenge': self.challenge,
-                                                          'target_data': self.target_data()}),
+                                                          'target_data': TargetTracking.objects.filter(
+                                                              subscription=sub)}),
         })

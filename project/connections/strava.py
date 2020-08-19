@@ -7,7 +7,7 @@ from django.conf import settings
 from django.urls import reverse_lazy
 from django.utils import timezone
 
-from backend.models import UserConnection, Activity, ActivityType
+from backend.models import UserConnection, Activity, ActivityType, ChallengeSubscription
 
 
 class Strava(object):
@@ -113,15 +113,16 @@ class Strava(object):
             obj.moving_duration_seconds = activity['moving_time']
             obj.distance_meters = activity['distance']
             obj.total_elevation_gain = activity['total_elevation_gain']
-            obj.avg_heart_rate = activity['average_heartrate']
+            if activity.get('average_heartrate', None):
+                obj.avg_heart_rate = activity['average_heartrate']
             if activity.get('start_latlng', None):
                 obj.latitude = activity['start_latlng'][0]
                 obj.longitude = activity['end_latlng'][1]
-            else:
-                print()
             if activity.get('map', None):
                 obj.polyline = activity['map']['summary_polyline']
-            else:
-                print()
             obj.raw_json = json.dumps(activity)
+            obj.calc_pace()
             obj.save()
+        if len(activities) > 0:
+            for sub in ChallengeSubscription.objects.filter(user_id=user_id):
+                sub.save()

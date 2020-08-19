@@ -5,6 +5,7 @@ from importlib import import_module
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Sum
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse_lazy
@@ -83,7 +84,7 @@ class Activity(TimeStampedModel):
         return val
 
     def distance_km(self):
-        return '{}'.format(self.distance_meters / Decimal(1000))
+        return '{}'.format(Decimal(self.distance_meters) / Decimal(1000))
 
     def get_absolute_url(self):
         return reverse_lazy('front:activities:view', kwargs={'pk': self.id})
@@ -128,14 +129,14 @@ class Activity(TimeStampedModel):
             return self.hr_colours(hr)
         return ''
 
-    def pace(self):
+    def calc_pace(self):
         mins = self.moving_duration_seconds / 60
         k = float(self.distance_km())
         pace_mins = 0
         if k != 0:
             pace_mins = float(Decimal(mins) / Decimal(k))
         pace = datetime.datetime.min + datetime.timedelta(minutes=pace_mins)
-        return round(float('{}.{}{}'.format(pace.minute, pace.second, pace.microsecond)), 2)
+        self.pace = round(float('{}.{}{}'.format(pace.minute, pace.second, pace.microsecond)), 2)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     external_id = models.CharField(max_length=255, blank=True, null=True)
@@ -149,6 +150,7 @@ class Activity(TimeStampedModel):
     latitude = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     longitude = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     avg_heart_rate = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    pace = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     polyline = models.TextField(blank=True, null=True)
     raw_json = models.TextField(blank=True, null=True)
 
@@ -203,6 +205,64 @@ class ChallengeSubscription(TimeStampedModel):
 
     def __str__(self):
         return '{} has signed up to {}'.format(self.user.get_full_name(), self.challenge)
+
+    def save(self):
+        for target in self.challenge.targets.all():
+            obj, created = TargetTracking.objects.get_or_create(subscription=self, target=target)
+            obj.calc()
+
+
+class TargetTracking(TimeStampedModel):
+    subscription = models.ForeignKey(ChallengeSubscription, on_delete=models.CASCADE)
+    target = models.ForeignKey(ChallengeTarget, on_delete=models.CASCADE)
+
+    achieved = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    farthest = models.ForeignKey(Activity, blank=True, null=True, related_name='farthest', on_delete=models.SET_NULL)
+    highest = models.ForeignKey(Activity, blank=True, null=True, related_name='highest', on_delete=models.SET_NULL)
+    fastest = models.ForeignKey(Activity, blank=True, null=True, related_name='fastest', on_delete=models.SET_NULL)
+    longest = models.ForeignKey(Activity, blank=True, null=True, related_name='longest', on_delete=models.SET_NULL)
+
+    def percentage(self):
+        return round((self.achieved / self.target.target_value) * 100, 0)
+
+    def percentage_class(self):
+        prcnt = self.percentage()
+        colour_class = 'danger'
+        if prcnt > 80:
+            colour_class = 'success'
+        elif prcnt > 20:
+            colour_class = 'warning'
+        return colour_class
+
+    def target_value_formatted(self):
+        if self.target.target_type.description == 'Elevation':
+            target_value = self.target.target_value
+        elif self.target.target_type.description == 'Distance':
+            target_value = self.target.target_value / Decimal(1000)
+        return target_value
+
+    def achieved_value_formatted(self):
+        if self.target.target_type.description == 'Elevation':
+            achieved = self.achieved
+        elif self.target.target_type.description == 'Distance':
+            achieved = self.achieved / Decimal(1000)
+        return achieved
+
+    def get_activities(self):
+        return Activity.objects.filter(activity_type__in=self.target.tracked_activity_type.all(),
+                                       date__range=(self.subscription.challenge.start, self.subscription.challenge.end),
+                                       user=self.subscription.user)
+
+    def calc(self):
+        activities = self.get_activities()
+
+        self.farthest = activities.order_by('-distance_meters').first()
+        self.highest = activities.order_by('-total_elevation_gain').first()
+        self.fastest = activities.order_by('pace').first()
+        self.longest = activities.order_by('-moving_duration_seconds').first()
+
+        self.achieved = activities.aggregate(total=Sum(self.target.target_type.field))['total'] or 0
+        self.save()
 
 
 class Profile(models.Model):
