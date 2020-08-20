@@ -196,12 +196,19 @@ class Challenge(TimeStampedModel):
             url = reverse_lazy('api:challenge:subscribe', kwargs={'pk': self.id, 'user_id': user_id})
             return '<span class="id_challenge_sub_{}"><button type="button" data-link="{}" class="btn btn-sm ' \
                    'btn-primary btn-ajax"><i class="fas fa-eye"></i> Join</button><span>'.format(self.id, url)
-        return '<button class="btn btn-sm btn-success disabled"><i class="fas fa-eye"></i> Joined!</button>'
+        return subscriptions.first().get_absolute_url_btn()
 
 
 class ChallengeSubscription(TimeStampedModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE)
+
+    def get_absolute_url(self):
+        return reverse_lazy('front:challenge:view', kwargs={'pk': self.challenge.id, 'user_id': self.user.id})
+
+    def get_absolute_url_btn(self):
+        return '<a href="{}" class="btn btn-sm btn-primary btn-ajax"><i class="fas fa-eye"></i> View</a>'.format(
+            self.get_absolute_url())
 
     def __str__(self):
         return '{} has signed up to {}'.format(self.user.get_full_name(), self.challenge)

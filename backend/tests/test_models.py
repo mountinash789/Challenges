@@ -135,7 +135,7 @@ class ChallengeTestCase(TestCase):
     def test_subscribe_button_subscribed(self):
         cs = ChallengeSubscription(user=self.user, challenge=self.challenge)
         cs.save()
-        html = '<button class="btn btn-sm btn-success disabled"><i class="fas fa-eye"></i> Joined!</button>'
+        html = cs.get_absolute_url_btn()
         self.assertEqual(self.challenge.subscribe_button(self.user.id), html)
 
     def test_subscribe_button(self):
