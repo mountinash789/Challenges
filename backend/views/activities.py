@@ -3,6 +3,7 @@ import asyncio
 from asgiref.sync import sync_to_async
 from django.contrib.auth.models import User
 from django_datatables_view.base_datatable_view import BaseDatatableView
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from backend.models import Activity
