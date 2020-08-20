@@ -30,7 +30,7 @@ class Strava(object):
         data = {
             'access_token': obj.get_access_token(),
         }
-        resp = requests.post('https://www.strava.com/oauth/deauthorize', data).json()
+        requests.post('https://www.strava.com/oauth/deauthorize', data).json()
         obj.delete()
         return
 

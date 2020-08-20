@@ -1,15 +1,12 @@
-from dateutil.parser import parse
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import User
-from django.urls import reverse_lazy
-
 from django.test import TestCase
+from django.urls import reverse_lazy
 from django.utils import timezone
 from model_bakery import baker
 
 from backend.models import UserConnection
-from backend.views.challenge import ChallengeGraphic
-from project.utils import end_of_day, start_of_day, month_start_end
+from project.utils import month_start_end
 
 
 class UserConnectionsTest(TestCase):
@@ -28,13 +25,13 @@ class UserConnectionsTest(TestCase):
 
     def test_logged_in_different_user(self):
         self.path = reverse_lazy('api:user_connections', kwargs={'user_id': self.test_second_user.id})
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(self.path)
 
         self.assertEqual(response.status_code, 401)
 
     def test_users_name(self):
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(self.path)
         self.assertEqual(response.status_code, 200)
 
@@ -58,7 +55,7 @@ class ConnectionSignUpViewTest(TestCase):
         self.assertRedirects(response, '/login/?next={}'.format(self.path))
 
     def test_logged_in(self):
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(self.path)
 
         self.assertEqual(response.status_code, 302)
@@ -83,7 +80,7 @@ class ConnectionDeauthViewTest(TestCase):
         self.assertRedirects(response, '/login/?next={}'.format(self.path))
 
     def test_logged_in(self):
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(self.path)
 
         self.assertEqual(response.status_code, 302)
@@ -107,7 +104,7 @@ class ConnectionRedirectViewTest(TestCase):
         self.assertRedirects(response, '/login/?next={}'.format(self.path))
 
     def test_logged_in(self):
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(self.path, {'code': '1'})
 
         self.assertEqual(response.status_code, 302)
@@ -128,7 +125,7 @@ class ActivitiesListTest(TestCase):
         self.assertRedirects(response, '/login/?next={}'.format(self.path))
 
     def test_logged_in(self):
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(self.path)
 
         self.assertEqual(response.status_code, 200)
@@ -137,7 +134,7 @@ class ActivitiesListTest(TestCase):
     def test_activites_loaded(self):
         activity_type = baker.make('backend.ActivityType')
         baker.make('backend.Activity', user=self.user, activity_type=activity_type, _quantity=3)
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(self.path)
 
         self.assertEqual(response.status_code, 200)
@@ -158,7 +155,7 @@ class ActivitiesLoadTest(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_logged_in(self):
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(self.path)
 
         self.assertEqual(response.status_code, 200)
@@ -178,7 +175,7 @@ class ChallengesCurrentTest(TestCase):
         self.assertRedirects(response, '/login/?next={}'.format(self.path))
 
     def test_logged_in(self):
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(self.path)
 
         self.assertEqual(response.status_code, 200)
@@ -187,7 +184,7 @@ class ChallengesCurrentTest(TestCase):
     def test_challenge_in_future_no_challenges(self):
         start, end = month_start_end(timezone.now() - relativedelta(months=2))
         baker.make('backend.Challenge', start=start, end=end)
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(self.path)
 
         self.assertEqual(response.status_code, 200)
@@ -196,7 +193,7 @@ class ChallengesCurrentTest(TestCase):
     def test_challenge_in_future_has_challenges(self):
         start, end = month_start_end(timezone.now() + relativedelta(months=2))
         baker.make('backend.Challenge', start=start, end=end)
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(self.path)
 
         self.assertEqual(response.status_code, 200)
@@ -217,7 +214,7 @@ class ChallengesPastTest(TestCase):
         self.assertRedirects(response, '/login/?next={}'.format(self.path))
 
     def test_logged_in(self):
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(self.path)
 
         self.assertEqual(response.status_code, 200)
@@ -226,7 +223,7 @@ class ChallengesPastTest(TestCase):
     def test_challenge_in_future_no_challenges(self):
         start, end = month_start_end(timezone.now() - relativedelta(months=2))
         baker.make('backend.Challenge', start=start, end=end)
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(self.path)
 
         self.assertEqual(response.status_code, 200)
@@ -235,7 +232,7 @@ class ChallengesPastTest(TestCase):
     def test_challenge_in_future_has_challenges(self):
         start, end = month_start_end(timezone.now() + relativedelta(months=2))
         baker.make('backend.Challenge', start=start, end=end)
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(self.path)
 
         self.assertEqual(response.status_code, 200)
@@ -259,7 +256,7 @@ class ChallengesSubscribeTestCase(TestCase):
 
     def test_subscribe(self):
         self.assertEqual(self.challenge.challengesubscription_set.count(), 0)
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(self.path)
 
         self.assertEqual(response.status_code, 200)
@@ -285,7 +282,7 @@ class ChallengeGraphicTestCase(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_response_0_activities(self):
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(self.path)
 
         self.assertEqual(response.status_code, 200)
@@ -300,7 +297,7 @@ class ChallengeGraphicTestCase(TestCase):
         baker.make('backend.ChallengeSubscription', user=self.user, challenge=dis_challenge)
         baker.make('backend.Activity', date=dis_challenge.start, user=self.user,
                    activity_type=self.activity_types[0], distance_meters=1000)
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(
             reverse_lazy('api:challenge:graphic', kwargs={'user_id': self.user.id, 'pk': dis_challenge.id}))
         self.assertEqual(response.status_code, 200)
@@ -316,7 +313,7 @@ class ChallengeGraphicTestCase(TestCase):
         baker.make('backend.ChallengeSubscription', user=self.user, challenge=elev_challenge)
         baker.make('backend.Activity', date=elev_challenge.start, user=self.user,
                    activity_type=self.activity_types[0], total_elevation_gain=300)
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(
             reverse_lazy('api:challenge:graphic', kwargs={'user_id': self.user.id, 'pk': elev_challenge.id}))
         self.assertEqual(response.status_code, 200)

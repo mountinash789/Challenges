@@ -44,4 +44,3 @@ class ActivityView(LoginRequired, DetailView):
         context['page_header'] = context['page_title'] = self.object.description
         context['activity'] = self.object
         return context
-

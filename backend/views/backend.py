@@ -6,12 +6,10 @@ from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
-from django_datatables_view.base_datatable_view import BaseDatatableView
 from rest_framework.response import Response
 
-from backend.models import Connection, Activity
-from backend.tasks import get_activities
-from project.utils import ExactUserRequiredAPI, LoginRequired, ExactUserRequired, local_time
+from backend.models import Connection
+from project.utils import ExactUserRequiredAPI, LoginRequired
 
 
 class UserConnections(ExactUserRequiredAPI):

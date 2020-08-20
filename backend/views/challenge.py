@@ -1,13 +1,10 @@
-from decimal import Decimal
-
 from django.contrib.auth.models import User
-from django.db.models import Sum
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from rest_framework.response import Response
 
-from backend.models import Challenge, ChallengeSubscription, Activity, TargetTracking
+from backend.models import Challenge, ChallengeSubscription, TargetTracking
 from project.utils import LoginRequired, ExactUserRequiredAPI, local_time
 
 
