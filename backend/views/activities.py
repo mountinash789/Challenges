@@ -1,3 +1,6 @@
+import asyncio
+
+from asgiref.sync import sync_to_async
 from django.contrib.auth.models import User
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from rest_framework.response import Response
@@ -51,3 +54,12 @@ class ActivitiesLoad(ExactUserRequiredAPI):
         user_id = self.kwargs['user_id']
         get_activities(user_id)
         return Response({})
+
+
+@api_view()
+async def activities_load_async(request, *args, **kwargs):
+    user_id = kwargs['user_id']
+    loop = asyncio.get_event_loop()
+    async_function = sync_to_async(get_activities)
+    loop.create_task(async_function(user_id))
+    return Response({})
