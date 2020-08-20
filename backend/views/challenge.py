@@ -30,20 +30,32 @@ class ChallengesCurrent(ChallengesMixin, LoginRequired, BaseDatatableView):
     past = False
     columns = order_columns = ['name', 'start', 'end', '', '']
 
+    def is_subscribed(self, challenge):
+        subs = ChallengeSubscription.objects.filter(challenge=challenge, user=self.request.user)
+        if subs.count() > 0:
+            return subs.first()
+        return False
+
+    def get_buttons(self, challenge):
+        btn = challenge.subscribe_button(self.user.id)
+        sub = self.is_subscribed(challenge)
+        if sub:
+            btn = sub.get_absolute_url_btn()
+        return [
+            '<div class="btn-group btn-group-xs">',
+            btn,
+            '</div>',
+        ]
+
     def prepare_results(self, qs):
         data = []
         for item in qs:
-            buttons = [
-                '<div class="btn-group btn-group-xs">',
-                item.subscribe_button(self.user.id),
-                '</div>',
-            ]
             data.append([
                 item.name,
                 local_time(item.start).strftime('%d/%m/%Y %H:%M:%S'),
                 local_time(item.end).strftime('%d/%m/%Y %H:%M:%S'),
                 item.instructions(),
-                ''.join(buttons),
+                ''.join(self.get_buttons(item)),
             ])
 
         return data
@@ -51,6 +63,17 @@ class ChallengesCurrent(ChallengesMixin, LoginRequired, BaseDatatableView):
 
 class ChallengesPast(ChallengesCurrent):
     past = True
+
+    def get_buttons(self, challenge):
+        btn = '<p>You did not enter this challenge</p>'
+        sub = self.is_subscribed(challenge)
+        if sub:
+            btn = sub.get_absolute_url_btn()
+        return [
+            '<div class="btn-group btn-group-xs">',
+            btn,
+            '</div>',
+        ]
 
 
 class ChallengesSubscribe(ExactUserRequiredAPI):
