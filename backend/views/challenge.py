@@ -1,13 +1,10 @@
-from decimal import Decimal
-
 from django.contrib.auth.models import User
-from django.db.models import Sum
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from rest_framework.response import Response
 
-from backend.models import Challenge, ChallengeSubscription, Activity
+from backend.models import Challenge, ChallengeSubscription, TargetTracking
 from project.utils import LoginRequired, ExactUserRequiredAPI, local_time
 
 
@@ -31,7 +28,7 @@ class ChallengesMixin(object):
 
 class ChallengesCurrent(ChallengesMixin, LoginRequired, BaseDatatableView):
     past = False
-    columns = order_columns = ['id', 'name', 'start', 'end', '', '']
+    columns = order_columns = ['name', 'start', 'end', '', '']
 
     def prepare_results(self, qs):
         data = []
@@ -42,7 +39,6 @@ class ChallengesCurrent(ChallengesMixin, LoginRequired, BaseDatatableView):
                 '</div>',
             ]
             data.append([
-                item.id,
                 item.name,
                 local_time(item.start).strftime('%d/%m/%Y %H:%M:%S'),
                 local_time(item.end).strftime('%d/%m/%Y %H:%M:%S'),
@@ -77,45 +73,6 @@ class ChallengeGraphic(ExactUserRequiredAPI):
     user = None
     challenge = None
 
-    def get_achieved(self, target):
-        activities = Activity.objects.filter(activity_type__in=target.tracked_activity_type.all(),
-                                             date__range=(self.challenge.start, self.challenge.end),
-                                             user=self.user)
-        return activities.aggregate(total=Sum(target.target_type.field))['total'] or 0
-        # if target.target_type.description == 'Elevation':
-        #     return activities.aggregate(total=Sum('total_elevation_gain'))['total']
-        # elif target.target_type.description == 'Distance':
-        #     return activities.aggregate(total=Sum('distance_meters'))['total']
-
-    def target_data(self):
-        data = []
-        for target in self.challenge.targets.all():
-            colour_class = 'danger'
-            target_value = target.target_value
-            achieved = round(self.get_achieved(target), 0)
-            prcnt = round((achieved / target.target_value) * 100, 0)
-
-            if prcnt > 80:
-                colour_class = 'success'
-            elif prcnt > 20:
-                colour_class = 'warning'
-
-            if target.target_type.description == 'Elevation':
-                achieved = achieved
-                target_value = target_value
-            elif target.target_type.description == 'Distance':
-                achieved = achieved / Decimal(1000)
-                target_value = target_value / Decimal(1000)
-
-            data.append({
-                'target': target,
-                'target_value': target_value,
-                'achieved': achieved,
-                'prcnt': prcnt,
-                'class': colour_class,
-            })
-        return data
-
     def get(self, request, *args, **kwargs):
         user_id = self.kwargs['user_id']
         challenge_id = self.kwargs['pk']
@@ -125,5 +82,6 @@ class ChallengeGraphic(ExactUserRequiredAPI):
         return Response({
             'id': 'id_challenge_status_{}'.format(challenge_id),
             'html': render_to_string(self.template_name, {'user': self.user, 'challenge': self.challenge,
-                                                          'target_data': self.target_data()}),
+                                                          'target_data': TargetTracking.objects.filter(
+                                                              subscription=sub)}),
         })

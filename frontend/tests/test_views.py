@@ -16,14 +16,14 @@ class ProfileViewTest(TestCase):
         self.assertRedirects(response, '/login/?next=/profile/')
 
     def test_logged_in(self):
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(self.path)
 
         self.assertEqual(str(response.context['user']), 'testuser')
         self.assertEqual(response.status_code, 200)
 
     def test_users_name(self):
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(self.path)
 
         self.assertEqual(str(response.context['page_title']), 'testuser')
@@ -34,7 +34,7 @@ class ProfileViewTest(TestCase):
         self.test_user.last_name = 'User'
         self.test_user.save()
 
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(self.path)
 
         self.assertEqual(str(response.context['page_title']), 'Test User')
@@ -62,20 +62,20 @@ class ActivitiesViewTest(TestCase):
     def setUp(self):
         self.test_user = User.objects.create_user(username='testuser', password='agdusgdiu39u21n')
         self.test_user.save()
-        self.path = reverse_lazy('front:activities')
+        self.path = reverse_lazy('front:activities:list')
 
     def test_redirect_if_not_logged_in(self):
         response = self.client.get(self.path)
         self.assertRedirects(response, '/login/?next=/activities/')
 
     def test_logged_in(self):
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(self.path)
 
         self.assertEqual(str(response.context['user']), 'testuser')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['data_url'],
-                         reverse_lazy('api:activities', kwargs={'user_id': self.test_user.id}))
+                         reverse_lazy('api:activities:list', kwargs={'user_id': self.test_user.id}))
 
 
 class RegistrationViewTest(TestCase):
@@ -88,8 +88,8 @@ class RegistrationViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_post(self):
-        response = self.client.post(self.path, data={'username': 'created_user', 'password1': 'agdusgdiu39u21n',
-                                                     'password2': 'agdusgdiu39u21n'})
+        self.client.post(self.path, data={'username': 'created_user', 'password1': 'agdusgdiu39u21n',
+                                          'password2': 'agdusgdiu39u21n'})
         self.assertEqual(User.objects.filter(username='created_user').count(), 1)
 
 
@@ -105,7 +105,7 @@ class ChallengeCurrentViewTest(TestCase):
         self.assertRedirects(response, '/login/?next={}'.format(self.path))
 
     def test_logged_in(self):
-        login = self.client.login(username='testuser', password='agdusgdiu39u21n')
+        self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(self.path)
 
         self.assertEqual(str(response.context['user']), 'testuser')

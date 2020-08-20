@@ -1,3 +1,5 @@
+import json
+
 import requests
 from dateutil.parser import parse
 from dateutil.relativedelta import relativedelta
@@ -5,7 +7,7 @@ from django.conf import settings
 from django.urls import reverse_lazy
 from django.utils import timezone
 
-from backend.models import UserConnection, Activity, ActivityType
+from backend.models import UserConnection, Activity, ActivityType, ChallengeSubscription
 
 
 class Strava(object):
@@ -28,7 +30,7 @@ class Strava(object):
         data = {
             'access_token': obj.get_access_token(),
         }
-        resp = requests.post('https://www.strava.com/oauth/deauthorize', data).json()
+        requests.post('https://www.strava.com/oauth/deauthorize', data).json()
         obj.delete()
         return
 
@@ -101,13 +103,26 @@ class Strava(object):
     def parse_activities(self, activities, user_id):
         for activity in activities:
             obj, created = Activity.objects.get_or_create(
-                external_id=activity['upload_id']
+                external_id=activity['upload_id'],
+                user_id=user_id,
             )
-            obj.user_id = user_id
             obj.description = activity['name']
             obj.activity_type = self.get_activity_type(activity['type'])
             obj.date = parse(activity['start_date'])
             obj.duration_seconds = activity['elapsed_time']
+            obj.moving_duration_seconds = activity['moving_time']
             obj.distance_meters = activity['distance']
             obj.total_elevation_gain = activity['total_elevation_gain']
+            if activity.get('average_heartrate', None):
+                obj.avg_heart_rate = activity['average_heartrate']
+            if activity.get('start_latlng', None):
+                obj.latitude = activity['start_latlng'][0]
+                obj.longitude = activity['end_latlng'][1]
+            if activity.get('map', None):
+                obj.polyline = activity['map']['summary_polyline']
+            obj.raw_json = json.dumps(activity)
+            obj.calc_pace()
             obj.save()
+        if len(activities) > 0:
+            for sub in ChallengeSubscription.objects.filter(user_id=user_id):
+                sub.save()

@@ -1,6 +1,8 @@
 {% load static %}
+<link rel="stylesheet" href="https://swiperjs.com/package/swiper-bundle.min.css">
 <link href="{% static 'css/progress.css' %}" rel="stylesheet">
 <script src="{% static 'js/progress.js' %}"></script>
+
 <div class="row mb-2">
     <div class="col-xl-12">
         {% for target in target_data %}
@@ -21,28 +23,100 @@
 
                     </h2>
 
-                    <div class="progress mx-auto"
-                         data-value='{% if target.prcnt > 100 %}100{% else %}{{ target.prcnt }}{% endif %}'>
-                              <span class="progress-left">
-                                            <span class="progress-bar border-{{ target.class }}"></span>
-                              </span>
-                        <span class="progress-right">
-                                            <span class="progress-bar border-{{ target.class }}"></span>
-                              </span>
-                        <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
-                            <div class="h2 font-weight-bold">{{ target.prcnt }}<sup class="small">%</sup></div>
-                        </div>
-                    </div>
+                    <div class="swiper-container" data-id="{{ challenge.id }}_{{ target.target.id }}">
+                        <!-- Additional required wrapper -->
+                        <div class="swiper-wrapper">
+                            <!-- Slides -->
+                            <div class="swiper-slide" data-hash="slide_{{ challenge.id }}_{{ target.target.id }}_1">
 
-                    <div class="row text-center mt-4">
-                        <div class="col-6 border-right">
-                            <div class="h5 font-weight-bold mb-0">{{ target.target_value }}</div>
-                            <span class="small text-gray">Target</span>
+                                <div class="progress mx-auto"
+                                     data-value='{% if target.percentage > 100 %}100{% else %}{{ target.percentage }}{% endif %}'>
+                              <span class="progress-left">
+                                            <span class="progress-bar border-{{ target.percentage_class }}"></span>
+                              </span>
+                                    <span class="progress-right">
+                                            <span class="progress-bar border-{{ target.percentage_class }}"></span>
+                              </span>
+                                    <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                        <div class="h2 font-weight-bold">{{ target.percentage }}<sup class="small">%</sup>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row text-center mt-4">
+                                    <div class="col-6 border-right">
+                                        <div class="h5 font-weight-bold mb-0">{{ target.target_value_formatted }}</div>
+                                        <span class="small text-gray">Target</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="h5 font-weight-bold mb-0">{{ target.achieved_value_formatted }}</div>
+                                        <span class="small text-gray">Achieved</span>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="swiper-slide" data-hash="slide_{{ challenge.id }}_{{ target.target.id }}_2">
+                                <div class="px-3">
+
+                                    {% if target.farthest %}
+                                    <a href="{{ target.farthest.get_absolute_url }}" class="achievement-link">
+                                    <div class="row border-secondary stat-cont">
+                                        <div class="col-10 col-sm-10 col-lg-9">
+                                            <span class="text-secondary">Farthest Distance</span>
+                                            <div class="center h5 font-weight-bold mb-0">{{ target.farthest.distance_km }}km</div>
+                                        </div>
+                                        <div class="col-2 col-sm-2 col-lg-2 arrow-container">
+                                            <i class="far fa-caret-square-right fa-fw fa-2x"></i>
+                                        </div>
+                                    </div>
+                                    </a>
+                                    {% endif %}
+
+                                    {% if target.highest %}
+                                    <a href="{{ target.highest.get_absolute_url }}" class="achievement-link">
+                                    <div class="row my-2 border-secondary stat-cont">
+                                        <div class="col-10 col-sm-10 col-lg-9">
+                                            <span class="text-secondary">Highest Elevation</span>
+                                            <div class="center h5 font-weight-bold mb-0">{{ target.highest.total_elevation_gain }}m</div>
+                                        </div>
+                                        <div class="col-2 col-sm-2 col-lg-2 arrow-container">
+                                            <i class="far fa-caret-square-right fa-fw fa-2x"></i>
+                                        </div>
+                                    </div>
+                                    </a>
+                                    {% endif %}
+
+                                    {% if target.fastest %}
+                                    <a href="{{ target.fastest.get_absolute_url }}" class="achievement-link">
+                                    <div class="row my-2 border-secondary stat-cont">
+                                        <div class="col-10 col-sm-10 col-lg-9">
+                                            <span class="text-secondary">Fastest Pace</span>
+                                            <div class="center h5 font-weight-bold mb-0">{{ target.fastest.pace }} /km</div>
+                                        </div>
+                                        <div class="col-2 col-sm-2 col-lg-2 arrow-container">
+                                            <i class="far fa-caret-square-right fa-fw fa-2x"></i>
+                                        </div>
+                                    </div>
+                                    </a>
+                                    {% endif %}
+
+                                    {% if target.longest %}
+                                    <a href="{{ target.longest.get_absolute_url }}" class="achievement-link">
+                                    <div class="row my-2 border-secondary stat-cont">
+                                        <div class="col-10 col-sm-10 col-lg-9">
+                                            <span class="text-secondary">Longest Activity</span>
+                                            <div class="center h5 font-weight-bold mb-0">{{ target.longest.moving_duration_seconds_formatted }}</div>
+                                        </div>
+                                        <div class="col-2 col-sm-2 col-lg-2 arrow-container">
+                                            <i class="far fa-caret-square-right fa-fw fa-2x"></i>
+                                        </div>
+                                    </div>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-6">
-                            <div class="h5 font-weight-bold mb-0">{{ target.achieved }}</div>
-                            <span class="small text-gray">Achieved</span>
-                        </div>
+                        <div class="swiper-pagination"></div>
                     </div>
                 </div>
             </div>

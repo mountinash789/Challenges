@@ -54,7 +54,8 @@ class ActivityTestCase(TestCase):
                          str(timedelta(seconds=int(self.activity.duration_seconds) or 0)))
 
     def test_view_button(self):
-        html = '<a href="#" class="btn btn-{} btn-primary"><i class="fas fa-eye"></i> View</a>'.format('sm')
+        html = '<a href="{}" class="btn btn-{} btn-primary"><i class="fas fa-eye"></i> View</a>'.format(
+            self.activity.get_absolute_url(), 'sm')
         self.assertEqual(self.activity.view_button(), html)
 
     def test_truncated_description__gt_20(self):
@@ -99,7 +100,7 @@ class TargetTypeTestCase(TestCase):
 class ChallengeTargetTestCase(TestCase):
 
     def setUp(self):
-        self.challenge_target= baker.make('backend.ChallengeTarget', description='100k Run')
+        self.challenge_target = baker.make('backend.ChallengeTarget', description='100k Run')
 
     def tearDown(self):
         self.challenge_target.delete()
@@ -111,7 +112,9 @@ class ChallengeTargetTestCase(TestCase):
 class ChallengeTestCase(TestCase):
 
     def setUp(self):
-        self.targets_set = baker.make('backend.ChallengeTarget', _quantity=5)
+        self.targets_set = baker.make('backend.ChallengeTarget',
+                                      target_type=baker.make('backend.TargetType', description='Elevation',
+                                                             field='total_elevation_gain'), _quantity=5)
         self.challenge = baker.make('backend.Challenge', name='100k Run', targets=self.targets_set)
         self.user = baker.make(User)
 
