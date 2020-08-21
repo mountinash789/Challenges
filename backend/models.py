@@ -139,6 +139,7 @@ class Activity(TimeStampedModel):
         self.pace = round(float('{}.{}{}'.format(pace.minute, pace.second, pace.microsecond)), 2)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    third_party_id = models.CharField(max_length=255, blank=True, null=True)
     external_id = models.CharField(max_length=255, blank=True, null=True)
     description = models.CharField(max_length=255, blank=True, null=True)
     activity_type = models.ForeignKey(ActivityType, on_delete=models.CASCADE, blank=True, null=True)
@@ -153,6 +154,30 @@ class Activity(TimeStampedModel):
     pace = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     polyline = models.TextField(blank=True, null=True)
     raw_json = models.TextField(blank=True, null=True)
+    has_streams = models.BooleanField(default=False)
+    connection = models.ForeignKey(Connection, on_delete=models.CASCADE, blank=True, null=True)
+
+    def get_activity_streams(self):
+        module = import_module(self.connection.library)
+        Lib = getattr(module, self.connection.class_str)
+        connect = Lib()
+        connect.get_streams(self.connection, self)
+        self.has_streams = True
+        self.save()
+
+    def label_stream(self):
+        distance = self.activitystream_set.filter(stream_type__description='distance').first()
+        time = self.activitystream_set.filter(stream_type__description='time').first()
+        if distance:
+            return distance
+        else:
+            return time
+
+    def has_graphs(self):
+        if self.has_streams:
+            if self.activitystream_set.filter(stream_type__display_graph=True).count() > 0:
+                return True if self.label_stream() else False
+        return False
 
 
 class TargetType(TimeStampedModel):
@@ -296,3 +321,24 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
     instance.profile.save()
+
+
+class StreamType(TimeStampedModel):
+    name = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
+    display_graph = models.BooleanField(default=False)
+    rgb = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.description
+
+
+class ActivityStream(TimeStampedModel):
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    stream_type = models.ForeignKey(StreamType, on_delete=models.CASCADE)
+    sequence = models.TextField()
+    raw_json = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.stream_type.description
+

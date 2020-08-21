@@ -3,19 +3,20 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, DetailView
 
-from backend.models import Activity
+from backend.models import Activity, ActivityType
 from backend.views.activities import ActivitiesMixin
 from project.utils import LoginRequired
 
 
 class ActivitiesPage(ActivitiesMixin, LoginRequired, TemplateView):
-    template_name = 'datatables.html'
+    template_name = 'activity/activity-list.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['page_header'] = context['page_title'] = 'Activities'
         context['table_id'] = self.__class__.__name__
         context['js_path'] = '/static/js/activities.js'
+        context['activity_types'] = ActivityType.objects.all().order_by('description')
         context['data_url'] = reverse_lazy('api:activities:list', kwargs={'user_id': self.request.user.id})
         context['headers'] = [
             'Description',

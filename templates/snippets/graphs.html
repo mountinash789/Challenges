@@ -1,0 +1,47 @@
+{% for stream in activity.activitystream_set.all %}
+    {% if stream.stream_type.display_graph %}
+    <div class="col-lg-6">
+        <div class="p-4 mb-4" style="background:white; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);">
+            <canvas id="chart_{{ stream.id }}" class="height:100%;"></canvas>
+        </div>
+    </div>
+
+    <script>
+        new Chart(
+            document.getElementById("chart_{{ stream.id }}"),
+            {
+                "type":"line",
+                "data":{
+                    "labels":{{ activity.label_stream.sequence }},
+                    "datasets":[
+                        {
+                            "label":"{{ stream.stream_type.name }}",
+                            "data":{{ stream.sequence }},
+                            "fill":true,
+                            "borderColor":"rgba({{ stream.stream_type.rgb }}, 1)",
+                            "backgroundColor":"rgba({{ stream.stream_type.rgb }}, 0.6)",
+                            "lineTension":1
+                        }
+                    ]
+                },
+                "options":{
+                    elements: {
+                        point:{
+                            radius: 0
+                        }
+                    },
+                    scales: {
+                        xAxes: [{
+                            ticks: {
+                                display: false //this will remove only the label
+                            },
+                            display: false,
+                        }]
+                    }
+                }
+            }
+        );
+
+    </script>
+    {% endif %}
+{% endfor %}

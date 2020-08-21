@@ -1,0 +1,11 @@
+{% extends 'datatables.html' %}
+
+{% block filters %}
+<select id='id_activity_type_select' class="custom-select col-sm-12 col-md-4">
+    <option selected disabled>Activity Types</option>
+    <option value="">All</option>
+    {% for activity_type in activity_types %}
+        <option value="{{ activity_type.description }}">{{ activity_type.description }}</option>
+    {% endfor %}
+</select>
+{% endblock %}
