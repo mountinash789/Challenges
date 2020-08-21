@@ -14,3 +14,9 @@ let config = {
     "initComplete": function(settings, json) {
     },
 }
+$(document).ready(function() {
+    $('#id_activity_type_select').on('change',function(){
+        var selectedValue = $(this).val();
+        $(`#${table_id}`).dataTable().fnFilter(selectedValue)
+    });
+} );

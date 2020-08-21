@@ -146,7 +146,6 @@ class Strava(object):
                 resp = requests.get(endpoint, params, headers={'Authorization': 'Bearer {}'.format(
                     user_connection.first().get_access_token())}).json()
                 for key, values in resp.items():
-                    print(values)
                     stream_obj, created = ActivityStream.objects.get_or_create(
                         activity=obj,
                         stream_type=self.get_stream_type(key),
