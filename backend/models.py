@@ -165,6 +165,20 @@ class Activity(TimeStampedModel):
         self.has_streams = True
         self.save()
 
+    def label_stream(self):
+        distance = self.activitystream_set.filter(stream_type__description='distance').first()
+        time = self.activitystream_set.filter(stream_type__description='time').first()
+        if distance:
+            return distance
+        else:
+            return time
+
+    def has_graphs(self):
+        if self.has_streams:
+            if self.activitystream_set.filter(stream_type__display_graph=True).count() > 0:
+                return True if self.label_stream() else False
+        return False
+
 
 class TargetType(TimeStampedModel):
     description = models.CharField(max_length=255)
@@ -310,7 +324,10 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
 
 
 class StreamType(TimeStampedModel):
+    name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
+    display_graph = models.BooleanField(default=False)
+    rgb = models.CharField(max_length=255)
 
     def __str__(self):
         return self.description

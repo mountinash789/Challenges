@@ -1,10 +1,12 @@
 from django.contrib.auth.models import User
+from django.template.loader import render_to_string
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from backend.models import Activity
 from backend.tasks import get_activities
-from project.utils import ExactUserRequiredAPI, local_time, ExactUserRequired
+from project.utils import ExactUserRequiredAPI, local_time, ExactUserRequired, LoginRequired
 
 
 class ActivitiesMixin(object):
@@ -51,3 +53,13 @@ class ActivitiesLoad(ExactUserRequiredAPI):
         user_id = self.kwargs['user_id']
         get_activities(user_id)
         return Response({})
+
+
+class ActivitiesGetStreams(LoginRequired, APIView):
+
+    def get(self, request, *args, **kwargs):
+        activity = Activity.objects.get(id=kwargs['pk'])
+        activity.get_activity_streams()
+        activity = Activity.objects.get(id=kwargs['pk'])
+        return Response({'has_graphs': activity.has_graphs(),
+                         'html': render_to_string('snippets/graphs.html', {'activity': activity})})

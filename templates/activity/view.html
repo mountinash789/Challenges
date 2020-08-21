@@ -54,29 +54,40 @@ $( document ).ready(function() {
     map.fitBounds(polyline.getBounds());
     {% endif %}
 
+    $('#id-graph-container').hide();
+    $('#id-toggle-graph-btn').click(function (){
+        $(this).toggleClass('active')
+        $('#id-info-container').fadeToggle();
+        $('#id-graph-container').fadeToggle();
+    });
+
+    {% if not activity.has_streams %}
+        $.ajax({
+            url: "{% url 'api:activities:get_streams' activity.id %}",
+            success: function(result){
+                if (result['has_graphs']){
+                    $('#id-toggle-graph-btn').removeClass('d-none');
+                    $('#id-graph-container').html(result['html']);
+                }
+            }
+        });
+    {% endif %}
+
 });
-
-
-
-
-
-
-
-
-
-
-
 
 </script>
 {% endblock %}
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">{{ page_header }}</h1>
-    <div class="btn-toolbar mb-2 mb-md-0 d-block d-lg-none">
-        <a href="#map" class="btn btn-sm btn-outline-secondary">Map</a>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group">
+            <a href="#map" class="d-block d-lg-none btn btn-sm btn-outline-secondary">Map</a>
+            <button type="button" id="id-toggle-graph-btn" class="btn btn-sm btn-outline-danger {% if not activity.has_graphs %}d-none{% endif %}">Graphs</button>
+        </div>
     </div>
 </div>
-<div class="row mb-4">
+<div class="row mb-4" id="id-info-container">
     <div class="col-lg-6">
         <div class="p-4" style="background:white; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);">
             <div class="form-group">
@@ -163,6 +174,10 @@ $( document ).ready(function() {
             {% endif %}
         </div>
     </div>
+</div>
+
+<div class="row mb-4" id="id-graph-container">
+    {% include 'snippets/graphs.html' %}
 </div>
 
 {% endblock %}
