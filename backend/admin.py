@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from backend.models import Connection, UserConnection, TargetType, ChallengeTarget, Challenge, ChallengeSubscription, \
-    ActivityType
+    ActivityType, StreamType
 
 
 @admin.register(Connection)
@@ -36,4 +36,9 @@ class ChallengeSubscriptionTargetAdmin(admin.ModelAdmin):
 
 @admin.register(ActivityType)
 class ActivityTypeAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(StreamType)
+class StreamTypeAdmin(admin.ModelAdmin):
     pass

@@ -37,7 +37,9 @@
 </div>
 <div class="row">
     <div class="col-12">
-        <table class="table rounded-lg shadow table-bordered dt-responsive nowrap" id="id_{{ table_id }}" style="background: white;">
+        {% block filters %}
+        {% endblock %}
+        <table class="table rounded-lg shadow table-bordered dt-responsive nowrap dataTable" id="id_{{ table_id }}" style="background: white;">
             <thead>
             <tr>
                 {% for header in headers %}

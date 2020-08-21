@@ -3,10 +3,6 @@
 {% block css %}
 {% endblock %}
 {% block js %}
-<script>
-    let GET_ACTIVITES_URL = "{% url 'api:activities:load_activities' user.id %}";
-</script>
-<script src="{% static 'js/load_activities.js' %}"></script>
 <script src="{% static 'js/dashboard.js' %}"></script>
 {% endblock %}
 {% block content %}
@@ -24,9 +20,8 @@
     <!--                </div>-->
 </div>
 
-{% for sub in my_challenges %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h5">{{ sub.challenge.name }} ({{ sub.challenge.start|date:'d/m/Y' }} - {{ sub.challenge.end|date:'d/m/Y' }})</h1>
+    <h1 class="h5">({{ sub.challenge.start|date:'d/m/Y' }} - {{ sub.challenge.end|date:'d/m/Y' }})</h1>
 </div>
 <span class="load_content" id="id_challenge_status_{{ sub.challenge.id }}"
       data-url="{% url 'api:challenge:graphic' sub.challenge.id sub.user.id %}">
@@ -35,5 +30,4 @@
              aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
     </div>
 </span>
-{% endfor %}
 {% endblock %}

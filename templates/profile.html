@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 {% block js %}
 <script src="{% static 'js/profile.js' %}"></script>
 {% endblock %}
@@ -64,6 +65,13 @@
 <!--        </div>-->
 <!--    </div>-->
 <!--</div>-->
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h5">User Information</h1>
+</div>
+<span>
+   {% crispy form %}
+</span>
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h5">Third party connections</h1>

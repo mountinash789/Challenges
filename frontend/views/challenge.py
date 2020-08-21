@@ -1,8 +1,9 @@
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 
+from backend.models import ChallengeSubscription
 from backend.views.challenge import ChallengesMixin
-from project.utils import LoginRequired
+from project.utils import LoginRequired, ExactUserRequired
 
 
 class CurrentView(ChallengesMixin, LoginRequired, TemplateView):
@@ -17,7 +18,6 @@ class CurrentView(ChallengesMixin, LoginRequired, TemplateView):
         context['js_path'] = '/static/js/challenges.js'
         context['data_url'] = reverse_lazy(self.data_url)
         context['headers'] = [
-            '#',
             'Name',
             'Start',
             'End',
@@ -30,3 +30,14 @@ class CurrentView(ChallengesMixin, LoginRequired, TemplateView):
 class PastView(CurrentView):
     title = 'Past Challenges'
     data_url = 'api:challenge:past'
+
+
+class ChallengeView(ExactUserRequired, TemplateView):
+    template_name = 'challenge-view.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sub'] = ChallengeSubscription.objects.get(challenge_id=self.kwargs['pk'],
+                                                           user_id=self.kwargs['user_id'])
+        context['page_header'] = context['page_title'] = context['sub'].challenge.name
+        return context

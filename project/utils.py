@@ -17,7 +17,6 @@ class RaiseException(object):
 class LoginRequired(RaiseException):
 
     def dispatch(self, request, *args, **kwargs):
-        access_denied = []
         if not request.user.is_authenticated:
             messages.error(request, 'You are not logged in!')
             return redirect_to_login(request.get_full_path(), 'front:login')

@@ -54,7 +54,8 @@ class ActivityTestCase(TestCase):
                          str(timedelta(seconds=int(self.activity.duration_seconds) or 0)))
 
     def test_view_button(self):
-        html = '<a href="#" class="btn btn-{} btn-primary"><i class="fas fa-eye"></i> View</a>'.format('sm')
+        html = '<a href="{}" class="btn btn-{} btn-primary"><i class="fas fa-eye"></i> View</a>'.format(
+            self.activity.get_absolute_url(), 'sm')
         self.assertEqual(self.activity.view_button(), html)
 
     def test_truncated_description__gt_20(self):
@@ -99,7 +100,7 @@ class TargetTypeTestCase(TestCase):
 class ChallengeTargetTestCase(TestCase):
 
     def setUp(self):
-        self.challenge_target= baker.make('backend.ChallengeTarget', description='100k Run')
+        self.challenge_target = baker.make('backend.ChallengeTarget', description='100k Run')
 
     def tearDown(self):
         self.challenge_target.delete()
@@ -111,7 +112,9 @@ class ChallengeTargetTestCase(TestCase):
 class ChallengeTestCase(TestCase):
 
     def setUp(self):
-        self.targets_set = baker.make('backend.ChallengeTarget', _quantity=5)
+        self.targets_set = baker.make('backend.ChallengeTarget',
+                                      target_type=baker.make('backend.TargetType', description='Elevation',
+                                                             field='total_elevation_gain'), _quantity=5)
         self.challenge = baker.make('backend.Challenge', name='100k Run', targets=self.targets_set)
         self.user = baker.make(User)
 
@@ -132,12 +135,12 @@ class ChallengeTestCase(TestCase):
     def test_subscribe_button_subscribed(self):
         cs = ChallengeSubscription(user=self.user, challenge=self.challenge)
         cs.save()
-        html = '<button class="btn btn-sm btn-success disabled"><i class="fas fa-eye"></i> Joined!</button>'
+        html = cs.get_absolute_url_btn()
         self.assertEqual(self.challenge.subscribe_button(self.user.id), html)
 
     def test_subscribe_button(self):
         url = reverse_lazy('api:challenge:subscribe', kwargs={'pk': self.challenge.id, 'user_id': self.user.id})
-        html = '<span id="id_challenge_sub_{}"><button type="button" data-link="{}" class="btn btn-sm ' \
+        html = '<span class="id_challenge_sub_{}"><button type="button" data-link="{}" class="btn btn-sm ' \
                'btn-primary btn-ajax"><i class="fas fa-eye"></i> Join</button><span>'.format(self.challenge.id, url)
         self.assertEqual(self.challenge.subscribe_button(self.user.id), html)
 
