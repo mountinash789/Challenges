@@ -208,6 +208,11 @@ class Challenge(TimeStampedModel):
     def __str__(self):
         return self.name
 
+    @staticmethod
+    def post_save(sender, instance, **kwargs):
+        for sub in ChallengeSubscription.objects.filter(challenge=instance):
+            sub.save()
+
     def instructions(self):
         html = '<ul>'
         for challenge in self.targets.all().order_by('created'):
@@ -246,6 +251,7 @@ class ChallengeSubscription(TimeStampedModel):
         return
 
 
+post_save.connect(Challenge.post_save, sender=Challenge)
 post_save.connect(ChallengeSubscription.post_save, sender=ChallengeSubscription)
 
 
@@ -276,6 +282,10 @@ class TargetTracking(TimeStampedModel):
             target_value = self.target.target_value
         elif self.target.target_type.description == 'Distance':
             target_value = self.target.target_value / Decimal(1000)
+        elif self.target.target_type.description == 'Time':
+            target_value = str(timedelta(seconds=int(self.target.target_value) or 0))
+        else:
+            target_value = self.target.target_value
         return target_value
 
     def achieved_value_formatted(self):
@@ -283,6 +293,10 @@ class TargetTracking(TimeStampedModel):
             achieved = self.achieved
         elif self.target.target_type.description == 'Distance':
             achieved = self.achieved / Decimal(1000)
+        elif self.target.target_type.description == 'Time':
+            achieved = str(timedelta(seconds=int(self.achieved) or 0))
+        else:
+            achieved = self.achieved
         return achieved
 
     def get_activities(self):
