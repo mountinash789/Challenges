@@ -342,3 +342,21 @@ class ActivityStream(TimeStampedModel):
     def __str__(self):
         return self.stream_type.description
 
+
+class Weather(TimeStampedModel):
+
+    class Meta:
+        ordering = ['timestamp']
+
+    timestamp = models.DateTimeField()
+    longitude = models.DecimalField(max_digits=20, decimal_places=10, default=0)
+    latitude = models.DecimalField(max_digits=20, decimal_places=10, default=0)
+    temperature = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    feels_like = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    pressure = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    humidity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    dew_point = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    clouds = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    visibility = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    wind_speed = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    wind_deg = models.DecimalField(max_digits=10, decimal_places=2, default=0)
