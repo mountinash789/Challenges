@@ -208,6 +208,11 @@ class Challenge(TimeStampedModel):
     def __str__(self):
         return self.name
 
+    @staticmethod
+    def post_save(sender, instance, **kwargs):
+        for sub in ChallengeSubscription.objects.filter(challenge=instance):
+            sub.save()
+
     def instructions(self):
         html = '<ul>'
         for challenge in self.targets.all().order_by('created'):
@@ -246,6 +251,7 @@ class ChallengeSubscription(TimeStampedModel):
         return
 
 
+post_save.connect(Challenge.post_save, sender=Challenge)
 post_save.connect(ChallengeSubscription.post_save, sender=ChallengeSubscription)
 
 
