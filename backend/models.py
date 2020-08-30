@@ -282,6 +282,10 @@ class TargetTracking(TimeStampedModel):
             target_value = self.target.target_value
         elif self.target.target_type.description == 'Distance':
             target_value = self.target.target_value / Decimal(1000)
+        elif self.target.target_type.description == 'Time':
+            target_value = str(timedelta(seconds=int(self.target.target_value) or 0))
+        else:
+            target_value = self.target.target_value
         return target_value
 
     def achieved_value_formatted(self):
@@ -289,6 +293,10 @@ class TargetTracking(TimeStampedModel):
             achieved = self.achieved
         elif self.target.target_type.description == 'Distance':
             achieved = self.achieved / Decimal(1000)
+        elif self.target.target_type.description == 'Time':
+            achieved = str(timedelta(seconds=int(self.achieved) or 0))
+        else:
+            achieved = self.achieved
         return achieved
 
     def get_activities(self):
