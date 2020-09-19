@@ -37,17 +37,22 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_hosts',
 
     'djrichtextfield',
     'crispy_forms',
     'rest_framework',
     'social_django',
+    'compressor',
 
     'frontend',
     'backend',
+    'wedding',
 ]
 
 MIDDLEWARE = [
+    'django_hosts.middleware.HostsRequestMiddleware',
+
     'bugsnag.django.middleware.BugsnagMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -56,6 +61,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'django_hosts.middleware.HostsResponseMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -73,6 +80,11 @@ LOGOUT_REDIRECT_URL = '/'
 SOCIAL_AUTH_URL_NAMESPACE = 'front:social'
 
 ROOT_URLCONF = 'project.urls'
+
+ROOT_HOSTCONF = 'project.hosts'
+DEFAULT_HOST = 'www'
+PARENT_HOST = 'rknight.co'
+
 
 TEMPLATES = [
     {
@@ -168,6 +180,17 @@ BUGSNAG = {
     'api_key': 'XXXXXXX',
     'project_root': BASE_DIR,
 }
+
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+]
+
+COMPRESS_PRECOMPILERS = (
+    ('text/x-scss', 'django_libsass.SassCompiler'),
+)
+
 
 try:
     from project.local_settings import *
