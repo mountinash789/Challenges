@@ -1,10 +1,90 @@
+{% load static %}
+{% load hosts %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Rowan Knight</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Baloo+Tammudu+2&display=swap');
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            text-align: center;
+            background-color: #808080;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            font-family: 'Baloo Tammudu 2';
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .box {
+          background: white;
+          padding: 2em;
+          position: relative;
+          width: 70%;
+          box-shadow: 0 5px 25px 0
+                      rgba(0,0,0, .25);
+        }
+
+        .project-desc{
+            text-align: left;
+        }
+
+        h1 {
+            font-weight: 300;
+            font-size: 1.7rem;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        p {
+            margin-top: 0;
+            line-height: 1.5;
+
+            &:last-of-type{
+                margin-bottom: 0;
+            }
+
+        }
+
+
+
+
+    </style>
 </head>
 <body>
-HOLDING PAGE
+
+<div class="box">
+    <img src="{% static 'rowan/img/logo.png' %}" style="max-height:20vh"/>
+    <h3>
+        This is a domain for my projects.<br/>
+        Maybe I will put my cv on here at some point.
+    </h3>
+
+    <hr>
+    <div class="project-desc">
+        <h1><a class="heading" href="{% host_url 'front:home' host 'challenges' %}">Challenges</a></h1>
+        <p>
+            This a site that can link to fitness tracking networks (Currently Strava) and syncs your data. This
+            currently
+            duplicates what you can already see in strava.
+            I have built it around a challenges features (Which Strava later refreshed goals to be similar) that allows
+            an admin to create challenges and for users to join them and track progress throughout the duration.
+            Challenges currently supported are time, distance and elevation. They can be limited by activity type.
+        </p>
+    </div>
+
+</div>
+
 </body>
 </html>
