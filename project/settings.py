@@ -84,7 +84,8 @@ ROOT_URLCONF = 'project.urls'
 ROOT_HOSTCONF = 'project.hosts'
 DEFAULT_HOST = 'www'
 PARENT_HOST = 'rknight.co'
-
+COMPRESS_ENABLED = True
+COMPRESS_OFFLINE = True
 
 TEMPLATES = [
     {
@@ -191,8 +192,13 @@ COMPRESS_PRECOMPILERS = (
     ('text/x-scss', 'django_libsass.SassCompiler'),
 )
 
-
-try:
-    from project.local_settings import *
-except ImportError:  # pragma: no cover
-    pass
+if os.getenv('GAE_APPLICATION', None):  # pragma: no cover
+    try:
+        from project.gae_settings import *
+    except ImportError:  # pragma: no cover
+        pass
+else:
+    try:
+        from project.local_settings import *
+    except ImportError:  # pragma: no cover
+        pass
