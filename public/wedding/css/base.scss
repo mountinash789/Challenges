@@ -7,6 +7,7 @@ $dark: #2d3c51;
 $primary: #eff8e2;
 $secondary: #64242e;
 $default: #eff8e2;
+$other: #ada8b6;
 
 $fancyfont: "Playfair Display";
 
@@ -24,6 +25,7 @@ body {
 	margin: 0;
 	font-family: 'Raleway', sans-serif;
 	text-align: center;
+	color: $dark;
 }
 
 img {
@@ -112,6 +114,22 @@ p {
 	border-width: 2px;
 	border-style: solid;
 	padding: .5em 1.75em;
+
+    color: $dark;
+    background-color: transparent;
+	border-color: $dark;
+	cursor: pointer;
+
+	&:hover,
+    &:focus {
+        color: white;
+        background-color: $dark;
+        border-color: $dark;
+    }
+
+	&.small {
+	    font-size: 1rem;
+	}
 }
 
 @media (min-width: 60rem) {
@@ -347,3 +365,4 @@ footer {
 }
 
 @import "wedding/css/inputs";
+@import "wedding/css/messages";
