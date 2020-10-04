@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django_hosts.resolvers import reverse_host
 from django.urls import reverse_lazy
 
 from django.test import TestCase
@@ -12,19 +13,19 @@ class ProfileViewTest(TestCase):
         self.path = reverse_lazy('front:profile')
 
     def test_redirect_if_not_logged_in(self):
-        response = self.client.get(self.path)
-        self.assertRedirects(response, '/login/?next=/profile/')
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
+        self.assertEqual(response.status_code, 302)
 
     def test_logged_in(self):
         self.client.login(username='testuser', password='agdusgdiu39u21n')
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
 
         self.assertEqual(str(response.context['user']), 'testuser')
         self.assertEqual(response.status_code, 200)
 
     def test_users_name(self):
         self.client.login(username='testuser', password='agdusgdiu39u21n')
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
 
         self.assertEqual(str(response.context['page_title']), 'testuser')
         self.assertEqual(response.status_code, 200)
@@ -35,7 +36,7 @@ class ProfileViewTest(TestCase):
         self.test_user.save()
 
         self.client.login(username='testuser', password='agdusgdiu39u21n')
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
 
         self.assertEqual(str(response.context['page_title']), 'Test User')
         self.assertEqual(response.status_code, 200)
@@ -49,11 +50,12 @@ class LoginViewTest(TestCase):
         self.path = reverse_lazy('front:login')
 
     def test_get(self):
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
         self.assertEqual(response.status_code, 200)
 
     def test_post(self):
-        response = self.client.post(self.path, data={'username': 'testuser', 'password': 'agdusgdiu39u21n'})
+        response = self.client.post(self.path, data={'username': 'testuser', 'password': 'agdusgdiu39u21n'},
+                                    HTTP_HOST=reverse_host('challenges'))
         self.assertRedirects(response, reverse_lazy('front:home'))
 
 
@@ -65,12 +67,12 @@ class ActivitiesViewTest(TestCase):
         self.path = reverse_lazy('front:activities:list')
 
     def test_redirect_if_not_logged_in(self):
-        response = self.client.get(self.path)
-        self.assertRedirects(response, '/login/?next=/activities/')
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
+        self.assertEqual(response.status_code, 302)
 
     def test_logged_in(self):
         self.client.login(username='testuser', password='agdusgdiu39u21n')
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
 
         self.assertEqual(str(response.context['user']), 'testuser')
         self.assertEqual(response.status_code, 200)
@@ -84,12 +86,12 @@ class RegistrationViewTest(TestCase):
         self.path = reverse_lazy('front:register')
 
     def test_get(self):
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
         self.assertEqual(response.status_code, 200)
 
     def test_post(self):
         self.client.post(self.path, data={'username': 'created_user', 'password1': 'agdusgdiu39u21n',
-                                          'password2': 'agdusgdiu39u21n'})
+                                          'password2': 'agdusgdiu39u21n'}, HTTP_HOST=reverse_host('challenges'))
         self.assertEqual(User.objects.filter(username='created_user').count(), 1)
 
 
@@ -101,12 +103,12 @@ class ChallengeCurrentViewTest(TestCase):
         self.path = reverse_lazy('front:challenge:current')
 
     def test_redirect_if_not_logged_in(self):
-        response = self.client.get(self.path)
-        self.assertRedirects(response, '/login/?next={}'.format(self.path))
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
+        self.assertEqual(response.status_code, 302)
 
     def test_logged_in(self):
         self.client.login(username='testuser', password='agdusgdiu39u21n')
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
 
         self.assertEqual(str(response.context['user']), 'testuser')
         self.assertEqual(response.status_code, 200)

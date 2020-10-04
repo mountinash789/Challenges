@@ -1,0 +1,78 @@
+@import "wedding/css/base";
+
+
+/* venue-location
+=================== */
+
+.venue-location-textbox {
+	background-color: $primary;
+	padding: 4em;
+	width: 100vw;
+	margin-left: -4.5%;
+	outline: 2px solid $secondary;
+	outline-offset: -2.5em;
+	color: $secondary;
+	position: relative;
+	text-align: left;
+
+	h1 {
+        color: $secondary;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: .75em;
+        background: $primary;
+        padding: 0 .145em;
+    }
+
+    li {
+        font-size: 1.4em;
+    }
+}
+
+
+@media (min-width: 25rem) {
+	h1 {
+		font-size: 1.4rem;
+	}
+
+	.venue-location-textbox {
+		padding: 4.5em;
+	    h1 {
+            top: 1.1em;
+            padding: 0 .325em;
+        }
+    }
+}
+
+@media (min-width: 35rem) {
+	h1 {
+		font-size: 2.5rem;
+	}
+
+	.venue-location {
+		padding-top: 4.5em;
+		padding-bottom: 4.5em;
+	}
+
+	.venue-location-textbox {
+		width: 100%;
+		padding: 5em;
+		outline-offset: -3.75em;
+		margin-left: -2.5%;
+		text-align: left;
+		box-shadow: 0 0 4em 0 rgba(0,0,0,.3);
+
+	    h1 {
+            top: .75em;
+            left: 6rem;
+            transform: translateX(0);
+        }
+	}
+
+}
+
+.gmap {
+    width: 100%;
+    height: 20em;
+}
