@@ -37,17 +37,22 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_hosts',
 
     'djrichtextfield',
     'crispy_forms',
     'rest_framework',
     'social_django',
+    'compressor',
 
     'frontend',
     'backend',
+    'wedding',
 ]
 
 MIDDLEWARE = [
+    'django_hosts.middleware.HostsRequestMiddleware',
+
     'bugsnag.django.middleware.BugsnagMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -56,6 +61,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'django_hosts.middleware.HostsResponseMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -73,6 +80,12 @@ LOGOUT_REDIRECT_URL = '/'
 SOCIAL_AUTH_URL_NAMESPACE = 'front:social'
 
 ROOT_URLCONF = 'project.urls'
+
+ROOT_HOSTCONF = 'project.hosts'
+DEFAULT_HOST = 'www'
+PARENT_HOST = 'rknight.co'
+COMPRESS_ENABLED = True
+COMPRESS_OFFLINE = True
 
 TEMPLATES = [
     {
@@ -169,7 +182,23 @@ BUGSNAG = {
     'project_root': BASE_DIR,
 }
 
-try:
-    from project.local_settings import *
-except ImportError:  # pragma: no cover
-    pass
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+]
+
+COMPRESS_PRECOMPILERS = (
+    ('text/x-scss', 'django_libsass.SassCompiler'),
+)
+
+if os.getenv('GAE_APPLICATION', None):  # pragma: no cover
+    try:
+        from project.gae_settings import *
+    except ImportError:  # pragma: no cover
+        pass
+else:
+    try:
+        from project.local_settings import *
+    except ImportError:  # pragma: no cover
+        pass

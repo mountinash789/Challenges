@@ -1,0 +1,8 @@
+{% load hosts %}
+<nav>
+    <ul>
+        <li><a href="{% host_url 'home' host 'wedding' %}">Home</a></li>
+        <li><a href="{% host_url 'fun' host 'wedding' %}">Fun</a></li>
+        <li><a href="{% host_url 'venue' host 'wedding' %}">Venue</a></li>
+    </ul>
+</nav>

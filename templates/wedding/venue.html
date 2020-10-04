@@ -1,0 +1,43 @@
+{% extends 'wedding/base.html' %}
+{% load static %}
+
+{% block scss %}
+<link type="text/x-scss" href="{% static 'wedding/css/venue.scss' %}" rel="stylesheet" media="screen">
+{% endblock %}
+
+{% block content %}
+
+<section>
+<div class="container">
+		<div class="col-3">
+			<div class="container">
+				<section class="venue-location">
+
+					<div class="venue-location-textbox">
+						<h1>Location</h1>
+						<iframe class="gmap"
+								src="https://maps.google.com/maps?q=falcon%20manor&t=&z=13&ie=UTF8&iwloc=&output=embed"
+								frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
+					</div>
+
+				</section>
+			</div>
+		</div>
+
+		<div class="col-3">
+			<div class="container">
+				<section class="venue-location">
+
+					<div class="venue-location-textbox">
+						<h1>Details</h1>
+						<p><strong>Address:</strong> <br/>Falcon Gardens, Settle BD24 9BD</p>
+						<p><strong>Phone:</strong> <br/>01729 823814</p>
+					</div>
+
+				</section>
+			</div>
+		</div>
+	</div>
+</section>
+
+{% endblock %}

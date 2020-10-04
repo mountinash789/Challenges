@@ -29,3 +29,6 @@ social-auth-core==3.3.3
 pymysql==0.10.0
 bugsnag==3.9.0
 webob==1.8.6
+django-hosts==4.0
+django_compressor==2.4
+django-libsass==0.8

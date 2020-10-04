@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django_hosts import reverse_host
 from model_bakery import baker
 
 from backend.models import UserConnection
@@ -20,19 +21,19 @@ class UserConnectionsTest(TestCase):
 
     def test_if_not_logged_in(self):
         self.path = reverse_lazy('api:user_connections', kwargs={'user_id': 6000})
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
         self.assertEqual(response.status_code, 401)
 
     def test_logged_in_different_user(self):
         self.path = reverse_lazy('api:user_connections', kwargs={'user_id': self.test_second_user.id})
         self.client.login(username='testuser', password='agdusgdiu39u21n')
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
 
         self.assertEqual(response.status_code, 401)
 
     def test_users_name(self):
         self.client.login(username='testuser', password='agdusgdiu39u21n')
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
         self.assertEqual(response.status_code, 200)
 
 
@@ -51,12 +52,12 @@ class ConnectionSignUpViewTest(TestCase):
         self.user_connection.delete()
 
     def test_redirect_if_not_logged_in(self):
-        response = self.client.get(self.path)
-        self.assertRedirects(response, '/login/?next={}'.format(self.path))
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
+        self.assertEqual(response.status_code, 302)
 
     def test_logged_in(self):
         self.client.login(username='testuser', password='agdusgdiu39u21n')
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
 
         self.assertEqual(response.status_code, 302)
 
@@ -76,12 +77,12 @@ class ConnectionDeauthViewTest(TestCase):
         self.user_connection.delete()
 
     def test_redirect_if_not_logged_in(self):
-        response = self.client.get(self.path)
-        self.assertRedirects(response, '/login/?next={}'.format(self.path))
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
+        self.assertEqual(response.status_code, 302)
 
     def test_logged_in(self):
         self.client.login(username='testuser', password='agdusgdiu39u21n')
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
 
         self.assertEqual(response.status_code, 302)
         self.assertFalse(UserConnection.objects.filter(id=self.user_connection.id).exists())
@@ -100,12 +101,12 @@ class ConnectionRedirectViewTest(TestCase):
         self.connection.delete()
 
     def test_redirect_if_not_logged_in(self):
-        response = self.client.get(self.path)
-        self.assertRedirects(response, '/login/?next={}'.format(self.path))
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
+        self.assertEqual(response.status_code, 302)
 
     def test_logged_in(self):
         self.client.login(username='testuser', password='agdusgdiu39u21n')
-        response = self.client.get(self.path, {'code': '1'})
+        response = self.client.get(self.path, {'code': '1'}, HTTP_HOST=reverse_host('challenges'))
 
         self.assertEqual(response.status_code, 302)
         self.assertTrue(UserConnection.objects.filter(user_id=self.user.id).exists())
@@ -121,12 +122,12 @@ class ActivitiesListTest(TestCase):
         self.user.delete()
 
     def test_redirect_if_not_logged_in(self):
-        response = self.client.get(self.path)
-        self.assertRedirects(response, '/login/?next={}'.format(self.path))
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
+        self.assertEqual(response.status_code, 302)
 
     def test_logged_in(self):
         self.client.login(username='testuser', password='agdusgdiu39u21n')
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['recordsTotal'], 0)
@@ -135,7 +136,7 @@ class ActivitiesListTest(TestCase):
         activity_type = baker.make('backend.ActivityType')
         baker.make('backend.Activity', user=self.user, activity_type=activity_type, _quantity=3)
         self.client.login(username='testuser', password='agdusgdiu39u21n')
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['recordsTotal'], 3)
@@ -151,12 +152,12 @@ class ActivitiesLoadTest(TestCase):
         self.user.delete()
 
     def test_redirect_if_not_logged_in(self):
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
         self.assertEqual(response.status_code, 401)
 
     def test_logged_in(self):
         self.client.login(username='testuser', password='agdusgdiu39u21n')
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
 
         self.assertEqual(response.status_code, 200)
 
@@ -171,12 +172,12 @@ class ChallengesCurrentTest(TestCase):
         self.user.delete()
 
     def test_redirect_if_not_logged_in(self):
-        response = self.client.get(self.path)
-        self.assertRedirects(response, '/login/?next={}'.format(self.path))
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
+        self.assertEqual(response.status_code, 302)
 
     def test_logged_in(self):
         self.client.login(username='testuser', password='agdusgdiu39u21n')
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['recordsTotal'], 0)
@@ -185,7 +186,7 @@ class ChallengesCurrentTest(TestCase):
         start, end = month_start_end(timezone.now() - relativedelta(months=2))
         baker.make('backend.Challenge', start=start, end=end)
         self.client.login(username='testuser', password='agdusgdiu39u21n')
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['recordsTotal'], 0)
@@ -194,7 +195,7 @@ class ChallengesCurrentTest(TestCase):
         start, end = month_start_end(timezone.now() + relativedelta(months=2))
         baker.make('backend.Challenge', start=start, end=end)
         self.client.login(username='testuser', password='agdusgdiu39u21n')
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['recordsTotal'], 1)
@@ -210,12 +211,12 @@ class ChallengesPastTest(TestCase):
         self.user.delete()
 
     def test_redirect_if_not_logged_in(self):
-        response = self.client.get(self.path)
-        self.assertRedirects(response, '/login/?next={}'.format(self.path))
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
+        self.assertEqual(response.status_code, 302)
 
     def test_logged_in(self):
         self.client.login(username='testuser', password='agdusgdiu39u21n')
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['recordsTotal'], 0)
@@ -224,7 +225,7 @@ class ChallengesPastTest(TestCase):
         start, end = month_start_end(timezone.now() - relativedelta(months=2))
         baker.make('backend.Challenge', start=start, end=end)
         self.client.login(username='testuser', password='agdusgdiu39u21n')
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['recordsTotal'], 1)
@@ -233,7 +234,7 @@ class ChallengesPastTest(TestCase):
         start, end = month_start_end(timezone.now() + relativedelta(months=2))
         baker.make('backend.Challenge', start=start, end=end)
         self.client.login(username='testuser', password='agdusgdiu39u21n')
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['recordsTotal'], 0)
@@ -251,13 +252,13 @@ class ChallengesSubscribeTestCase(TestCase):
         self.challenge.delete()
 
     def test_redirect_if_not_logged_in(self):
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
         self.assertEqual(response.status_code, 401)
 
     def test_subscribe(self):
         self.assertEqual(self.challenge.challengesubscription_set.count(), 0)
         self.client.login(username='testuser', password='agdusgdiu39u21n')
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['id'], 'id_challenge_sub_{}'.format(self.challenge.id))
@@ -278,12 +279,12 @@ class ChallengeGraphicTestCase(TestCase):
         self.challenge.delete()
 
     def test_redirect_if_not_logged_in(self):
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
         self.assertEqual(response.status_code, 401)
 
     def test_response_0_activities(self):
         self.client.login(username='testuser', password='agdusgdiu39u21n')
-        response = self.client.get(self.path)
+        response = self.client.get(self.path, HTTP_HOST=reverse_host('challenges'))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['id'], 'id_challenge_status_{}'.format(self.challenge.id))
@@ -299,7 +300,7 @@ class ChallengeGraphicTestCase(TestCase):
                    activity_type=self.activity_types[0], distance_meters=1000)
         self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(
-            reverse_lazy('api:challenge:graphic', kwargs={'user_id': self.user.id, 'pk': dis_challenge.id}))
+            reverse_lazy('api:challenge:graphic', kwargs={'user_id': self.user.id, 'pk': dis_challenge.id}), HTTP_HOST=reverse_host('challenges'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['id'], 'id_challenge_status_{}'.format(dis_challenge.id))
         dis_challenge.delete()
@@ -315,7 +316,7 @@ class ChallengeGraphicTestCase(TestCase):
                    activity_type=self.activity_types[0], total_elevation_gain=300)
         self.client.login(username='testuser', password='agdusgdiu39u21n')
         response = self.client.get(
-            reverse_lazy('api:challenge:graphic', kwargs={'user_id': self.user.id, 'pk': elev_challenge.id}))
+            reverse_lazy('api:challenge:graphic', kwargs={'user_id': self.user.id, 'pk': elev_challenge.id}), HTTP_HOST=reverse_host('challenges'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['id'], 'id_challenge_status_{}'.format(elev_challenge.id))
         elev_challenge.delete()
