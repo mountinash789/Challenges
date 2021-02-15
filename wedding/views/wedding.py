@@ -66,3 +66,7 @@ class RSVPParty(TemplateView):
         context['guests'] = self.party.guests()
         context['dietary_reqs'] = DietaryReq.objects.all()
         return context
+
+
+class RSVPPin(TemplateView):
+    template_name = 'wedding/rsvp-pin.html'

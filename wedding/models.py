@@ -1,3 +1,4 @@
+from random import randint
 from uuid import uuid1
 
 from django.db import models
@@ -39,12 +40,20 @@ class Party(TimeStampedModel):
     def get_absolute_url(self):
         return reverse_lazy('rsvp', host='wedding', kwargs={'party_ref': self.reference})
 
+    def create_pin(self):
+        pin = randint(100000, 999999)
+        if Party.objects.filter(pin=pin).count() > 0:
+            pin = self.create_pin()
+        return pin
+
     def save(self):
         if not self.pk:
             self.reference = uuid1()
+            self.pin = self.create_pin()
         super().save()
 
     reference = models.UUIDField(blank=True, null=True)
+    pin = models.IntegerField(blank=True, null=True)
     description = models.CharField(max_length=200)
     offering_hotel_room = models.BooleanField(default=False)
     offering_hotel_room_day_before = models.BooleanField(default=False)
