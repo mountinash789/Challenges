@@ -19,6 +19,8 @@ class Guest(TimeStampedModel):
     starter = models.ForeignKey('wedding.Starter', blank=True, null=True, on_delete=models.CASCADE)
     main = models.ForeignKey('wedding.Main', blank=True, null=True, on_delete=models.CASCADE)
     dessert = models.ForeignKey('wedding.Dessert', blank=True, null=True, on_delete=models.CASCADE)
+    attending = models.BooleanField(default=False)
+    dietary_requirements_text = models.CharField(max_length=500, blank=True, null=True)
 
 
 class Party(TimeStampedModel):
@@ -50,7 +52,6 @@ class Party(TimeStampedModel):
     last_accessed = models.DateTimeField(blank=True, null=True)
 
     # User set fields
-    attending = models.BooleanField(default=False)
     phone_number = models.CharField(max_length=200, blank=True, null=True)
     email_address = models.EmailField(blank=True, null=True)
     wants_hotel_room = models.BooleanField(default=False)
