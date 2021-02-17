@@ -2,9 +2,6 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
-{% block scss %}
-<link type="text/x-scss" href="{% static 'wedding/css/rsvp.scss' %}" rel="stylesheet" media="screen">
-{% endblock %}
 
 {% block js %}
 {% endblock %}
@@ -16,31 +13,32 @@
 {% block content %}
 
 
-<section class="form-container">
-    <form id="id_rsvp_form" method="POST">
-        {% csrf_token %}
-        <div class="section">
-            <h3 style="margin-top:0;">PIN:</h3>
-            <form>
-                <div class="form-group">
-                    <label for="exampleInputEmail1">Email address</label>
-                    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
-                           placeholder="Enter email">
-                    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
-                        else.</small>
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputPassword1">Password</label>
-                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-                </div>
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
+<section class="form-container" style="height: 100vh;">
+    <div class="section">
+        <div class="col-5">
+            <div class="container">
+                <section class="venue-location">
+
+                    <div class="venue-location-textbox">
+                        <h1>Enter PIN found on wedding invite.</h1>
+                        <form id="id_rsvp_form" method="POST">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="id_pin">PIN:</label>
+                                <input type="number" class="form-control" id="id_pin" name="pin" placeholder="" required>
+                                {% if error %}
+                                <small id="pin_help" class="form-text text-muted">Invalid PIN entered.</small>
+                                {% endif %}
+                            </div>
+                            <button type="submit" class="button small ">Submit</button>
+
+                        </form>
+                    </div>
+
+                </section>
+            </div>
         </div>
-    </form>
+
 </section>
 
 

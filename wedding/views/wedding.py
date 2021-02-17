@@ -70,3 +70,16 @@ class RSVPParty(TemplateView):
 
 class RSVPPin(TemplateView):
     template_name = 'wedding/rsvp-pin.html'
+    error = False
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['error'] = self.request.GET.get('e', False)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        try:
+            party = Party.objects.get(pin=self.request.POST['pin'])
+            return HttpResponseRedirect(party.get_absolute_url())
+        except Exception as e:
+            pass
+        return HttpResponseRedirect(reverse_lazy('rsvp_pin', host='wedding')+'?e=1')
