@@ -39,20 +39,22 @@ class RSVPParty(TemplateView):
             self.party = get_object_or_404(Party, reference=self.kwargs['party_ref'])
             self.party.phone_number = self.request.POST.get('phone_number', None)
             self.party.email_address = self.request.POST.get('email_address', None)
-            self.party.attending = True if self.request.POST.get('attending', False) == 'Yes' else False
+            # self.party.attending = True if self.request.POST.get('attending', False) == 'Yes' else False
             self.party.rsvp_responded = True
 
             if self.party.offering_hotel_room:
                 self.party.wants_hotel_room = True if self.request.POST.get('hotel_room', False) == 'Yes' else False
             if self.party.offering_hotel_room_day_before:
-                self.party.wants_hotel_room = True if self.request.POST.get('hotel_room_night_before',
-                                                                            False) == 'Yes' else False
+                self.party.wants_hotel_room_day_before = True if self.request.POST.get('hotel_room_night_before',
+                                                                                       False) == 'Yes' else False
             self.party.save()
 
             for guest in self.party.guests():
-                dietary = self.request.POST.getlist('{}_dietary_req'.format(guest.id), [])
-                if len(dietary) > 0:
-                    guest.dietary_requirements.set(dietary)
+                dietary_req = self.request.POST.get('{}_dietary_req'.format(guest.id), None)
+                guest.dietary_requirements_text = dietary_req
+                guest.attending = True if self.request.POST.get('{}_attending'.format(guest.id),
+                                                                False) == 'Yes' else False
+                guest.save()
 
             messages.success(self.request, 'Thank you for submitting. Your response has been saved.')
         except Exception as e:
@@ -63,7 +65,7 @@ class RSVPParty(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context['party'] = self.party
-        context['guests'] = self.party.guests()
+        context['guests'] = self.party.guests().order_by('sequence')
         context['dietary_reqs'] = DietaryReq.objects.all()
         return context
 
@@ -71,6 +73,7 @@ class RSVPParty(TemplateView):
 class RSVPPin(TemplateView):
     template_name = 'wedding/rsvp-pin.html'
     error = False
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context['error'] = self.request.GET.get('e', False)
@@ -82,4 +85,4 @@ class RSVPPin(TemplateView):
             return HttpResponseRedirect(party.get_absolute_url())
         except Exception as e:
             pass
-        return HttpResponseRedirect(reverse_lazy('rsvp_pin', host='wedding')+'?e=1')
+        return HttpResponseRedirect(reverse_lazy('rsvp_pin', host='wedding') + '?e=1')

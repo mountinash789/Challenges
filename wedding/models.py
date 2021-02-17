@@ -16,12 +16,13 @@ class Guest(TimeStampedModel):
     first_name = models.CharField(max_length=200)
     surname = models.CharField(max_length=200)
     party = models.ForeignKey('wedding.Party', on_delete=models.CASCADE)
-    dietary_requirements = models.ManyToManyField('wedding.DietaryReq')
+    dietary_requirements = models.ManyToManyField('wedding.DietaryReq', blank=True)
     starter = models.ForeignKey('wedding.Starter', blank=True, null=True, on_delete=models.CASCADE)
     main = models.ForeignKey('wedding.Main', blank=True, null=True, on_delete=models.CASCADE)
     dessert = models.ForeignKey('wedding.Dessert', blank=True, null=True, on_delete=models.CASCADE)
     attending = models.BooleanField(default=False)
     dietary_requirements_text = models.CharField(max_length=500, blank=True, null=True)
+    sequence = models.IntegerField(default=0)
 
 
 class Party(TimeStampedModel):

@@ -5,6 +5,7 @@ from wedding.models import Guest, Party, DietaryReq, Starter, Main, Dessert
 
 class GuestAdmin(admin.StackedInline):
     model = Guest
+    extra = 1
 
 
 @admin.register(Party)
