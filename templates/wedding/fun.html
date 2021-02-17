@@ -1,6 +1,8 @@
 {% extends 'wedding/base.html' %}
 {% load static %}
-
+<meta content="gzip" http-equiv="content-encoding"/>
+{% block js %}
+{%endblock
 {% block scss %}
 <link type="text/x-scss" href="{% static 'wedding/css/fun.scss' %}" rel="stylesheet" media="screen">
 {% endblock %}
@@ -25,7 +27,7 @@
         </div>
     </div>
     <script>
-      var buildUrl = "{% static 'wedding/gamefiles/Build/' %}";
+      var buildUrl = "{% static 'wedding/gamefiles/Build' %}";
       var loaderUrl = buildUrl + "/WhackaMoleWeb.loader.js";
       var config = {
         dataUrl: buildUrl + "/WhackaMoleWeb.data.gz",
@@ -63,7 +65,7 @@
             unityInstance.SetFullscreen(1);
           };
         }).catch((message) => {
-
+alert(message);
         });
       };
       document.body.appendChild(script);

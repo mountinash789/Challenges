@@ -10,6 +10,7 @@ class GuestAdmin(admin.StackedInline):
 
 @admin.register(Party)
 class PartyAdmin(admin.ModelAdmin):
+    change_form_template = 'wedding/admin/add_form.html'
     inlines = [
         GuestAdmin,
     ]

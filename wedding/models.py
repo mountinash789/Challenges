@@ -2,8 +2,10 @@ from random import randint
 from uuid import uuid1
 
 from django.db import models
+from django.utils.safestring import mark_safe
 from django_extensions.db.models import TimeStampedModel
 from django_hosts import reverse_lazy
+from qr_code.templatetags.qr_code import qr_from_text
 
 
 class Guest(TimeStampedModel):
@@ -40,6 +42,12 @@ class Party(TimeStampedModel):
 
     def get_absolute_url(self):
         return reverse_lazy('rsvp', host='wedding', kwargs={'party_ref': self.reference})
+
+    def qr_url(self):
+        return 'https:{}'.format(self.get_absolute_url())
+
+    def qr_code(self):
+        return qr_from_text(self.qr_url(), size='s', image_format='png', border=6)
 
     def create_pin(self):
         pin = randint(100000, 999999)
