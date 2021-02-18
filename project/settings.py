@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'social_django',
     'compressor',
+    'qr_code',
 
     'frontend',
     'backend',

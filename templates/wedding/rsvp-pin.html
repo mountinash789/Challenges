@@ -1,0 +1,45 @@
+{% extends 'wedding/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% block js %}
+{% endblock %}
+
+{% block body_js %}
+<script src="{% static 'wedding/js/rsvp.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+
+<section class="form-container" style="height: 100vh;">
+    <div class="section">
+        <div class="col-5">
+            <div class="container">
+                <section class="venue-location">
+
+                    <div class="venue-location-textbox">
+                        <h1>Enter PIN found on wedding invite.</h1>
+                        <form id="id_rsvp_form" method="POST">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="id_pin">PIN:</label>
+                                <input type="number" class="form-control" id="id_pin" name="pin" placeholder="" required>
+                                {% if error %}
+                                <small id="pin_help" class="form-text text-muted">Invalid PIN entered.</small>
+                                {% endif %}
+                            </div>
+                            <button type="submit" class="button small ">Submit</button>
+
+                        </form>
+                    </div>
+
+                </section>
+            </div>
+        </div>
+
+</section>
+
+
+{% endblock %}

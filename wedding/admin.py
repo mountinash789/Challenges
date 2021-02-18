@@ -3,14 +3,17 @@ from django.contrib import admin
 from wedding.models import Guest, Party, DietaryReq, Starter, Main, Dessert
 
 
-@admin.register(Guest)
-class GuestAdmin(admin.ModelAdmin):
-    pass
+class GuestAdmin(admin.StackedInline):
+    model = Guest
+    extra = 1
 
 
 @admin.register(Party)
 class PartyAdmin(admin.ModelAdmin):
-    pass
+    change_form_template = 'wedding/admin/add_form.html'
+    inlines = [
+        GuestAdmin,
+    ]
 
 
 @admin.register(DietaryReq)

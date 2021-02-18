@@ -35,4 +35,4 @@ jobs:
         run: |
           coverage erase
           coverage run manage.py test
-          coveralls
+          coveralls --service=github

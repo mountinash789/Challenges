@@ -17,102 +17,102 @@
 
 
 <section class="form-container">
+
+
     {% if party.rsvp_responded %}
-        <h3>You have already responded</h3>
+    <h3>You have already responded</h3>
     {% else %}
-        <form id="id_rsvp_form" method="POST">
-            {% csrf_token %}
-            <div class="section">
-                <h3 style="margin-top:0;">RSVP:</h3>
-                <div class="input-container">
-                    <label>Email Address</label>
-                    <div class="field">
-                        <input type="email" id="id_email_address" name="email_address"/>
-                        <span class="help-text">If attending please provide at least one of the contact methods.</span>
-                        <span class="error-text"></span>
-                    </div>
-                </div>
-                <div class="input-container">
-                    <label>Phone Number</label>
-                    <div class="field">
-                        <input type="text" id="id_phone_number" name="phone_number"/>
-                        <span class="error-text"></span>
-                    </div>
-                </div>
-                <div class="input-container">
-                    <label>Will you be attending?</label>
+    <form id="id_rsvp_form" method="POST">
+        {% csrf_token %}
+        {% for guest in guests %}
+        <div class="section ">
+            <h3 style="margin-top:0;">{{ guest.get_full_name }}</h3>
+            <div class="input-container">
+                <label for="id_{{ guest.id }}_dietary_req">Attending</label>
+                <div class="field">
                     <div class="field">
                         <span>
-                            <input type="radio" id="id_attending_yes" name="attending" value="Yes">
-                            <label for="id_attending_yes">Yes</label>
+                            <input type="radio" id="id_{{ guest.id }}_attending_yes"
+                                   name="{{ guest.id }}_attending" value="Yes">
+                            <label for="id_{{ guest.id }}_attending_yes">Yes</label>
                         </span>
                         <span>
-                            <input type="radio" id="id_attending_no" name="attending" value="No">
-                            <label for="id_attending_no">No</label>
+                            <input type="radio" id="id_{{ guest.id }}_attending_no"
+                                   name="{{ guest.id }}_attending" value="No" checked>
+                            <label for="id_{{ guest.id }}_attending_no">No</label>
                         </span>
                         <span class="error-text"></span>
                     </div>
+                    <span class="error-text"></span>
+                </div>
+            </div>
+            <div class="input-container">
+                <label for="id_{{ guest.id }}_dietary_req">Dietary Requirements</label>
+                <div class="field">
+                    <textarea name="{{ guest.id }}_dietary_req" id="id_{{ guest.id }}_dietary_req"></textarea>
+                    <span class="error-text"></span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="section">
+            <div class="input-container">
+                <label>Email Address</label>
+                <div class="field">
+                    <input type="email" id="id_email_address" name="email_address"/>
+                    <span class="help-text">Please provide at least one of the contact methods.</span>
+                    <span class="error-text"></span>
+                </div>
+            </div>
+            <div class="input-container">
+                <label>Phone Number</label>
+                <div class="field">
+                    <input type="text" id="id_phone_number" name="phone_number"/>
+                    <span class="error-text"></span>
                 </div>
             </div>
             {% if party.offering_hotel_room %}
-            <div class="section attending-only">
-                <div class="input-container">
-                    <label>Would you like a hotel room on the night of the wedding?</label>
-                    <div class="field">
-                        <span>
-                            <input type="radio" id="id_hotel_room_yes" name="hotel_room" value="Yes">
-                            <label for="id_hotel_room_yes">Yes</label>
-                        </span>
-                        <span>
-                            <input type="radio" id="id_hotel_room_no" name="hotel_room" value="No" checked>
-                            <label for="id_hotel_room_no">No</label>
-                        </span>
-                        <span class="error-text"></span>
-                    </div>
+            <div class="input-container">
+                <label>Would you like a hotel room on the night of the wedding?</label>
+                <div class="field">
+                    <span>
+                        <input type="radio" id="id_hotel_room_yes" name="hotel_room" value="Yes">
+                        <label for="id_hotel_room_yes">Yes</label>
+                    </span>
+                    <span>
+                        <input type="radio" id="id_hotel_room_no" name="hotel_room" value="No" checked>
+                        <label for="id_hotel_room_no">No</label>
+                    </span>
+                    <span class="error-text"></span>
                 </div>
             </div>
             {% endif %}
-
             {% if party.offering_hotel_room_day_before %}
-            <div class="section attending-only">
-                <div class="input-container">
-                    <label>Would you like a hotel room on the night before the wedding?</label>
-                    <div class="field">
-                        <span>
-                            <input type="radio" id="id_hotel_room_night_before_yes" name="hotel_room_night_before" value="Yes">
-                            <label for="id_hotel_room_night_before_yes">Yes</label>
-                        </span>
-                        <span>
-                            <input type="radio" id="id_hotel_room_night_before_no" name="hotel_room_night_before" value="No" checked>
-                            <label for="id_hotel_room_night_before_no">No</label>
-                        </span>
-                        <span class="help-text">We will get confirmation from the venue 6 months before the wedding if rooms are available.</span>
-                        <span class="error-text"></span>
-                    </div>
+            <div class="input-container">
+                <label>Would you like a hotel room on the night before the wedding?</label>
+                <div class="field">
+                                <span>
+                                    <input type="radio" id="id_hotel_room_night_before_yes"
+                                           name="hotel_room_night_before" value="Yes">
+                                    <label for="id_hotel_room_night_before_yes">Yes</label>
+                                </span>
+                    <span>
+                                    <input type="radio" id="id_hotel_room_night_before_no"
+                                           name="hotel_room_night_before" value="No" checked>
+                                    <label for="id_hotel_room_night_before_no">No</label>
+                                </span>
+                    <span class="help-text">We will get confirmation from the venue 6 months before the wedding if rooms are available.</span>
+                    <span class="error-text"></span>
                 </div>
             </div>
             {% endif %}
+        </div>
 
-            {% for guest in guests %}
-            <div class="section attending-only">
-                <h3 style="margin-top:0;">{{ guest.get_full_name }}</h3>
-                <div class="input-container">
-                    <label for="id_{{ guest.id }}_dietary_req">Dietary Requirements</label>
-                    <div class="field">
-                        <select name="{{ guest.id }}_dietary_req" id="id_{{ guest.id }}_dietary_req" multiple>
-                            {% for req in dietary_reqs %}
-                            <option value="{{ req.id }}">{{ req.name }}</option>
-                            {% endfor %}
-                        </select>
-                        <span class="help-text">Leave blank if none.</span>
-                        <span class="error-text"></span>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </form>
 
-        <button class="button small" id="id_rsvp_form_submit" style="width:100%">Save</button>
+    </form>
+
+    <button class="button small" id="id_rsvp_form_submit" style="width:100%">Save</button>
     {% endif %}
 </section>
 

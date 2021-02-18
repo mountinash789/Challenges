@@ -6,8 +6,6 @@ const form = document.getElementById('id_rsvp_form');
 const email_input = document.getElementById('id_email_address');
 const phone_number_input = document.getElementById('id_phone_number');
 
-form_submit_btn.classList.add('hidden');
-
 Array.prototype.forEach.call(attending_options, function(attending_option) {
     attending_option.addEventListener('change', (event) => {
         form_submit_btn.classList.remove('hidden');
@@ -57,6 +55,12 @@ form_submit_btn.addEventListener('click', (event) => {
     const phone_regex = /^(((\+44\s?\d{4}|\(?0\d{4}\)?)\s?\d{3}\s?\d{3})|((\+44\s?\d{3}|\(?0\d{3}\)?)\s?\d{3}\s?\d{4})|((\+44\s?\d{2}|\(?0\d{2}\)?)\s?\d{4}\s?\d{4}))(\s?\#(\d{4}|\d{3}))?$/gm;
     if (phone_number_input.value.length !== 0 && phone_regex.exec(phone_number_input.value) === null){
         add_error(phone_number_input, 'Phone number is invalid.');
+        valid = false;
+    }
+
+    if (phone_number_input.value.length === 0 && email_input.value.length === 0){
+        add_error(phone_number_input, 'At least one contact method must be filled in.');
+        add_error(email_input, 'At least one contact method must be filled in.');
         valid = false;
     }
 
