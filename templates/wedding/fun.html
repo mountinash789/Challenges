@@ -1,9 +1,6 @@
 {% extends 'wedding/base.html' %}
 {% load static %}
 
-{% block js %}
-<meta content="gzip" http-equiv="content-encoding"/>
-{% endblock %}
 {% block scss %}
 <link type="text/x-scss" href="{% static 'wedding/css/fun.scss' %}" rel="stylesheet" media="screen">
 {% endblock %}
@@ -32,9 +29,9 @@
       var buildUrl = "{% static 'wedding/gamefiles/Build' %}";
       var loaderUrl = buildUrl + "/WhackaMoleWeb.loader.js";
       var config = {
-        dataUrl: buildUrl + "/WhackaMoleWeb.data.gz",
-        frameworkUrl: buildUrl + "/WhackaMoleWeb.framework.js.gz",
-        codeUrl: buildUrl + "/WhackaMoleWeb.wasm.gz",
+        dataUrl: buildUrl + "/WhackaMoleWeb.data",
+        frameworkUrl: buildUrl + "/WhackaMoleWeb.framework.js",
+        codeUrl: buildUrl + "/WhackaMoleWeb.wasm",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
         productName: "WhackaMole",
