@@ -54,6 +54,14 @@ class RSVPParty(TemplateView):
                 guest.dietary_requirements_text = dietary_req
                 guest.attending = True if self.request.POST.get('{}_attending'.format(guest.id),
                                                                 False) == 'Yes' else False
+                if guest.is_plus_one:
+                    guest_name = self.request.POST.get('{}_guest_name'.format(guest.id), 'none').split(' ', 1)
+                    last = guest.surname
+                    first = guest_name[0]
+                    if len(guest_name) > 1:
+                        last = guest_name[1]
+                    guest.first_name = first
+                    guest.surname = last
                 guest.save()
 
             messages.success(self.request, 'Thank you for submitting. Your response has been saved.')

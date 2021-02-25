@@ -25,6 +25,7 @@ class Guest(TimeStampedModel):
     attending = models.BooleanField(default=False)
     dietary_requirements_text = models.CharField(max_length=500, blank=True, null=True)
     sequence = models.IntegerField(default=0)
+    is_plus_one = models.BooleanField(default=False)
 
 
 class Party(TimeStampedModel):

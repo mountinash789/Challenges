@@ -26,7 +26,17 @@
         {% csrf_token %}
         {% for guest in guests %}
         <div class="section ">
+            {% if guest.is_plus_one %}
+            <div class="input-container">
+                <label>Guest Name</label>
+                <div class="field">
+                    <input type="text" id="id_{{ guest.id }}_guest_name" name="{{ guest.id }}_guest_name" value="{{ guest.get_full_name }}">
+                    <span class="help-text">If you haven't decided or they aren't attending leave as Plus 1. But please let us know asap.</span>
+                </div>
+            </div>
+            {% else %}
             <h3 style="margin-top:0;">{{ guest.get_full_name }}</h3>
+            {% endif %}
             <div class="input-container">
                 <label for="id_{{ guest.id }}_dietary_req">Attending</label>
                 <div class="field">
@@ -60,7 +70,7 @@
             <div class="input-container">
                 <label>Email Address</label>
                 <div class="field">
-                    <input type="email" id="id_email_address" name="email_address"/>
+                    <input type="email" id="id_email_address" name="email_address" value=""/>
                     <span class="help-text">Please provide at least one of the contact methods.</span>
                     <span class="error-text"></span>
                 </div>
