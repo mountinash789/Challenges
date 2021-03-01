@@ -18,7 +18,7 @@ django-coverage-plugin==1.8.0
 model-bakery==1.1.1
 PyJWT==1.7.1
 cffi==1.14.1
-cryptography==3.2
+cryptography==3.3.2
 defusedxml==0.7.0rc1
 oauthlib==3.1.0
 pycparser==2.20
