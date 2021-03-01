@@ -14,11 +14,28 @@
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link {% if view_name == 'front:activities:list' %}active{% endif %}"
-           href="{% url 'front:activities:list' %}">
+        <a class="nav-link" href="#" data-toggle="collapse" data-target="#id_activities_sub">
             <i class="fas fa-chart-line fa-fw"></i>
             Activities
         </a>
+        <span id="id_activities_sub" class="collapse {% if 'challenge' in namespaces %}show{% endif %}">
+        <ul class="nav flex-column level-two">
+            <li class="nav-item">
+                <a class="nav-link {% if view_name == 'front:activities:list' %}active{% endif %}"
+                   href="{% url 'front:activities:list' %}">
+                    <i class="fas fa-chart-line fa-fw"></i>
+                    Log
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if view_name == 'front:activities:distance' %}active{% endif %}"
+                   href="{% url 'front:activities:distance' %}">
+                    <i class="fas fa-history fa-fw"></i>
+                    Distance
+                </a>
+            </li>
+        </ul>
+            </span>
     </li>
     <li class="nav-item">
         <a class="nav-link" href="#" data-toggle="collapse" data-target="#id_challenges_sub">

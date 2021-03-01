@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load formatting %}
+{% load static %}
+{% block css %}
+
+{% endblock %}
+{% block js %}
+
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ page_header }}</h1>
+</div>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="p-4 mb-4" style="background:white; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);">
+        <h5 id="id_date_range"></h5>
+            <p>
+                <b>Distance:</b> <span id="id_distance"></span>km<br/>
+                <b>Elevation:</b> <span id="id_elevation"></span>m<br/>
+                <b>Time:</b> <span id="id_time"></span>
+            </p>
+        </div>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-lg-10 offset-lg-1">
+        <div class="p-4 mb-4" style="background:white; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);">
+            <canvas id="chart" class="height:100%;"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+
+function update_chart(data){
+    var canvas = document.getElementById('chart')
+    var ctx = canvas.getContext("2d");
+    var gradientStroke = ctx.createLinearGradient(0, 0, 0, canvas.height /1.8);
+    gradientStroke.addColorStop(0, "rgba(255,165,0, 1)");
+    gradientStroke.addColorStop(1, "rgba(255,165,0, 0)");
+
+    chart.data.datasets = [{
+        label: '',
+        borderWidth: 2,
+        borderColor:"rgba(255,165,0, 1)",
+        lineTension: 0.1,
+        data: data.data,
+        backgroundColor: gradientStroke,
+    }];
+        chart.update();
+    chart.data.labels = data.dates;
+    chart.update();
+}
+
+function update_details(data){
+
+let date_range = document.getElementById('id_date_range')
+date_range.innerText = data.date_range
+let dist = document.getElementById('id_distance')
+dist.innerText = data.distance
+let elev = document.getElementById('id_elevation')
+elev.innerText = data.elevation
+let time = document.getElementById('id_time')
+time.innerText = data.time
+
+}
+
+function get_data(){
+    $.getJSON({
+        url: `{% url 'api:activities:distance' %}?current=${current}`,
+        success: function(result){
+           dates = result.dates;
+           update_chart(result);
+           update_details(result.current);
+        }
+    });
+}
+
+function handleClick(evt){
+    var activePoints = chart.getElementsAtXAxis(evt);
+    var idx = activePoints[0]['_index'];
+    current = dates[idx];
+    get_data();
+}
+
+let current = 0;
+let dates = []
+const chart = new Chart(document.getElementById("chart"),{type: 'line', data: {}, options: {animation: {duration:0,},tooltips: {enabled: false,}, onClick: handleClick}});
+$( document ).ready(function() {
+    get_data()
+});
+
+
+</script>
+
+{% endblock %}

@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.utils.timezone import make_aware
 from rest_framework.views import APIView
+from datetime import timedelta
 
 
 class RaiseException(object):
@@ -54,3 +55,14 @@ def month_start_end(dt):
     first_day = dt.date().replace(day=1)
     last_day = dt.date().replace(day=calendar.monthrange(dt.date().year, dt.date().month)[1])
     return start_of_day(first_day), end_of_day(last_day)
+
+
+def week_start(dt):
+    start = dt - timedelta(days=dt.weekday())
+    return start_of_day(start)
+
+
+def week_end(dt):
+    start = dt - timedelta(days=dt.weekday())
+    end = start + timedelta(days=6)
+    return end_of_day(end)

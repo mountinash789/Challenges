@@ -45,3 +45,12 @@ class ActivityView(LoginRequired, DetailView):
         context['page_header'] = context['page_title'] = self.object.description
         context['activity'] = self.object
         return context
+
+
+class ActivitiesDistanceView(LoginRequired, TemplateView):
+    template_name = 'activity/activity-distance.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_header'] = context['page_title'] = 'Distance'
+        return context
