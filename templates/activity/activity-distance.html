@@ -26,7 +26,7 @@
 <div class="row mb-4">
     <div class="col-lg-10 offset-lg-1">
         <div class="p-4 mb-4" style="background:white; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);">
-            <canvas id="chart" class="height:100%;"></canvas>
+            <canvas id="chart" style="min-height:30rem;"></canvas>
         </div>
     </div>
 </div>
@@ -86,7 +86,7 @@ function handleClick(evt){
 
 let current = 0;
 let dates = []
-const chart = new Chart(document.getElementById("chart"),{type: 'line', data: {}, options: {animation: {duration:0,},tooltips: {enabled: false,}, onClick: handleClick}});
+const chart = new Chart(document.getElementById("chart"),{type: 'line', data: {}, options: {maintainAspectRatio: false,animation: {duration:0,},tooltips: {enabled: false,}, onClick: handleClick}});
 $( document ).ready(function() {
     get_data()
 });

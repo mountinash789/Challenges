@@ -1,3 +1,4 @@
+import ast
 import datetime
 from datetime import timedelta
 from decimal import Decimal
@@ -129,13 +130,16 @@ class Activity(TimeStampedModel):
             return self.hr_colours(hr)
         return ''
 
-    def calc_pace(self):
+    def pace_mins(self):
         mins = self.moving_duration_seconds / 60
         k = float(self.distance_km())
         pace_mins = 0
         if k != 0:
             pace_mins = float(Decimal(mins) / Decimal(k))
-        pace = datetime.datetime.min + datetime.timedelta(minutes=pace_mins)
+        return pace_mins
+
+    def calc_pace(self):
+        pace = datetime.datetime.min + datetime.timedelta(minutes=self.pace_mins())
         self.pace = round(float('{}.{}{}'.format(pace.minute, pace.second, pace.microsecond)), 2)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
@@ -178,6 +182,46 @@ class Activity(TimeStampedModel):
             if self.activitystream_set.filter(stream_type__display_graph=True).count() > 0:
                 return True if self.label_stream() else False
         return False
+
+    def trimp_orig(self):
+        if self.avg_heart_rate:
+            return (self.duration_seconds / 60) * self.avg_heart_rate
+        else:
+            return 0
+
+    def trimp(self):
+        if not self.has_streams:
+            self.get_activity_streams()
+        hr = self.activitystream_set.filter(stream_type__description='heartrate').first()
+        if hr:
+            zones = self.target_heartrates(want_zones=True)
+            z1 = 0
+            z2 = 0
+            z3 = 0
+            z4 = 0
+            z5 = 0
+            seq = ast.literal_eval(hr.sequence)
+            for num in seq:
+                if num >= zones[90]:
+                    z5 += 1
+                elif num >= zones[80]:
+                    z4 += 1
+                elif num >= zones[70]:
+                    z3 += 1
+                elif num >= zones[60]:
+                    z2 += 1
+                else:
+                    z1 += 1
+            duration_mins = float(self.duration_seconds / 60)
+            z1_percentage = (((z1 / len(seq)) * 100) * duration_mins) / 100
+            z2_percentage = (((z2 / len(seq)) * 100) * duration_mins) / 100
+            z3_percentage = (((z3 / len(seq)) * 100) * duration_mins) / 100
+            z4_percentage = (((z4 / len(seq)) * 100) * duration_mins) / 100
+            z5_percentage = (((z5 / len(seq)) * 100) * duration_mins) / 100
+
+            return sum(
+                [1 * z1_percentage, 2 * z2_percentage, 3 * z3_percentage, 4 * z4_percentage, 5 * z5_percentage, ])/ 10
+        return 0
 
 
 class TargetType(TimeStampedModel):
@@ -355,4 +399,3 @@ class ActivityStream(TimeStampedModel):
 
     def __str__(self):
         return self.stream_type.description
-

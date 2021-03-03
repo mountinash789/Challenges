@@ -44,7 +44,7 @@ class ActivitiesList(ActivitiesMixin, ExactUserRequired, BaseDatatableView):
             ]
             data.append([
                 item.truncated_description,
-                item.activity_type.description,
+                item.activity_type.description if item.activity_type else '',
                 local_time(item.date).strftime('%d/%m/%Y %H:%M:%S'),
                 item.duration_seconds_formatted,
                 round(item.distance_meters / 1000, 1),
@@ -151,4 +151,5 @@ class ActivitiesDistance(ActivitiesMixin, LoginRequired, APIView):
     def get_initial_queryset(self):
         qs = super().get_initial_queryset()
         qs = qs.filter(date__range=(start_of_day(self.start_date), end_of_day(self.end_date)))
+        qs = qs.filter(activity_type__description='Run')
         return qs

@@ -1,11 +1,16 @@
+from decimal import Decimal
+
+from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.generic import TemplateView, DetailView
 
 from backend.models import Activity, ActivityType
+from backend.utils.fitnessscore import FitnessScore
 from backend.views.activities import ActivitiesMixin
-from project.utils import LoginRequired
+from project.utils import LoginRequired, start_of_day, end_of_day
 
 
 class ActivitiesPage(ActivitiesMixin, LoginRequired, TemplateView):
@@ -53,4 +58,40 @@ class ActivitiesDistanceView(LoginRequired, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['page_header'] = context['page_title'] = 'Distance'
+        return context
+
+
+class ActivitiesFitnessView(ActivitiesMixin, LoginRequired, TemplateView):
+    template_name = 'activity/activity-fitness.html'
+    start = None
+    end = None
+    full_qs = None
+
+    def get_initial_queryset(self):
+        qs = super().get_initial_queryset()
+        qs = qs.filter(date__range=(start_of_day(self.start), end_of_day(self.end)))
+        qs = qs.filter(activity_type__description='Run')
+        return qs
+
+    def get_data(self):
+        labels = []
+        data = {'form': [], 'fitness': [], 'fatigue': [], }
+        d = self.start
+        while d <= self.end:
+            fs = FitnessScore(self.user.id, d)
+
+            labels.append(d.strftime("%d/%m/%Y"))
+            data['fitness'].append(fs.fitness)
+            data['form'].append(fs.form)
+            data['fatigue'].append(fs.fatigue)
+            d += relativedelta(days=1)
+        return labels, data
+
+    def get_context_data(self, **kwargs):
+        self.end = timezone.now()
+        self.start = self.end - relativedelta(months=1)
+        context = super().get_context_data(**kwargs)
+        context['page_header'] = context['page_title'] = 'Fitness'
+        context['labels'], context['data'] = self.get_data()
+
         return context

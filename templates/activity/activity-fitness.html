@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load formatting %}
+{% load static %}
+{% block css %}
+
+{% endblock %}
+{% block js %}
+
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ page_header }} <sup><span class="badge badge-primary">BETA</span></sup></h1>
+</div>
+<div class="row mb-4">
+    <div class="col-lg-10 offset-lg-1">
+        <div class="p-4 mb-4" style="background:white; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);">
+            <h5>Info</h5>
+            <p>This graph is based on TRIMP score, which requires heart rate.</p>
+            <p>Fitness is weighted average TRIMP score over last 42 days.<br/>
+                Fatigue is weighted average TRIMP score over last 7 days.<br/>
+                Form is is fitness - fatigue.</p>
+            <p>Two types of TRIMP score that you can toggle between:
+            <ul>
+                <li>Basic: This takes the duration of an activity in minutes then multiplies that by the average heart
+                    rate.
+                </li>
+                <li>Zonal: This calculates your heart rate zone, works out how many minutes was spent in that heart rate
+                    then sums that together.
+                    eg. 10 minutes in zone 1 and 20 minutes in zone 3. (1 x 10) + (2 x 20) = 50
+                </li>
+            </ul>
+            </p>
+            <button class="btn btn-success active">BASIC TRIMP</button>
+            <button class="btn btn-success">ZONAL TRIMP</button>
+        </div>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-lg-10 offset-lg-1">
+        <div class="p-4 mb-4" style="background:white; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);">
+            <canvas id="chart" style="min-height:30rem;"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+
+function update_chart(){
+    var canvas = document.getElementById('chart')
+    var ctx = canvas.getContext("2d");
+    var gradientStroke = ctx.createLinearGradient(0, 0, 0, canvas.height /1.8);
+    gradientStroke.addColorStop(0, "rgba(255,165,0, 1)");
+    gradientStroke.addColorStop(1, "rgba(255,165,0, 0)");
+
+    chart.data.datasets = [{
+        label: 'Fitness',
+        borderWidth: 2,
+        fill: false,
+        borderColor:"rgb(85, 221, 224)",
+        lineTension: 0.1,
+        data: {{data.fitness}},
+    },
+    {
+        label: 'Fatigue',
+        borderWidth: 2,
+        lineTension: 0.1,
+        fill: false,
+        data: {{data.fatigue}},
+        borderColor: "rgb(222, 26, 26)",
+    },
+    {
+        label: 'Form',
+        borderWidth: 2,
+        fill: false,
+        lineTension: 0.1,
+        data: {{data.form}},
+        borderColor: "rgb(255, 166, 48)",
+    }
+    ];
+        chart.update();
+    chart.data.labels = {{labels|safe}};
+    chart.update();
+}
+
+<!--function get_data(){-->
+<!--    $.getJSON({-->
+<!--        url: `{% url 'api:activities:distance' %}?current=${current}`,-->
+<!--        success: function(result){-->
+<!--           dates = result.dates;-->
+<!--           update_chart(result);-->
+<!--           update_details(result.current);-->
+<!--        }-->
+<!--    });-->
+<!--}-->
+
+<!--function handleClick(evt){-->
+<!--    var activePoints = chart.getElementsAtXAxis(evt);-->
+<!--    var idx = activePoints[0]['_index'];-->
+<!--    current = dates[idx];-->
+<!--    get_data();-->
+<!--}-->
+
+let current = 0;
+let dates = []
+const chart = new Chart(document.getElementById("chart"),{type: 'line', data: {}, options: {maintainAspectRatio: false, scales: {
+    yAxes: [{
+      ticks: {
+                display: false
+            }
+    }]
+  },
+  animation: {duration:0,},tooltips: {enabled: true,},}});
+$( document ).ready(function() {
+    update_chart()
+});
+
+
+
+
+
+
+
+</script>
+
+{% endblock %}
