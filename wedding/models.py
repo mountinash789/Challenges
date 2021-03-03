@@ -56,11 +56,11 @@ class Party(TimeStampedModel):
             pin = self.create_pin()
         return pin
 
-    def save(self):
+    def save(self, *args, **kwargs):
         if not self.pk:
             self.reference = uuid1()
             self.pin = self.create_pin()
-        super().save()
+        super().save(*args, **kwargs)
 
     reference = models.UUIDField(blank=True, null=True)
     pin = models.IntegerField(blank=True, null=True)

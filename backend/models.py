@@ -224,8 +224,13 @@ class Activity(TimeStampedModel):
             z5_percentage = (((z5 / len(seq)) * 100) * duration_mins) / 100
 
             return sum(
-                [1 * z1_percentage, 2 * z2_percentage, 3 * z3_percentage, 4 * z4_percentage, 5 * z5_percentage, ])/ 10
+                [1 * z1_percentage, 2 * z2_percentage, 3 * z3_percentage, 4 * z4_percentage, 5 * z5_percentage, ]) / 10
         return 0
+
+    def save(self, *args, **kwargs):
+        if not self.has_streams:
+            self.get_activity_streams()
+        super().save(*args, **kwargs)
 
 
 class TargetType(TimeStampedModel):
@@ -403,3 +408,10 @@ class ActivityStream(TimeStampedModel):
 
     def __str__(self):
         return self.stream_type.description
+
+
+class ServiceLog(TimeStampedModel):
+    service = models.CharField(max_length=255)
+    endpoint = models.CharField(max_length=255)
+    sent_data = models.TextField(blank=True, null=True)
+    response_data = models.TextField(blank=True, null=True)

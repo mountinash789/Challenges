@@ -3,9 +3,10 @@ from django.urls import reverse_lazy
 from django.utils.timezone import make_aware
 
 from backend.models import UserConnection, ActivityType, Activity
+from project.connections.base import BaseConnection
 
 
-class TestConnection(object):
+class TestConnection(BaseConnection):
     """
     tets connection library to simulate the tasks to get activites from third parties
     """
@@ -14,14 +15,7 @@ class TestConnection(object):
     def sign_up(user_id, connection_id):
         return reverse_lazy('front:profile')
 
-    @staticmethod
-    def deauth(user_id, connection_id):
-        obj = UserConnection.objects.get(user_id=user_id, connection_id=connection_id)
-        obj.delete()
-        return
-
-    @staticmethod
-    def exchange(user_id, connection_id, code):
+    def exchange(self, user_id, connection_id, code):
         obj, created = UserConnection.objects.get_or_create(user_id=user_id, connection_id=connection_id)
         obj.access_token = 'test'
         obj.refresh_token = 'test'
@@ -53,11 +47,6 @@ class TestConnection(object):
             },
         ]
         self.parse_activities(data, connection.user_id)
-
-    @staticmethod
-    def get_activity_type(activity_type):
-        obj, created = ActivityType.objects.get_or_create(description=activity_type)
-        return obj
 
     def parse_activities(self, activities, user_id):
         for activity in activities:
