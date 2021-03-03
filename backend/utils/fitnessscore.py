@@ -1,7 +1,5 @@
-import numpy as np
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import User
-from django.db.models import Avg
 
 from backend.models import Activity
 from project.utils import start_of_day, end_of_day
@@ -29,6 +27,12 @@ class FitnessScore(object):
         self.trimp_type = trimp_type
         self.calc()
 
+    @staticmethod
+    def weighted_avg(values, weights):
+        for g in range(len(values)):
+            values[g] = values[g] * weights[g] / sum(weights)
+        return sum(values)
+
     def get_activities_trimp(self, d):
         trimp = 0
         activities = Activity.objects.filter(user=self.user, date__range=(start_of_day(d), end_of_day(d)))
@@ -49,17 +53,15 @@ class FitnessScore(object):
         return 1
 
     def score(self, days):
-        score = 0
         rate = []
         weights = []
-        weight = 0.1
         d = self.date - relativedelta(days=days)
         while d <= self.date:
             weights.append(self.calc_weight(d))
             rate.append(self.get_activities_trimp(d))
             d += relativedelta(days=1)
 
-        return np.average(rate, weights=weights)
+        return self.weighted_avg(rate, weights)
 
     def calc(self):
         self.fitness = self.score(42)
