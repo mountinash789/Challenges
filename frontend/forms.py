@@ -58,6 +58,7 @@ class ProfileForm(forms.ModelForm):
     dob = forms.DateField(required=True, input_formats=['%d/%m/%Y'],
                           widget=forms.DateInput(attrs={'class': 'datepicker'}),
                           label='Date of Birth')
+    parse_activities = forms.BooleanField(required=False)
 
     class Meta:
         model = Profile
@@ -77,6 +78,7 @@ class ProfileForm(forms.ModelForm):
             FieldWithButtons(Field('dob', autocomplete="off"),
                              StrictButton('<i class="fa fa-calendar fa-fw"></i>',
                                           css_class='btn-outline-secondary datepicker-btn')),
+            'parse_activities',
             Div(
                 Submit('submit', 'Save'),
                 css_class='offset-lg-2',

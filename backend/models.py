@@ -4,6 +4,7 @@ from datetime import timedelta
 from decimal import Decimal
 from importlib import import_module
 
+import bugsnag
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Sum
@@ -162,12 +163,15 @@ class Activity(TimeStampedModel):
     connection = models.ForeignKey(Connection, on_delete=models.CASCADE, blank=True, null=True)
 
     def get_activity_streams(self):
-        module = import_module(self.connection.library)
-        Lib = getattr(module, self.connection.class_str)
-        connect = Lib()
-        connect.get_streams(self.connection, self)
-        self.has_streams = True
-        self.save()
+        try:
+            module = import_module(self.connection.library)
+            Lib = getattr(module, self.connection.class_str)
+            connect = Lib()
+            connect.get_streams(self.connection, self)
+            self.has_streams = True
+            self.save()
+        except Exception as e:
+            bugsnag.notify(e)
 
     def label_stream(self):
         distance = self.activitystream_set.filter(stream_type__description='distance').first()

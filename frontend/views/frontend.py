@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import TemplateView, FormView, UpdateView
 
-from backend.models import ChallengeSubscription, Profile
+from backend.models import ChallengeSubscription, Profile, Activity
 from frontend.forms import LoginForm, RegisterForm, ProfileForm
 from project.utils import LoginRequired
 
@@ -62,6 +62,10 @@ class ProfilePage(LoginRequired, UpdateView):
 
     def get_success_url(self):
         messages.success(self.request, 'Profile Updated.')
+        if self.request.POST.get('parse_activities', None):
+            for activity in Activity.objects.filter(user_id=self.request.user.id).exclude(has_streams=True):
+                activity.get_activity_streams()
+
         return reverse_lazy('front:profile')
 
     def get_initial(self):
