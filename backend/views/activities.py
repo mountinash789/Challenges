@@ -12,6 +12,7 @@ from rest_framework.views import APIView
 
 from backend.models import Activity
 from backend.tasks import get_activities
+from backend.utils.fitnessscore import FitnessScore
 from project.utils import ExactUserRequiredAPI, local_time, ExactUserRequired, LoginRequired, start_of_day, end_of_day, \
     week_end, week_start
 
@@ -151,5 +152,39 @@ class ActivitiesDistance(ActivitiesMixin, LoginRequired, APIView):
     def get_initial_queryset(self):
         qs = super().get_initial_queryset()
         qs = qs.filter(date__range=(start_of_day(self.start_date), end_of_day(self.end_date)))
+        qs = qs.filter(activity_type__description='Run')
+        return qs
+
+
+class ActivitiesFitness(ActivitiesMixin, LoginRequired, APIView):
+    start = None
+    end = None
+
+    def get(self, request, *args, **kwargs):
+        self.user = self.request.user
+        self.end = timezone.now()
+        self.start = self.end - relativedelta(months=1)
+        labels, data = self.get_data()
+        return Response({
+            'labels': labels,
+            'data': data,
+        })
+
+    def get_data(self):
+        labels = []
+        data = {'form': [], 'fitness': [], 'fatigue': [], }
+        d = self.start
+        while d <= self.end:
+            fs = FitnessScore(self.user.id, d, self.request.GET.get('type', None))
+            labels.append(d.strftime("%d/%m/%Y"))
+            data['fitness'].append(fs.fitness)
+            data['form'].append(fs.form)
+            data['fatigue'].append(fs.fatigue)
+            d += relativedelta(days=1)
+        return labels, data
+
+    def get_initial_queryset(self):
+        qs = super().get_initial_queryset()
+        qs = qs.filter(date__range=(start_of_day(self.start), end_of_day(self.end)))
         qs = qs.filter(activity_type__description='Run')
         return qs

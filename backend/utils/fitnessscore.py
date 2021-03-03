@@ -21,18 +21,22 @@ class FitnessScore(object):
     fitness = 0
     fatigue = 0
     form = 0
+    trimp_type = None
 
-    def __init__(self, user_id, date):
+    def __init__(self, user_id, date, trimp_type='basic'):
         self.user = User.objects.get(id=user_id)
         self.date = date
+        self.trimp_type = trimp_type
         self.calc()
 
     def get_activities_trimp(self, d):
         trimp = 0
         activities = Activity.objects.filter(user=self.user, date__range=(start_of_day(d), end_of_day(d)))
         for act in activities:
-            trimp += act.trimp_orig()
-            # trimp += act.trimp()
+            if self.trimp_type == 'basic':
+                trimp += act.trimp_orig()
+            elif self.trimp_type == 'zonal':
+                trimp += act.trimp()
         if activities.count() > 0:
             trimp = trimp / activities.count()
         return float(trimp)

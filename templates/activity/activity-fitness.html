@@ -30,8 +30,18 @@
                 </li>
             </ul>
             </p>
-            <button class="btn btn-success active">BASIC TRIMP</button>
-            <button class="btn btn-success">ZONAL TRIMP</button>
+            <span id="id_buttons">
+                <button class="btn btn-success active toggle-type" data-trimp-type="basic">BASIC TRIMP</button>
+                <button class="btn btn-success toggle-type" data-trimp-type="zonal">ZONAL TRIMP</button>
+            </span>
+            <span id="id_progress_container" style="display:None;">
+                <div class="progress">
+                  <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                       aria-valuenow="100"
+                       aria-valuemin="0" aria-valuemax="100" style="width: 100%">Calculating</div>
+                </div>
+            </span>
+
         </div>
     </div>
 </div>
@@ -45,12 +55,12 @@
 
 <script>
 
-function update_chart(){
-    var canvas = document.getElementById('chart')
-    var ctx = canvas.getContext("2d");
-    var gradientStroke = ctx.createLinearGradient(0, 0, 0, canvas.height /1.8);
-    gradientStroke.addColorStop(0, "rgba(255,165,0, 1)");
-    gradientStroke.addColorStop(1, "rgba(255,165,0, 0)");
+function progress(){
+    $('#id_buttons').toggle();
+    $('#id_progress_container').toggle();
+}
+
+function update_chart(data){
 
     chart.data.datasets = [{
         label: 'Fitness',
@@ -58,14 +68,14 @@ function update_chart(){
         fill: false,
         borderColor:"rgb(85, 221, 224)",
         lineTension: 0.1,
-        data: {{data.fitness}},
+        data: data.data.fitness,
     },
     {
         label: 'Fatigue',
         borderWidth: 2,
         lineTension: 0.1,
         fill: false,
-        data: {{data.fatigue}},
+        data: data.data.fatigue,
         borderColor: "rgb(222, 26, 26)",
     },
     {
@@ -73,25 +83,25 @@ function update_chart(){
         borderWidth: 2,
         fill: false,
         lineTension: 0.1,
-        data: {{data.form}},
+        data: data.data.form,
         borderColor: "rgb(255, 166, 48)",
     }
     ];
         chart.update();
-    chart.data.labels = {{labels|safe}};
+    chart.data.labels = data.labels;
     chart.update();
+    progress();
 }
 
-<!--function get_data(){-->
-<!--    $.getJSON({-->
-<!--        url: `{% url 'api:activities:distance' %}?current=${current}`,-->
-<!--        success: function(result){-->
-<!--           dates = result.dates;-->
-<!--           update_chart(result);-->
-<!--           update_details(result.current);-->
-<!--        }-->
-<!--    });-->
-<!--}-->
+function get_data(){
+    progress();
+    $.getJSON({
+        url: `{% url 'api:activities:fitness' %}?type=${trimp_type}`,
+        success: function(result){
+           update_chart(result);
+        }
+    });
+}
 
 <!--function handleClick(evt){-->
 <!--    var activePoints = chart.getElementsAtXAxis(evt);-->
@@ -100,8 +110,7 @@ function update_chart(){
 <!--    get_data();-->
 <!--}-->
 
-let current = 0;
-let dates = []
+let trimp_type = 'basic';
 const chart = new Chart(document.getElementById("chart"),{type: 'line', data: {}, options: {maintainAspectRatio: false, scales: {
     yAxes: [{
       ticks: {
@@ -111,8 +120,17 @@ const chart = new Chart(document.getElementById("chart"),{type: 'line', data: {}
   },
   animation: {duration:0,},tooltips: {enabled: true,},}});
 $( document ).ready(function() {
-    update_chart()
+
+    $('.toggle-type').click(function(){
+        $('.toggle-type').toggleClass('active');
+        trimp_type = $(this).attr('data-trimp-type');
+        get_data();
+    });
+
+    get_data()
 });
+
+
 
 
 
