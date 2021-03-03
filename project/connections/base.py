@@ -31,7 +31,7 @@ class BaseConnection(object):
 
     def send(self, endpoint, data, method='POST', headers={}):
         try:
-            resp = requests.request(method, endpoint, data=data, headers=headers)
+            resp = requests.request(method, endpoint, data=data, headers=headers).json()
         except Exception as e:
             bugsnag.notify(e)
             resp = {}
