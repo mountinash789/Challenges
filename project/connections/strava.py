@@ -46,6 +46,8 @@ class Strava(BaseConnection):
         obj, created = UserConnection.objects.get_or_create(user_id=user_id, connection_id=connection_id)
         obj.access_token = resp.get('access_token', None)
         obj.refresh_token = resp.get('refresh_token', None)
+        athlete = resp.get('athlete', {})
+        obj.external_id = athlete.get('id', None)
         obj.expires_at = timezone.now() + relativedelta(seconds=resp.get('expires_in', 0))
         obj.save()
 
@@ -135,6 +137,12 @@ class Strava(BaseConnection):
                         raw_json=json.dumps(values),
                     )
 
+    def get_update_activity(self, user_connection, activity_id):
+        endpoint = 'https://www.strava.com/api/v3/activities/{}?include_all_efforts=true'.format(activity_id)
+        resp = self.send(endpoint, method='GET',
+                         headers={'Authorization': 'Bearer {}'.format(user_connection.first().get_access_token())})
+        self.parse_activities(user_connection, [resp], user_connection.user_id)
+
     def handle_webhook(self, data):
         super().handle_webhook(data)
         if settings.STRAVA_WEBHOOK_SECRET != data['GET'].get('hub.verify_token', None):
@@ -142,4 +150,9 @@ class Strava(BaseConnection):
         challenge = data['GET'].get('hub.challenge', None)
         if challenge:
             return {"hub.challenge": challenge}, 200
+
+        if data['data']['object_type'] == 'activity':
+            connection = UserConnection.objects.get(external_id=data['data']['owner_id'])
+            self.get_update_activity(connection, data['data']['object_id'])
+
         return {}, 200
