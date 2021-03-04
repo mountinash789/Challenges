@@ -66,3 +66,8 @@ class BaseConnection(object):
 
     def get_streams(self, connection, obj):
         pass
+
+    def handle_webhook(self, data):
+        self.log('Webhook', {}, data)
+
+        return {}, 200
