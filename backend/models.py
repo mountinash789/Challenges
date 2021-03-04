@@ -45,6 +45,7 @@ class UserConnection(TimeStampedModel):
     refresh_token = models.CharField(max_length=255, blank=True, null=True)
     expires_at = models.DateTimeField(blank=True, null=True)
     last_pulled = models.DateTimeField(blank=True, null=True)
+    external_id = models.CharField(max_length=255, blank=True, null=True)
 
     def get_access_token(self):
         module = import_module(self.connection.library)
@@ -164,12 +165,13 @@ class Activity(TimeStampedModel):
 
     def get_activity_streams(self):
         try:
-            module = import_module(self.connection.library)
-            Lib = getattr(module, self.connection.class_str)
-            connect = Lib()
-            connect.get_streams(self.connection, self)
-            self.has_streams = True
-            self.save()
+            if self.connection:
+                module = import_module(self.connection.library)
+                Lib = getattr(module, self.connection.class_str)
+                connect = Lib()
+                connect.get_streams(self.connection, self)
+                self.has_streams = True
+                self.save()
         except Exception as e:
             bugsnag.notify(e)
 
