@@ -13,4 +13,5 @@ urlpatterns = [
          name='connection_redirect'),
     path('challenge/', include('backend.urls.challenge', namespace='challenge')),
     path('activities/', include('backend.urls.activities', namespace='activities')),
+    path('webhook/', include('backend.urls.webhooks', namespace='webhook')),
 ]
