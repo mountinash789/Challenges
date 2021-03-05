@@ -145,10 +145,10 @@ class Strava(BaseConnection):
 
     def handle_webhook(self, data):
         super().handle_webhook(data)
-        if settings.STRAVA_WEBHOOK_SECRET != data['GET'].get('hub.verify_token', None):
-            return {}, 401
         challenge = data['GET'].get('hub.challenge', None)
         if challenge:
+            if settings.STRAVA_WEBHOOK_SECRET != data['GET'].get('hub.verify_token', None):
+                return {}, 401
             return {"hub.challenge": challenge}, 200
 
         if data['data']['object_type'] == 'activity':
