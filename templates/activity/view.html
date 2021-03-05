@@ -83,6 +83,9 @@ $( document ).ready(function() {
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group">
             <a href="#map" class="d-block d-lg-none btn btn-sm btn-outline-secondary">Map</a>
+            <a href="{% url 'front:activities:edit' activity.id %}" class="btn btn-sm btn-outline-secondary">
+                <i class="d-inline-block d-xl-none fa fa-pen fa-fw"></i> <span class="d-none d-xl-block">Edit</span>
+            </a>
             <button type="button" id="id-toggle-graph-btn" class="btn btn-sm btn-outline-danger {% if not activity.has_graphs %}d-none{% endif %}">Graphs</button>
         </div>
     </div>

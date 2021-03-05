@@ -1,10 +1,13 @@
+from datetime import date, datetime, timedelta
+
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, DetailView
+from django.views.generic import TemplateView, DetailView, CreateView, UpdateView
 
 from backend.models import Activity, ActivityType
 from backend.views.activities import ActivitiesMixin
+from frontend.forms import ActivityForm
 from project.utils import LoginRequired
 
 
@@ -63,3 +66,43 @@ class ActivitiesFitnessView(LoginRequired, TemplateView):
         context = super().get_context_data(**kwargs)
         context['page_header'] = context['page_title'] = 'Fitness'
         return context
+
+
+class ActivityFormMixin(LoginRequired):
+    model = Activity
+    template_name = 'base_form.html'
+    form_class = ActivityForm
+    edit = False
+
+    def form_valid(self, form):
+        cleaned = form.cleaned_data
+        duration = cleaned['duration']
+        delta = datetime.combine(date.min, duration) - datetime.min
+        self.object = form.save(commit=False)
+        self.object.duration_seconds = delta.total_seconds()
+        if not self.edit:
+            self.object.user = self.request.user
+            self.object.moving_duration_seconds = self.object.duration_seconds
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class AddActivityView(ActivityFormMixin, CreateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_header'] = context['page_title'] = 'Add Activity'
+        return context
+
+
+class EditActivityView(ActivityFormMixin, UpdateView):
+    edit = True
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_header'] = context['page_title'] = 'Edit Activity'
+        return context
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['duration'] = str(timedelta(seconds=int(self.object.duration_seconds)))
+        return initial

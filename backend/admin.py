@@ -46,6 +46,6 @@ class StreamTypeAdmin(admin.ModelAdmin):
 
 @admin.register(ServiceLog)
 class ServiceLogAdmin(admin.ModelAdmin):
-    list_display = ['service', 'endpoint', 'sent_data', 'response_data']
+    list_display = ['service', 'created', 'endpoint', 'sent_data', 'response_data']
     list_filter = ['service']
     search_fields = ['endpoint']
