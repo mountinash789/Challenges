@@ -3,11 +3,11 @@ from datetime import date, datetime, timedelta
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, DetailView, CreateView, UpdateView
+from django.views.generic import TemplateView, DetailView, CreateView, UpdateView, FormView
 
 from backend.models import Activity, ActivityType
 from backend.views.activities import ActivitiesMixin
-from frontend.forms import ActivityForm
+from frontend.forms import ActivityForm, GraphSelectForm
 from project.utils import LoginRequired
 
 
@@ -106,3 +106,13 @@ class EditActivityView(ActivityFormMixin, UpdateView):
         initial = super().get_initial()
         initial['duration'] = str(timedelta(seconds=int(self.object.duration_seconds)))
         return initial
+
+
+class ActivitiesGraphs(LoginRequired, FormView):
+    template_name = 'activity/graphs.html'
+    form_class = GraphSelectForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_header'] = context['page_title'] = 'Select Options'
+        return context
