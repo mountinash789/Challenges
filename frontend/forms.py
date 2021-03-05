@@ -5,7 +5,7 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.urls import reverse_lazy
 
-from backend.models import Profile
+from backend.models import Profile, Activity
 
 
 class LoginForm(AuthenticationForm):
@@ -84,3 +84,42 @@ class ProfileForm(forms.ModelForm):
                 css_class='offset-lg-2',
             ),
         )
+
+
+class ActivityForm(forms.ModelForm):
+    duration = forms.TimeField(widget=forms.TimeInput(format='%H:%M:%S'))
+
+    class Meta:
+        model = Activity
+        fields = [
+            'description',
+            'activity_type',
+            'date',
+            'distance_meters',
+            'total_elevation_gain',
+            'avg_heart_rate',
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'id_main_form'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-8'
+
+        self.helper.layout = Layout(
+            'description',
+            'activity_type',
+            'date',
+            'duration',
+            'distance_meters',
+            'total_elevation_gain',
+            'avg_heart_rate',
+            Div(
+                Submit('submit', 'Save'),
+                css_class='offset-lg-2',
+            ),
+        )
+
+        self.fields['date'].widget = forms.DateInput(attrs={'class': 'datepicker'})

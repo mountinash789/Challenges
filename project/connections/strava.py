@@ -139,16 +139,16 @@ class Strava(BaseConnection):
 
     def get_update_activity(self, user_connection, activity_id):
         endpoint = 'https://www.strava.com/api/v3/activities/{}?include_all_efforts=true'.format(activity_id)
-        resp = self.send(endpoint, method='GET',
-                         headers={'Authorization': 'Bearer {}'.format(user_connection.first().get_access_token())})
+        resp = self.send(endpoint, {}, method='GET',
+                         headers={'Authorization': 'Bearer {}'.format(user_connection.get_access_token())})
         self.parse_activities(user_connection, [resp], user_connection.user_id)
 
     def handle_webhook(self, data):
         super().handle_webhook(data)
-        if settings.STRAVA_WEBHOOK_SECRET != data['GET'].get('hub.verify_token', None):
-            return {}, 401
         challenge = data['GET'].get('hub.challenge', None)
         if challenge:
+            if settings.STRAVA_WEBHOOK_SECRET != data['GET'].get('hub.verify_token', None):
+                return {}, 401
             return {"hub.challenge": challenge}, 200
 
         if data['data']['object_type'] == 'activity':
