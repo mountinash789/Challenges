@@ -22,6 +22,13 @@
         <span id="id_activities_sub" class="collapse {% if 'activities' in namespaces %}show{% endif %}">
         <ul class="nav flex-column level-two">
             <li class="nav-item">
+                <a class="nav-link {% if view_name == 'front:activities:add' %}active{% endif %}"
+                   href="{% url 'front:activities:add' %}">
+                    <i class="fas fa-plus fa-fw"></i>
+                    Add
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link {% if view_name == 'front:activities:list' %}active{% endif %}"
                    href="{% url 'front:activities:list' %}">
                     <i class="fas fa-chart-line fa-fw"></i>
