@@ -1,7 +1,7 @@
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import User
 
-from backend.models import Activity
+from backend.models import Activity, StreamType
 from project.utils import start_of_day, end_of_day
 
 
@@ -36,11 +36,10 @@ class FitnessScore(object):
     def get_activities_trimp(self, d):
         trimp = 0
         activities = Activity.objects.filter(user=self.user, date__range=(start_of_day(d), end_of_day(d)))
+        trimp_description = 'Trimp {}'.format(self.trimp_type)
+        trimp_stream = StreamType.objects.filter(description=trimp_description).first()
         for act in activities:
-            if self.trimp_type == 'basic':
-                trimp += act.trimp_orig()
-            elif self.trimp_type == 'zonal':
-                trimp += act.trimp()
+            trimp += act.avg_stream_type(trimp_stream.id)
         if activities.count() > 0:
             trimp = trimp / activities.count()
         return float(trimp)
