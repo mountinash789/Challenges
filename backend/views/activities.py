@@ -27,6 +27,12 @@ class ActivitiesMixin(object):
             self.user = User.objects.get(pk=self.kwargs.get('user_id'))
         return super().get(request, *args, **kwargs)
 
+    def post(self, request, *args, **kwargs):
+        self.user = self.request.user
+        if self.kwargs.get('user_id'):
+            self.user = User.objects.get(pk=self.kwargs.get('user_id'))
+        return super().post(request, *args, **kwargs)
+
     def get_initial_queryset(self):
         return self.model.objects.filter(user=self.user)
 
@@ -159,11 +165,13 @@ class ActivitiesDistance(ActivitiesMixin, LoginRequired, APIView):
 class ActivitiesFitness(ActivitiesMixin, LoginRequired, APIView):
     start = None
     end = None
+    activity_types = None
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         self.user = self.request.user
-        self.end = timezone.now()
-        self.start = self.end - relativedelta(months=1)
+        self.end = end_of_day(parse(self.request.POST['end']))
+        self.start = start_of_day(parse(self.request.POST['start']))
+        self.activity_types = ActivityType.objects.filter(id__in=self.request.POST.getlist("activity_type"))
         labels, data = self.get_data()
         return Response({
             'labels': labels,
@@ -185,8 +193,7 @@ class ActivitiesFitness(ActivitiesMixin, LoginRequired, APIView):
 
     def get_initial_queryset(self):
         qs = super().get_initial_queryset()
-        qs = qs.filter(date__range=(start_of_day(self.start), end_of_day(self.end)))
-        qs = qs.filter(activity_type__description='Run')
+        qs = qs.filter(date__range=(start_of_day(self.start), end_of_day(self.end)), activity_type__in=self.activity_types)
         return qs
 
 

@@ -7,7 +7,7 @@ from django.views.generic import TemplateView, DetailView, CreateView, UpdateVie
 
 from backend.models import Activity, ActivityType
 from backend.views.activities import ActivitiesMixin
-from frontend.forms import ActivityForm, GraphSelectForm
+from frontend.forms import ActivityForm, GraphSelectForm, DataSelectForm
 from project.utils import LoginRequired
 
 
@@ -59,13 +59,19 @@ class ActivitiesDistanceView(LoginRequired, TemplateView):
         return context
 
 
-class ActivitiesFitnessView(LoginRequired, TemplateView):
+class ActivitiesFitnessView(LoginRequired, FormView):
     template_name = 'activity/activity-fitness.html'
+    form_class = DataSelectForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['page_header'] = context['page_title'] = 'Fitness'
         return context
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['activity_type'] = ActivityType.objects.filter(description='Run')
+        return initial
 
 
 class ActivityFormMixin(LoginRequired):

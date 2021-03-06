@@ -129,7 +129,7 @@ class ActivityForm(forms.ModelForm):
         self.fields['date'].widget = forms.DateInput(attrs={'class': 'datepicker'})
 
 
-class GraphSelectForm(forms.Form):
+class DataSelectForm(forms.Form):
     date_range = DateRangeField(
         input_formats=['%d/%m/%Y'],
         widget=DateRangeWidget(
@@ -137,6 +137,44 @@ class GraphSelectForm(forms.Form):
         )
     )
     activity_type = forms.ModelMultipleChoiceField(queryset=ActivityType.objects.all())
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'id_main_form'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-8'
+
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    'activity_type',
+                    css_class='col-lg-12',
+                ),
+                css_class='row',
+            ),
+            Div(
+                Div(
+                    'date_range',
+                    css_class='col-lg-12',
+                ),
+                css_class='row',
+            ),
+            Div(
+                Submit('submit', 'Run'),
+                css_class='',
+            ),
+        )
+        now = timezone.now()
+        now_minus_month = now - relativedelta(months=1)
+        self.fields['date_range'].widget.picker_options = {
+            'startDate': now_minus_month.strftime('%d/%m/%Y'),
+            'maxDate': now.strftime('%d/%m/%Y'),
+        }
+
+
+class GraphSelectForm(DataSelectForm):
     data_points = forms.MultipleChoiceField(choices=[('Pace', 'Pace'), ('Duration', 'Duration')])
 
     def __init__(self, *args, **kwargs):
