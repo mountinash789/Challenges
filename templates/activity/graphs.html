@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load formatting %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block css %}
+
+{% endblock %}
+{% block js %}
+<script src="{% static 'js/external/shade_color.js' %}"></script>
+<script>
+    function update_chart(data){
+        let colours = ["#47adb1","#f26523","#fecd33","#fecd33","#286d4f","#c9222b","#97257b"];
+        let datasets = [];
+        for (const [key, value] of Object.entries(data.data)) {
+        let colour = colours.sort(function() { return 0.5 - Math.random();}).pop();
+        console.log(value.length)
+            datasets.push({
+                label: key,
+                borderWidth: 2,
+                fill: true,
+                data: value,
+                backgroundColor: shadeColor(colour,200),
+                borderColor: colour,
+            })
+          console.log(`${key}: ${value}`);
+        }
+        chart.data.datasets = datasets;
+        chart.update();
+        chart.data.labels = data.labels;
+        chart.update();
+    }
+
+    $( document ).ready(function() {
+
+
+
+
+        $("#id_main_form").submit(function (e){
+            e.preventDefault();
+            e.stopPropagation();
+
+            let data = $(this).serializeArray();
+            data.pop('date_range');
+            let date_range = $('#id_date_range').data('daterangepicker');
+            data.push({name:"start", value: date_range.startDate._d.toISOString()});
+            data.push({name:"end", value: date_range.endDate._d.toISOString()});
+
+            $.ajax({
+                method:'POST',
+                url: "{% url 'api:activities:graph_data' %}",
+                data: data,
+                success: function(data){
+                    update_chart(data);
+                }
+            });
+        });
+    });
+
+
+
+
+
+
+
+</script>
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ page_header }} <sup><span class="badge badge-primary">BETA</span></sup></h1>
+</div>
+<div class="row mb-4">
+    <div class="col-lg-10 offset-lg-1">
+        <div class="p-4 mb-4" style="background:white; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);">
+            {% crispy form %}
+        </div>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-lg-10 offset-lg-1">
+        <div class="p-4 mb-4" style="background:white; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);">
+            <canvas id="chart" style="min-height:30rem;"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+
+const chart = new Chart(document.getElementById("chart"),{type: 'line', data: {}, options: {maintainAspectRatio: false, scales: {
+        yAxes: [{
+          ticks: {
+                    display: false
+                }
+        }]
+        },
+        tooltips: {enabled: true,},}});
+
+
+
+</script>
+
+{% endblock %}

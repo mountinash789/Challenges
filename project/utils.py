@@ -1,5 +1,6 @@
 import calendar
 import datetime
+from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.auth.views import redirect_to_login
@@ -66,3 +67,17 @@ def week_end(dt):
     start = dt - timedelta(days=dt.weekday())
     end = start + timedelta(days=6)
     return end_of_day(end)
+
+
+def percent(part, whole):
+    """
+    x is what percentage of y
+    """
+    return 100 * (Decimal(part) / Decimal(whole))
+
+
+def what_percent(percentage, whole):
+    """
+    x% of y
+    """
+    return (Decimal(whole) * Decimal(percentage)) / 100

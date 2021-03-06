@@ -33,3 +33,4 @@ django-hosts==4.0
 django_compressor==2.4
 django-libsass==0.8
 django-qr-code==2.1.0
+django-bootstrap-daterangepicker==1.0.6

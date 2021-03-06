@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'social_django',
     'compressor',
     'qr_code',
+    'bootstrap_daterangepicker',
 
     'frontend',
     'backend',

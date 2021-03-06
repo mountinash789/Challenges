@@ -11,7 +11,10 @@ from django.db.models import Sum
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django_extensions.db.models import TimeStampedModel
+
+from project.utils import percent, what_percent
 
 
 class Connection(TimeStampedModel):
@@ -92,15 +95,8 @@ class Activity(TimeStampedModel):
     def get_absolute_url(self):
         return reverse_lazy('front:activities:view', kwargs={'pk': self.id})
 
-    def age(self):
-        if self.user.profile.dob:
-            today = self.date
-            born = self.user.profile.dob
-            return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
-        return 30
-
     def target_heartrates(self, want_zones=False):
-        target = 220 - self.age()
+        target = self.user.profile.max_heartrate(self.date)
         target_min = round((55 * target) / 100.0)  # 55% of target
         target_max = round((85 * target) / 100.0)  # 85% of target
 
@@ -175,6 +171,85 @@ class Activity(TimeStampedModel):
         except Exception as e:
             bugsnag.notify(e)
 
+    def lactate_trimp(self, hr_data):
+        score = 0
+        data = []
+        threshold_1 = self.user.profile.lactate_threshold(1, self.date)
+        threshold_2 = self.user.profile.lactate_threshold(2, self.date)
+        for rate in hr_data:
+            if rate > threshold_2:
+                score += 3
+            elif threshold_2 > rate > threshold_1:
+                score += 2
+            elif rate < threshold_1:
+                score += 1
+            data.append(float(score) / float(self.duration_seconds / 60))
+        return data
+
+    def basic_trimp(self, hr_data):
+        data = []
+        total = len(hr_data)
+        for i, rate in enumerate(hr_data, start=1):
+            duration = what_percent(percent(i, total), self.duration_seconds)
+            score = (duration / 60) * rate
+            data.append(float(score) / float(self.duration_seconds / 60))
+        return data
+
+    def zonal_trimp(self, hr_data):
+        score = 0
+        data = []
+        total = len(hr_data)
+        zones = self.target_heartrates(want_zones=True)
+        for i, rate in enumerate(hr_data, start=1):
+            if rate >= zones[90]:
+                score += 5 * percent(1, total)
+            elif rate >= zones[80]:
+                score += 4 * percent(1, total)
+            elif rate >= zones[70]:
+                score += 3 * percent(1, total)
+            elif rate >= zones[60]:
+                score += 2 * percent(1, total)
+            else:
+                score += 1 * percent(1, total)
+            data.append(float(score) / float(self.duration_seconds / 60))
+        return data
+
+    def create_trimp_graphs(self):
+        for trimp in ['zonal', 'lactate', 'basic']:
+            self.create_trimp_graph(trimp_type=trimp)
+
+    def create_trimp_graph(self, trimp_type):
+        if not self.has_streams:
+            self.get_activity_streams()
+        hr = self.activitystream_set.filter(stream_type__description='heartrate').first()
+        trimp_description = 'Trimp {}'.format(trimp_type)
+        trimp_stream = self.activitystream_set.filter(stream_type__description=trimp_description).first()
+        if hr:
+            hr_data = ast.literal_eval(hr.sequence)
+            if not trimp_stream:
+                stream_type, created = StreamType.objects.get_or_create(description=trimp_description)
+                trimp_stream = hr
+                trimp_stream.id = None
+                trimp_stream.stream_type = stream_type
+            data = []
+
+            if trimp_type == 'lactate':
+                data = self.lactate_trimp(hr_data)
+            elif trimp_type == 'basic':
+                data = self.basic_trimp(hr_data)
+            elif trimp_type == 'zonal':
+                data = self.zonal_trimp(hr_data)
+
+            trimp_stream.sequence = str(data)
+            trimp_stream.save()
+
+    def avg_stream_type(self, stream_type_id):
+        stream = self.activitystream_set.filter(stream_type_id=stream_type_id).first()
+        if stream:
+            seq = ast.literal_eval(stream.sequence)
+            return sum(seq) / len(seq)
+        return 0
+
     def label_stream(self):
         distance = self.activitystream_set.filter(stream_type__description='distance').first()
         time = self.activitystream_set.filter(stream_type__description='time').first()
@@ -189,49 +264,9 @@ class Activity(TimeStampedModel):
                 return True if self.label_stream() else False
         return False
 
-    def trimp_orig(self):
-        if self.avg_heart_rate:
-            return (self.duration_seconds / 60) * self.avg_heart_rate
-        else:
-            return 0
-
-    def trimp(self):
-        if not self.has_streams:
-            self.get_activity_streams()
-        hr = self.activitystream_set.filter(stream_type__description='heartrate').first()
-        if hr:
-            zones = self.target_heartrates(want_zones=True)
-            z1 = 0
-            z2 = 0
-            z3 = 0
-            z4 = 0
-            z5 = 0
-            seq = ast.literal_eval(hr.sequence)
-            for num in seq:
-                if num >= zones[90]:
-                    z5 += 1
-                elif num >= zones[80]:
-                    z4 += 1
-                elif num >= zones[70]:
-                    z3 += 1
-                elif num >= zones[60]:
-                    z2 += 1
-                else:
-                    z1 += 1
-            duration_mins = float(self.duration_seconds / 60)
-            z1_percentage = (((z1 / len(seq)) * 100) * duration_mins) / 100
-            z2_percentage = (((z2 / len(seq)) * 100) * duration_mins) / 100
-            z3_percentage = (((z3 / len(seq)) * 100) * duration_mins) / 100
-            z4_percentage = (((z4 / len(seq)) * 100) * duration_mins) / 100
-            z5_percentage = (((z5 / len(seq)) * 100) * duration_mins) / 100
-
-            return sum(
-                [1 * z1_percentage, 2 * z2_percentage, 3 * z3_percentage, 4 * z4_percentage, 5 * z5_percentage, ]) / 10
-        return 0
-
     def save(self, *args, **kwargs):
         if not self.has_streams:
-            self.get_activity_streams()
+            self.create_trimp_graphs()
         super().save(*args, **kwargs)
 
 
@@ -377,6 +412,29 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+    def age(self, ts=None):
+        if not ts:
+            ts = timezone.now()
+        if self.user.profile.dob:
+            today = ts
+            born = self.user.profile.dob
+            return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+        return 30
+
+    def max_heartrate(self, ts=None):
+        if not ts:
+            ts = timezone.now()
+        return 220 - self.age(ts)
+
+    def lactate_threshold(self, threshold, ts=None):
+        if not ts:
+            ts = timezone.now()
+        if threshold == 1:
+            return 180 - self.age(ts)
+        elif threshold == 2:
+            return what_percent(87.5, self.max_heartrate(ts))
+        return 0
 
     def get_name(self):
         name = ' '.join(map(str, [self.user.first_name, self.user.last_name]))

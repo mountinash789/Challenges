@@ -10,7 +10,7 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from backend.models import Activity
+from backend.models import Activity, ActivityType
 from backend.tasks import get_activities
 from backend.utils.fitnessscore import FitnessScore
 from project.utils import ExactUserRequiredAPI, local_time, ExactUserRequired, LoginRequired, start_of_day, end_of_day, \
@@ -187,4 +187,43 @@ class ActivitiesFitness(ActivitiesMixin, LoginRequired, APIView):
         qs = super().get_initial_queryset()
         qs = qs.filter(date__range=(start_of_day(self.start), end_of_day(self.end)))
         qs = qs.filter(activity_type__description='Run')
+        return qs
+
+
+class ActivitiesGraphData(ActivitiesMixin, LoginRequired, APIView):
+    start = None
+    end = None
+    activity_types = None
+    data_points = None
+
+    def post(self, request, *args, **kwargs):
+        self.user = self.request.user
+        self.end = end_of_day(parse(self.request.POST['end']))
+        self.start = start_of_day(parse(self.request.POST['start']))
+        self.activity_types = ActivityType.objects.filter(id__in=self.request.POST.getlist("activity_type"))
+        self.data_points = self.request.POST.getlist("data_points")
+        labels, data = self.get_data()
+        return Response({
+            'labels': labels,
+            'data': data,
+        })
+
+    def get_data(self):
+        labels = []
+        data = {k: [] for k in self.data_points}
+        d = self.start
+        base_qs = self.get_initial_queryset()
+        while d <= self.end:
+            day_qs = base_qs.filter(date__range=(start_of_day(d), end_of_day(d)))
+            if 'Duration' in self.data_points:
+                data['Duration'].append(day_qs.aggregate(Sum('duration_seconds'))['duration_seconds__sum'])
+            if 'Pace' in self.data_points:
+                data['Pace'].append(day_qs.aggregate(Sum('pace'))['pace__sum'])
+            labels.append(d.strftime("%d/%m/%Y"))
+            d += relativedelta(days=1)
+        return labels, data
+
+    def get_initial_queryset(self):
+        qs = super().get_initial_queryset()
+        qs = qs.filter(date__range=(self.start, self.end), activity_type__in=self.activity_types)
         return qs
