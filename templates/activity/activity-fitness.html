@@ -33,6 +33,7 @@
             <span id="id_buttons">
                 <button class="btn btn-success active toggle-type" data-trimp-type="basic">BASIC TRIMP</button>
                 <button class="btn btn-success toggle-type" data-trimp-type="zonal">ZONAL TRIMP</button>
+                <button class="btn btn-success toggle-type" data-trimp-type="lactate">LACTATE THRESHOLD TRIMP</button>
             </span>
             <span id="id_progress_container" style="display:None;">
                 <div class="progress">
@@ -122,7 +123,8 @@ const chart = new Chart(document.getElementById("chart"),{type: 'line', data: {}
 $( document ).ready(function() {
 
     $('.toggle-type').click(function(){
-        $('.toggle-type').toggleClass('active');
+        $('.toggle-type').removeClass('active');
+        $(this).addClass('active');
         trimp_type = $(this).attr('data-trimp-type');
         get_data();
     });
