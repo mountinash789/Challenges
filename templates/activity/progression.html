@@ -13,16 +13,16 @@
         let datasets = [];
         for (const [key, value] of Object.entries(data.data)) {
         let colour = colours.pop();
-        console.log(value.length)
             datasets.push({
                 label: key,
                 borderWidth: 2,
-                fill: true,
+                fill: false,
                 data: value,
-                backgroundColor: shadeColor(colour,200),
+                backgroundColor: shadeColor(colour,20),
                 borderColor: colour,
+                radius: 0,
+                pointRadius: 0,
             })
-          console.log(`${key}: ${value}`);
         }
         chart.data.datasets = datasets;
         chart.update();
@@ -30,37 +30,32 @@
         chart.update();
     }
 
+    function get_data(){
+        let data = $("#id_main_form").serializeArray();
+        data.pop('date_range');
+        let date_range = $('#id_date_range').data('daterangepicker');
+        data.push({name:"start", value: date_range.startDate._d.toISOString()});
+        data.push({name:"end", value: date_range.endDate._d.toISOString()});
+
+        $.ajax({
+            method:'POST',
+            url: "{% url 'api:activities:progression' %}",
+            data: data,
+            success: function(data){
+                update_chart(data);
+            }
+        });
+    }
+
     $( document ).ready(function() {
-
-
-
 
         $("#id_main_form").submit(function (e){
             e.preventDefault();
             e.stopPropagation();
-
-            let data = $(this).serializeArray();
-            data.pop('date_range');
-            let date_range = $('#id_date_range').data('daterangepicker');
-            data.push({name:"start", value: date_range.startDate._d.toISOString()});
-            data.push({name:"end", value: date_range.endDate._d.toISOString()});
-
-            $.ajax({
-                method:'POST',
-                url: "{% url 'api:activities:graph_data' %}",
-                data: data,
-                success: function(data){
-                    update_chart(data);
-                }
-            });
+            get_data();
         });
+        get_data();
     });
-
-
-
-
-
-
 
 </script>
 {% endblock %}
@@ -85,14 +80,29 @@
 
 <script>
 
-const chart = new Chart(document.getElementById("chart"),{type: 'line', data: {}, options: {maintainAspectRatio: false, scales: {
-        yAxes: [{
-          ticks: {
-                    display: false
-                }
-        }]
-        },
-        tooltips: {enabled: true,},}});
+const chart = new Chart(
+    document.getElementById("chart"),
+    {
+        type: 'line',
+        data: {},
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                yAxes: [
+                    {
+                        ticks: {
+                            display: false
+                        },
+                    }
+                ]
+            },
+            tooltips: {
+                enabled: false,
+            },
+        }
+    }
+);
+
 
 
 

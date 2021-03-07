@@ -1,9 +1,10 @@
 from datetime import timedelta
+from itertools import accumulate
 
 from dateutil.parser import parse
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import User
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django_datatables_view.base_datatable_view import BaseDatatableView
@@ -193,7 +194,8 @@ class ActivitiesFitness(ActivitiesMixin, LoginRequired, APIView):
 
     def get_initial_queryset(self):
         qs = super().get_initial_queryset()
-        qs = qs.filter(date__range=(start_of_day(self.start), end_of_day(self.end)), activity_type__in=self.activity_types)
+        qs = qs.filter(date__range=(start_of_day(self.start), end_of_day(self.end)),
+                       activity_type__in=self.activity_types)
         return qs
 
 
@@ -233,4 +235,64 @@ class ActivitiesGraphData(ActivitiesMixin, LoginRequired, APIView):
     def get_initial_queryset(self):
         qs = super().get_initial_queryset()
         qs = qs.filter(date__range=(self.start, self.end), activity_type__in=self.activity_types)
+        return qs
+
+
+class ActivitiesProgressionData(ActivitiesMixin, LoginRequired, APIView):
+    start = None
+    end = None
+    activity_types = None
+    data_points = None
+
+    def min_year(self):
+        oldest = Activity.objects.filter(user=self.user, activity_type__in=self.activity_types).exclude(
+            date=None).order_by('date').first()
+        if not oldest:
+            return timezone.now().year
+        return oldest.date.year
+
+    def post(self, request, *args, **kwargs):
+        self.user = self.request.user
+        self.end = end_of_day(parse(self.request.POST['end']))
+        self.start = start_of_day(parse(self.request.POST['start']))
+        self.activity_types = ActivityType.objects.filter(id__in=self.request.POST.getlist("activity_type"))
+        self.data_point = self.request.POST["type"]
+        labels, data = self.get_data()
+        return Response({
+            'labels': labels,
+            'data': data,
+        })
+
+    def get_data(self):
+        now = timezone.now()
+        this_year = now.year
+        years = list(range(self.min_year(), this_year + 1))
+        labels = []
+        data = {str(k): [] for k in years}
+        d = self.start
+        while d <= self.end:
+            for year in data.keys():
+                qs = self.get_qs(d, int(year))
+                if year == str(this_year) and d > now:
+                    continue
+                data[year].append(qs.get(self.data_point, 0) or 0)
+            labels.append(d.strftime("%d/%m"))
+            d += relativedelta(days=1)
+        for k, v in data.items():
+            data[k] = list(accumulate(v))
+        return labels, data
+
+    def get_qs(self, date, year):
+        start = start_of_day(date + relativedelta(year=year))
+        end = end_of_day(start)
+        qs = super().get_initial_queryset()
+        qs = qs.filter(
+            date__range=(start, end),
+            activity_type__in=self.activity_types
+        ).aggregate(
+            Sum('distance_meters'),
+            Sum('duration_seconds'),
+            Sum('total_elevation_gain'),
+            Count('id'),
+        )
         return qs

@@ -130,6 +130,7 @@ class ActivityForm(forms.ModelForm):
 
 
 class DataSelectForm(forms.Form):
+    picker_options = None
     date_range = DateRangeField(
         input_formats=['%d/%m/%Y'],
         widget=DateRangeWidget(
@@ -139,6 +140,7 @@ class DataSelectForm(forms.Form):
     activity_type = forms.ModelMultipleChoiceField(queryset=ActivityType.objects.all())
 
     def __init__(self, *args, **kwargs):
+        self.picker_options = kwargs.pop('picker_options', None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_id = 'id_main_form'
@@ -166,16 +168,24 @@ class DataSelectForm(forms.Form):
                 css_class='',
             ),
         )
+        self.init_date_range()
+
+    def init_date_range(self):
         now = timezone.now()
         now_minus_month = now - relativedelta(months=1)
-        self.fields['date_range'].widget.picker_options = {
+        picker_options = {
             'startDate': now_minus_month.strftime('%d/%m/%Y'),
             'maxDate': now.strftime('%d/%m/%Y'),
         }
+        if self.picker_options:
+            picker_options = self.picker_options
+
+        self.fields['date_range'].widget.picker_options = picker_options
 
 
-class GraphSelectForm(DataSelectForm):
-    data_points = forms.MultipleChoiceField(choices=[('Pace', 'Pace'), ('Duration', 'Duration')])
+class ExtraSelectForm(DataSelectForm):
+    def extra(self):
+        return []
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -191,10 +201,7 @@ class GraphSelectForm(DataSelectForm):
                     'activity_type',
                     css_class='col-lg-6',
                 ),
-                Div(
-                    'data_points',
-                    css_class='col-lg-6',
-                ),
+                *self.extra(),
                 css_class='row',
             ),
             Div(
@@ -209,9 +216,33 @@ class GraphSelectForm(DataSelectForm):
                 css_class='',
             ),
         )
-        now = timezone.now()
-        now_minus_month = now - relativedelta(months=1)
-        self.fields['date_range'].widget.picker_options = {
-            'startDate': now_minus_month.strftime('%d/%m/%Y'),
-            'maxDate': now.strftime('%d/%m/%Y'),
-        }
+        self.init_date_range()
+
+
+class GraphSelectForm(ExtraSelectForm):
+    data_points = forms.MultipleChoiceField(choices=[('Pace', 'Pace'), ('Duration', 'Duration')])
+
+    def extra(self):
+        return [
+            Div(
+                'data_points',
+                css_class='col-lg-6',
+            ),
+        ]
+
+
+class ProgressionSelectForm(ExtraSelectForm):
+    type = forms.ChoiceField(choices=[
+        ('distance_meters__sum', 'Distance'),
+        ('duration_seconds__sum', 'Time'),
+        ('total_elevation_gain__sum', 'Elevation'),
+        ('id__count', 'Count'),
+    ])
+
+    def extra(self):
+        return [
+            Div(
+                'type',
+                css_class='col-lg-6',
+            ),
+        ]

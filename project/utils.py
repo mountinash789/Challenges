@@ -69,6 +69,16 @@ def week_end(dt):
     return end_of_day(end)
 
 
+def year_start(dt):
+    start = dt.date().replace(day=1, month=1)
+    return start_of_day(start)
+
+
+def year_end(dt):
+    start = dt.date().replace(day=31, month=12)
+    return end_of_day(start)
+
+
 def percent(part, whole):
     """
     x is what percentage of y

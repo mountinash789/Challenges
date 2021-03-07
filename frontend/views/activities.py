@@ -3,12 +3,13 @@ from datetime import date, datetime, timedelta
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.generic import TemplateView, DetailView, CreateView, UpdateView, FormView
 
 from backend.models import Activity, ActivityType
 from backend.views.activities import ActivitiesMixin
-from frontend.forms import ActivityForm, GraphSelectForm, DataSelectForm
-from project.utils import LoginRequired
+from frontend.forms import ActivityForm, GraphSelectForm, DataSelectForm, ProgressionSelectForm
+from project.utils import LoginRequired, year_start, year_end
 
 
 class ActivitiesPage(ActivitiesMixin, LoginRequired, TemplateView):
@@ -122,3 +123,31 @@ class ActivitiesGraphs(LoginRequired, FormView):
         context = super().get_context_data(**kwargs)
         context['page_header'] = context['page_title'] = 'Select Options'
         return context
+
+
+class Progression(LoginRequired, FormView):
+    template_name = 'activity/progression.html'
+    form_class = ProgressionSelectForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_header'] = context['page_title'] = 'Progression'
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        now = timezone.now()
+        start = year_start(now).strftime('%d/%m/%Y')
+        end = year_end(now).strftime('%d/%m/%Y')
+        kwargs['picker_options'] = {
+            'startDate': start,
+            'endDate': end,
+            'minDate': start,
+            'maxDate': end,
+        }
+        return kwargs
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['activity_type'] = ActivityType.objects.filter(description='Run')
+        return initial
