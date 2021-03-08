@@ -15,8 +15,8 @@ let config = {
     },
 }
 $(document).ready(function() {
-    $('#id_activity_type_select').on('change',function(){
-        var selectedValue = $(this).val();
-        $(`#${table_id}`).dataTable().fnFilter(selectedValue)
+    $('#id_tag_select').on('change',function(){
+        AJAX_URL = `${BASE_URL}?${$('#id_tag_select').serialize()}`;
+        $(`#${table_id}`).DataTable().ajax.url(AJAX_URL).load();
     });
 } );

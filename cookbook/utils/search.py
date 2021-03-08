@@ -22,13 +22,11 @@ def generate_keywords(text):
 
 
 def search(query, qs):
-    from cookbook.models import Recipe
     keywords = generate_keywords(query)
-
-    recipes = Recipe.objects.filter(
-        keyword_set__keyword__in=keywords,
+    recipes = qs.filter(
+        keyword__keyword__in=keywords,
     ).annotate(
-        search_score=Sum('keyword_set__importance'),
+        search_score=Sum('keyword__importance'),
     ).order_by(
         '-search_score',
     )

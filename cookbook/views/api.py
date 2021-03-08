@@ -14,11 +14,15 @@ class CookbookData(BaseDatatableView):
                                '', ]
 
     def get_initial_queryset(self):
-        return self.model.objects.all()
+        qs = self.model.objects.all()
+        tags = self.request.GET.getlist('selected_tags')
+        if len(tags) > 0:
+            qs = qs.filter(tags__in=tags)
+        return qs
 
     def filter_queryset(self, qs):
         search_query = self._querydict.get('search[value]', None)
-        if len(search_query) > 1:
+        if len(search_query) > 0:
             return search(search_query, qs)
         return qs
 
