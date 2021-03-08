@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'frontend',
     'backend',
     'wedding',
+    'cookbook',
 ]
 
 MIDDLEWARE = [
