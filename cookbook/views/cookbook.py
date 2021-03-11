@@ -1,7 +1,7 @@
 from django_hosts import reverse_lazy
 from django.views.generic import TemplateView
 
-from cookbook.models import Tag
+from cookbook.models import Tag, Recipe
 
 
 class CookbookView(TemplateView):
@@ -12,6 +12,7 @@ class CookbookView(TemplateView):
         context['table_id'] = self.__class__.__name__
         context['js_path'] = '/static/cookbook/js/search.js'
         context['tags'] = Tag.objects.all().order_by('description')
+        context['recipes'] = Recipe.objects.all().order_by()
         context['data_url'] = reverse_lazy('recipes_data', host='cookbook')
         context['headers'] = [
             '',

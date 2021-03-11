@@ -37,7 +37,7 @@ class Unit(TimeStampedModel):
 class Recipe(TimeStampedModel):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag, blank=True)
     cooking_time = models.TimeField()
 
     def __str__(self):

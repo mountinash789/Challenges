@@ -1,40 +1,32 @@
+from django.core import serializers
 from django.utils.safestring import mark_safe
 from django_datatables_view.base_datatable_view import BaseDatatableView
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from cookbook.models import Recipe
+from cookbook.serialisers import RecipeSerializer
 from cookbook.utils.search import search
 
 
-class CookbookData(BaseDatatableView):
+class CookbookData(APIView):
     model = Recipe
-    columns = order_columns = ['',
-                               'name',
-                               '',
-                               'cooking_time',
-                               '', ]
 
     def get_initial_queryset(self):
         qs = self.model.objects.all()
-        tags = self.request.GET.getlist('selected_tags')
+        tags = self.request.GET.getlist('selected_tags[]')
         if len(tags) > 0:
             qs = qs.filter(tags__in=tags)
         return qs
 
     def filter_queryset(self, qs):
-        search_query = self._querydict.get('search[value]', None)
+        search_query = self.request.GET.get('search', '')
         if len(search_query) > 0:
             return search(search_query, qs)
         return qs
 
-    def prepare_results(self, qs):
-        data = []
-        for item in qs:
-            data.append([
-                item.main_image(),
-                item.name,
-                mark_safe(item.get_tags_display()),
-                item.cooking_time_format(),
-                '',
-            ])
-
-        return data
+    def get(self, request, *args, **kwargs):
+        qs = self.get_initial_queryset()
+        qs = self.filter_queryset(qs)
+        serializer = RecipeSerializer(qs, many=True)
+        return Response({'count': qs.count(), 'cards': serializer.data})
