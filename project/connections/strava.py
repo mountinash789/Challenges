@@ -109,7 +109,8 @@ class Strava(BaseConnection):
                 obj.latitude = activity['start_latlng'][0]
                 obj.longitude = activity['end_latlng'][1]
             if activity.get('map', None):
-                obj.polyline = activity['map']['summary_polyline']
+                if activity['map'].get('summary_polyline', None):
+                    obj.polyline = activity['map']['summary_polyline']
             obj.raw_json = json.dumps(activity)
             obj.connection = connection.connection
             obj.calc_pace()
