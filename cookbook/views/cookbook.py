@@ -22,3 +22,13 @@ class CookbookView(TemplateView):
             '',
         ]
         return context
+
+
+class RecipeView(TemplateView):
+    template_name = 'cookbook/recipe.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = Recipe.objects.get(pk=self.kwargs['pk'])
+        context['recipe'] = obj
+        return context

@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import Index, UniqueConstraint, Q
 from django.utils.safestring import mark_safe
 from django_extensions.db.models import TimeStampedModel
+from django_hosts import reverse_lazy
 
 from cookbook.utils.search import generate_keywords
 
@@ -53,6 +54,9 @@ class Recipe(TimeStampedModel):
             text.append('{} minute{}'.format(minute, 's' if minute > 1 else ''))
 
         return ' and '.join(text)
+
+    def get_absolute_url(self):
+        return reverse_lazy('view', kwargs={'pk': self.id}, host='cookbook')
 
     def html_name(self):
         return mark_safe('<b>{}</b><p>{}</p>'.format(self.name, self.description))

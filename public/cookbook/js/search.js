@@ -38,8 +38,10 @@ function create_card(container, card){
         el.textContent = card.cooking_time_format;
     });
     let card_el = clone.querySelectorAll(".recipe-card")[0];
+    card_el.dataset.url = card.url;
     clone.querySelectorAll(".recipe-card")[0].style.opacity = 0;
     container[0].appendChild(clone);
+    create_card_event(card_el);
     setTimeout(function(){
     card_el.style.opacity = 1;
     }, 100)
@@ -59,6 +61,13 @@ function display_cards(data){
             create_card(container, card);
         });
     }
+}
+
+function create_card_event(element){
+    $(element).unbind().on('click',function(){
+        console.log(1)
+        window.location.href = $(this).attr('data-url');
+    });
 }
 
 $(document).ready(function() {

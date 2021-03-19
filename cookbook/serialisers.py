@@ -6,6 +6,7 @@ from cookbook.models import Recipe
 class RecipeSerializer(serializers.ModelSerializer):
     cooking_time_format = serializers.CharField(read_only=True)
     tags_display = serializers.CharField(source='get_tags_display', read_only=True)
+    url = serializers.CharField(source='get_absolute_url', read_only=True)
 
     class Meta:
         model = Recipe
@@ -15,4 +16,5 @@ class RecipeSerializer(serializers.ModelSerializer):
             "description",
             "cooking_time_format",
             "tags_display",
+            "url",
         ]
