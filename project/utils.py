@@ -2,8 +2,11 @@ import calendar
 import datetime
 from decimal import Decimal
 
+import bugsnag
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.views import redirect_to_login
+from django.core.mail import send_mail
 from django.http import HttpResponse
 from django.utils import timezone
 from django.utils.timezone import make_aware
@@ -91,3 +94,11 @@ def what_percent(percentage, whole):
     x% of y
     """
     return (Decimal(whole) * Decimal(percentage)) / 100
+
+
+def send_email(subject, message, recipient_list):
+    try:
+        email_from = settings.EMAIL_HOST_USER
+        send_mail(subject, message, email_from, recipient_list)
+    except Exception as e:
+        bugsnag.notify(e)
