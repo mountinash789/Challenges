@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.views.generic import TemplateView
 from django_hosts import reverse_lazy
 
-from project.utils import send_email
+from project.utils import send_email, LoginRequired
 from wedding.models import Party, DietaryReq
 from django.contrib import messages
 
@@ -98,3 +98,12 @@ class RSVPPin(TemplateView):
         except Exception as e:
             pass
         return HttpResponseRedirect(reverse_lazy('rsvp_pin', host='wedding') + '?e=1')
+
+
+class PrintQR(TemplateView):
+    template_name = 'wedding/test/qr_codes.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['parties'] = Party.objects.all()
+        return context
