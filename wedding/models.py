@@ -9,14 +9,18 @@ from qr_code.templatetags.qr_code import qr_from_text
 
 
 class Guest(TimeStampedModel):
+    class Meta:
+        ordering = ['sequence', 'created']
+
     def __str__(self):
         return self.get_full_name()
 
     def get_full_name(self):
-        return '{} {}'.format(self.first_name, self.surname)
+        return '{} {}'.format(self.first_name, self.surname or '')
 
     first_name = models.CharField(max_length=200)
-    surname = models.CharField(max_length=200)
+    surname = models.CharField(max_length=200, blank=True, null=True)
+    nickname = models.CharField(max_length=200, blank=True, null=True)
     party = models.ForeignKey('wedding.Party', on_delete=models.CASCADE)
     dietary_requirements = models.ManyToManyField('wedding.DietaryReq', blank=True)
     starter = models.ForeignKey('wedding.Starter', blank=True, null=True, on_delete=models.CASCADE)
@@ -27,6 +31,12 @@ class Guest(TimeStampedModel):
     sequence = models.IntegerField(default=0)
     is_plus_one = models.BooleanField(default=False)
 
+    @property
+    def get_nickname(self):
+        if self.nickname:
+            return self.nickname
+        return self.first_name
+
 
 class Party(TimeStampedModel):
     def __str__(self):
@@ -34,9 +44,9 @@ class Party(TimeStampedModel):
 
     def guests_names(self):
         name = []
-        for guest in self.guests():
-            name.append(guest.get_full_name())
-        return ', '.join(name)
+        for guest in self.guests().exclude(is_plus_one=True):
+            name.append(guest.get_nickname)
+        return ' + '.join(name)
 
     def guests(self):
         return Guest.objects.filter(party=self)
@@ -48,7 +58,7 @@ class Party(TimeStampedModel):
         return 'https:{}'.format(self.get_absolute_url())
 
     def qr_code(self):
-        return qr_from_text(self.qr_url(), size='s', image_format='png', border=6)
+        return qr_from_text(self.qr_url(), size='3', image_format='png', border=2)
 
     def create_pin(self):
         pin = randint(100000, 999999)

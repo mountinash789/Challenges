@@ -1,9 +1,12 @@
 import bugsnag
+from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django_hosts import reverse_lazy
+
+from project.utils import send_email, LoginRequired
 from wedding.models import Party, DietaryReq
 from django.contrib import messages
 
@@ -64,6 +67,7 @@ class RSVPParty(TemplateView):
                     guest.surname = last
                 guest.save()
 
+            send_email('RSVP Responded', '{} party has responded.'.format(self.party.description), settings.OUR_EMAILS)
             messages.success(self.request, 'Thank you for submitting. Your response has been saved.')
         except Exception as e:
             messages.error(self.request, 'An error occurred. It has been logged, please try later.')
@@ -94,3 +98,12 @@ class RSVPPin(TemplateView):
         except Exception as e:
             pass
         return HttpResponseRedirect(reverse_lazy('rsvp_pin', host='wedding') + '?e=1')
+
+
+class PrintQR(TemplateView):
+    template_name = 'wedding/test/qr_codes.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['parties'] = Party.objects.all()
+        return context
