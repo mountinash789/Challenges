@@ -20,6 +20,7 @@ class Guest(TimeStampedModel):
 
     first_name = models.CharField(max_length=200)
     surname = models.CharField(max_length=200, blank=True, null=True)
+    nickname = models.CharField(max_length=200, blank=True, null=True)
     party = models.ForeignKey('wedding.Party', on_delete=models.CASCADE)
     dietary_requirements = models.ManyToManyField('wedding.DietaryReq', blank=True)
     starter = models.ForeignKey('wedding.Starter', blank=True, null=True, on_delete=models.CASCADE)
@@ -30,6 +31,12 @@ class Guest(TimeStampedModel):
     sequence = models.IntegerField(default=0)
     is_plus_one = models.BooleanField(default=False)
 
+    @property
+    def get_nickname(self):
+        if self.nickname:
+            return self.nickname
+        return self.first_name
+
 
 class Party(TimeStampedModel):
     def __str__(self):
@@ -38,7 +45,7 @@ class Party(TimeStampedModel):
     def guests_names(self):
         name = []
         for guest in self.guests().exclude(is_plus_one=True):
-            name.append(guest.first_name)
+            name.append(guest.get_nickname)
         return ' + '.join(name)
 
     def guests(self):
