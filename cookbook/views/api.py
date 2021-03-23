@@ -16,7 +16,8 @@ class CookbookData(APIView):
         qs = self.model.objects.all()
         tags = self.request.GET.getlist('selected_tags[]')
         if len(tags) > 0:
-            qs = qs.filter(tags__in=tags)
+            for tag in tags:
+                qs = qs.filter(tags__in=tag)
         return qs
 
     def filter_queryset(self, qs):
