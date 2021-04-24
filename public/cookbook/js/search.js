@@ -80,6 +80,10 @@ $(document).ready(function() {
         }
         get_cards();
     });
+    $('#search-input').on('keyup',function(){
+        SEARCH_QUERY = $('#search-input').val();
+        get_cards();
+    });
     $('.search-btn').on('click',function(){
         SEARCH_QUERY = $('#search-input').val();
         get_cards();

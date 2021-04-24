@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django import forms
+from django.core.exceptions import ValidationError
 
 from cookbook.forms import TagForm
 from cookbook.models import Tag, Item, Unit, Ingredient, Recipe, RecipeImage, Step
@@ -36,10 +38,24 @@ class TagAdmin(admin.ModelAdmin):
     search_fields = ['description']
 
 
+class ItemForm(forms.ModelForm):
+    class Meta:
+        model = Item
+        fields = ['description']
+
+    def clean(self):
+        if Item.objects.filter(description__iexact=self.cleaned_data['description']).exists():
+            raise ValidationError(
+                message="Item with this Description already exists.",
+            )
+        super().clean()
+
+
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
     list_display = ['description']
     search_fields = ['description']
+    form = ItemForm
 
 
 @admin.register(Unit)

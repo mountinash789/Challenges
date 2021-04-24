@@ -116,7 +116,7 @@ main{
                 {% for step in recipe.step_set.all %}
                 <tr>
                     <td width="10%" align="right">{{ forloop.counter }}.</td>
-                    <td>{{step.description}}</td>
+                    <td>{{step.description|safe}}</td>
                 </tr>
                 {% endfor %}
             </table>

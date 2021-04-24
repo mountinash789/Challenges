@@ -8,7 +8,7 @@ from cookbook.utils.search import generate_keywords
 
 
 class Tag(TimeStampedModel):
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, unique=True)
     colour = models.CharField(max_length=255)
     text_color = models.CharField(max_length=255)
 
@@ -22,14 +22,14 @@ class Tag(TimeStampedModel):
 
 
 class Item(TimeStampedModel):
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return self.description
 
 
 class Unit(TimeStampedModel):
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return self.description
@@ -144,12 +144,20 @@ class Ingredient(TimeStampedModel):
         ordering = ['created']
 
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    number = models.IntegerField()
+    number = models.DecimalField(decimal_places=2, default=0, max_digits=10)
     food = models.ForeignKey(Item, on_delete=models.CASCADE)
     unit = models.ForeignKey(Unit, blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        return '{}{} {}'.format(self.number, self.unit if self.unit else '', self.food)
+        num = self.number
+        if num % 1 == 0:
+            num = round(num, 0)
+        else:
+            num = str(num)
+            pre, after = num.split('.')
+            after = after.replace('0', '')
+            num = '{}.{}'.format(pre, after)
+        return '{}{} {}'.format(num, self.unit if self.unit else '', self.food)
 
 
 class Keyword(models.Model):
