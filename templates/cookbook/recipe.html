@@ -20,8 +20,13 @@
 body {
   padding-bottom: 3rem;
   color: #5a5a5a;
+
 }
 
+main{
+    max-width:1150px;
+    margin: auto;
+}
 
 /* CUSTOMIZE THE CAROUSEL
 -------------------------------------------------- */
@@ -64,6 +69,7 @@ body {
 
 
 
+
     </style>
 </head>
 <body>
@@ -89,7 +95,7 @@ body {
                 {% for step in recipe.step_set.all %}
                 <tr>
                     <td width="10%" align="right">{{ forloop.counter }}.</td>
-                    <td>{{step.description}}</td>
+                    <td>{{step.description|safe}}</td>
                 </tr>
                 {% endfor %}
             </table>
