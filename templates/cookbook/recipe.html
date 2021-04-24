@@ -1,0 +1,128 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/docs/4.0/assets/img/favicons/favicon.ico">
+
+    <title>Cookbook - {{ recipe.name }}</title>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <style>
+          /* GLOBAL STYLES
+-------------------------------------------------- */
+/* Padding below the footer and lighter body text */
+
+body {
+  padding-bottom: 3rem;
+  color: #5a5a5a;
+}
+
+
+/* CUSTOMIZE THE CAROUSEL
+-------------------------------------------------- */
+
+/* Since positioning the image, we need to help out the caption */
+.carousel-caption {
+  z-index: 10;
+}
+
+/* Declare heights because of positioning of img element */
+.carousel-item {
+  height: 20rem;
+  background-color: #777;
+}
+.carousel-item > img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  height: 32rem;
+}
+.fancy-border{
+    border-left: 2px red solid;
+    margin-left:15px;
+    padding:5px;
+}
+
+/* RESPONSIVE CSS
+-------------------------------------------------- */
+
+@media (min-width: 40em) {
+  /* Bump up size of carousel content */
+  .carousel-caption p {
+    font-size: 1.25rem;
+    line-height: 1.4;
+  }
+
+}
+
+
+
+
+    </style>
+</head>
+<body>
+
+<main role="main">
+
+
+    <div class="row m-2 my-4">
+        <div class="col-12">
+            <h2>{{ recipe.name }}</h2>
+        </div>
+        <div class="col-12 fancy-border" style="">
+            <span>
+                <h5>{{ recipe.description }}</h5>
+                <h5>{{ recipe.cooking_time_format }}</h5>
+            </span>
+        </div>
+    </div>
+    <div class="row m-2 my-4">
+        <div class="d-none d-md-block col-7">
+            <h5>Steps</h5>
+            <table class="table">
+                {% for step in recipe.step_set.all %}
+                <tr>
+                    <td width="10%" align="right">{{ forloop.counter }}.</td>
+                    <td>{{step.description}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="col-sm-12 col-md-5 ">
+            <h5>Ingredients</h5>
+            <table class="table">
+                {% for ingredient in recipe.ingredient_set.all %}
+                <tr>
+                    <td>{{ingredient}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="d-block d-md-none col-12">
+            <h5>Steps</h5>
+            <table class="table">
+                {% for step in recipe.step_set.all %}
+                <tr>
+                    <td width="10%" align="right">{{ forloop.counter }}.</td>
+                    <td>{{step.description}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+</body>
+</html>
