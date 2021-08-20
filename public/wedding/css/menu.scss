@@ -1,0 +1,152 @@
+@import "wedding/css/base";
+
+
+.help-text,
+.error-text{
+    display:  block;
+    color: lighten(#2d3c51, 35%);
+    font-size: .8em;
+}
+
+
+.canape-location-textbox ,
+.starter-location-textbox ,
+.main-location-textbox ,
+.dessert-location-textbox {
+	background-color: $primary;
+	padding: 4em;
+	width: 100vw;
+	margin-left: -4.5%;
+	outline: 2px solid $secondary;
+	outline-offset: -2.5em;
+	color: $secondary;
+	position: relative;
+	text-align: left;
+
+	h1 {
+        color: $secondary;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 0em;
+        background: $primary;
+        padding: 0 .145em;
+    }
+
+    li {
+        font-size: 1.4em;
+    }
+}
+
+
+@media (min-width: 25rem) {
+	h1 {
+		font-size: 1.4rem;
+	}
+
+	.canape-location-textbox {
+		padding: 4.5em;
+	    h1 {
+            top: 0em;
+            padding: 0 .325em;
+        }
+    }
+
+	.starter-location-textbox {
+		padding: 4.5em;
+	    h1 {
+            top: 0em;
+            padding: 0 .325em;
+        }
+    }
+	.main-location-textbox {
+		padding: 4.5em;
+	    h1 {
+            top: 0em;
+            padding: 0 .325em;
+        }
+    }
+	.dessert-location-textbox {
+		padding: 4.5em;
+	    h1 {
+            top: 0em;
+            padding: 0 .325em;
+        }
+    }
+}
+
+@media (min-width: 35rem) {
+	h1 {
+		font-size: 2.5rem;
+	}
+
+	.canape-location {
+		padding-top: 4.5em;
+		padding-bottom: 4.5em;
+	}
+
+	.starter-location,
+	.main-location,
+	.dessert-location	 {
+		padding-bottom: 4.5em;
+	}
+
+	.canape-location-textbox {
+		width: 100%;
+		padding: 5em;
+		outline-offset: -3.75em;
+		margin-left: -2.5%;
+		text-align: left;
+		box-shadow: 0 0 4em 0 rgba(0,0,0,.3);
+
+	    h1 {
+            top: .55em;
+            left: 6rem;
+            transform: translateX(0);
+        }
+	}
+	.starter-location-textbox {
+		width: 100%;
+		padding: 5em;
+		outline-offset: -3.75em;
+		margin-left: -2.5%;
+		text-align: left;
+		box-shadow: 0 0 4em 0 rgba(0,0,0,.3);
+
+	    h1 {
+            top: .55em;
+            left: 6rem;
+            transform: translateX(0);
+        }
+	}
+	.main-location-textbox {
+		width: 100%;
+		padding: 5em;
+		outline-offset: -3.75em;
+		margin-left: -2.5%;
+		text-align: left;
+		box-shadow: 0 0 4em 0 rgba(0,0,0,.3);
+
+	    h1 {
+            top: .55em;
+            left: 6rem;
+            transform: translateX(0);
+        }
+	}
+	.dessert-location-textbox {
+		width: 100%;
+		padding: 5em;
+		outline-offset: -3.75em;
+		margin-left: -2.5%;
+		text-align: left;
+		box-shadow: 0 0 4em 0 rgba(0,0,0,.3);
+
+	    h1 {
+            top: .55em;
+            left: 6rem;
+            transform: translateX(0);
+        }
+	}
+
+}
+
