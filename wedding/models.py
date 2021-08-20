@@ -102,8 +102,9 @@ class MealOption(TimeStampedModel):
         return self.description
 
     name = models.CharField(max_length=200)
-    description = models.TextField()
-    exclude_dietary_class = models.ManyToManyField(DietaryReq)
+    description = models.TextField(blank=True, null=True)
+    exclude_dietary_class = models.ManyToManyField(DietaryReq, blank=True)
+    active = models.BooleanField(default=False)
 
 
 class Starter(MealOption):
