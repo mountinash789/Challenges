@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 
-from wedding.views.wedding import HomeView, FunView, VenueView, InputTestView, RSVPParty, RSVPPin, PrintQR
+from wedding.views.wedding import HomeView, FunView, VenueView, InputTestView, RSVPParty, RSVPPin, PrintQR, NameCards
 
 app_name = 'wedding'
 urlpatterns = [
@@ -12,4 +12,5 @@ urlpatterns = [
     path('rsvp/<uuid:party_ref>/', RSVPParty.as_view(), name='rsvp'),
     path('rsvp/pin/', RSVPPin.as_view(), name='rsvp_pin'),
     path('rsvp/print/qr/', PrintQR.as_view(), name='print_qr'),
+    path('rsvp/print/name_cards/', NameCards.as_view(), name='name_cards'),
 ]

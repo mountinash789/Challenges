@@ -7,7 +7,7 @@ from django.views.generic import TemplateView
 from django_hosts import reverse_lazy
 
 from project.utils import send_email, LoginRequired
-from wedding.models import Party, DietaryReq
+from wedding.models import Party, DietaryReq, Guest
 from django.contrib import messages
 
 
@@ -106,4 +106,13 @@ class PrintQR(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context['parties'] = Party.objects.all()
+        return context
+
+
+class NameCards(TemplateView):
+    template_name = 'wedding/test/name_cards.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['guests'] = Guest.objects.filter(attending=True)
         return context
