@@ -99,7 +99,7 @@ class MealOption(TimeStampedModel):
         abstract = True
 
     def __str__(self):
-        return self.description
+        return self.name
 
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)

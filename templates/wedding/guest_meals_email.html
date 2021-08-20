@@ -1,0 +1,16 @@
+<table border>
+    <tr>
+        <th>Guest</th>
+        <th>Starter</th>
+        <th>Main</th>
+        <th>Dessert</th>
+    </tr>
+    {% for guest in party.guests %}
+    <tr>
+        <td>{{ guest.get_full_name }}</td>
+        <td>{{ guest.starter }}</td>
+        <td>{{ guest.main }}</td>
+        <td>{{ guest.dessert }}</td>
+    </tr>
+    {% endfor %}
+</table>

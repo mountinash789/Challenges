@@ -203,6 +203,8 @@ EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 OUR_EMAILS = []
 
+CAN_CHANGE_MEAL_CHOICE = True
+
 if os.getenv('GAE_APPLICATION', None):  # pragma: no cover
     try:
         from project.gae_settings import *
