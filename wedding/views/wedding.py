@@ -7,7 +7,7 @@ from django.views.generic import TemplateView
 from django_hosts import reverse_lazy
 
 from project.utils import send_email, LoginRequired
-from wedding.models import Party, DietaryReq, Guest
+from wedding.models import Party, DietaryReq, Guest, Starter, Main, Dessert
 from django.contrib import messages
 
 
@@ -115,4 +115,15 @@ class NameCards(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context['guests'] = Guest.objects.filter(attending=True)
+        return context
+
+
+class MenuView(TemplateView):
+    template_name = 'wedding/menu.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['starters'] = Starter.objects.filter(active=True)
+        context['mains'] = Main.objects.filter(active=True)
+        context['desserts'] = Dessert.objects.filter(active=True)
         return context
