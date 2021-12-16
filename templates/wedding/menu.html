@@ -1,84 +1,87 @@
 {% extends 'wedding/base.html' %}
- {% load static %}
+{% load static %}
 
+{% block scss %}
+<link href="{% static 'wedding/css/menu.css' %}" rel="stylesheet" media="screen">
+{% endblock %}
 
- {% block content %}
+{% block content %}
 
- <section style="min-height: 100vh;">
- <div class="container">
- 		<div class="col-12">
- 			<div class="container">
- 				<section class="canape-location">
+<section style="min-height: 100vh;">
+    <div class="container">
+        <div class="col-12">
+            <div class="container">
+                <section class="canape-location">
 
- 					<div class="canape-location-textbox">
- 						<h1>Canapes</h1>
- 						<p>
-							Bangers and Mash <br/>
-<!--							<span class="help-text">aa</span>-->
-						</p>
- 						<p>
-							Tomato, olive and basil bruschetta <br/>
-							<span class="help-text">(Vegan)</span>
-						</p>
- 						<p>
-							Chicken and sesame bon bons <br/>
-<!--							<span class="help-text">aa</span>-->
-						</p>
- 						<p>
-							Salmon and dill rillette <br/>
-<!--							<span class="help-text">aa</span>-->
-						</p>
- 					</div>
+                    <div class="canape-location-textbox">
+                        <h1>Canapes</h1>
+                        <p>
+                            Bangers and Mash <br/>
+                            <!--							<span class="help-text">aa</span>-->
+                        </p>
+                        <p>
+                            Tomato, olive and basil bruschetta <br/>
+                            <span class="help-text">(Vegan)</span>
+                        </p>
+                        <p>
+                            Chicken and sesame bon bons <br/>
+                            <!--							<span class="help-text">aa</span>-->
+                        </p>
+                        <p>
+                            Salmon and dill rillette <br/>
+                            <!--							<span class="help-text">aa</span>-->
+                        </p>
+                    </div>
 
- 				</section>
- 			</div>
- 		</div>
+                </section>
+            </div>
+        </div>
 
- 		<div class="col-12">
- 			<div class="container">
- 				<section class="starter-location">
+        <div class="col-12">
+            <div class="container">
+                <section class="starter-location">
 
- 					<div class="starter-location-textbox">
- 						<h1>Starter</h1>
- 						{% for starter in starters %}
- 						<p>{{ starter.name }} <br/><span class="help-text">{{ starter.description }}</span></p>
- 						{% endfor %}
- 					</div>
+                    <div class="starter-location-textbox">
+                        <h1>Starter</h1>
+                        {% for starter in starters %}
+                        <p>{{ starter.name }} <br/><span class="help-text">{{ starter.description }}</span></p>
+                        {% endfor %}
+                    </div>
 
- 				</section>
- 			</div>
- 		</div>
+                </section>
+            </div>
+        </div>
 
- 		<div class="col-12">
- 			<div class="container">
- 				<section class="main-location">
+        <div class="col-12">
+            <div class="container">
+                <section class="main-location">
 
- 					<div class="main-location-textbox">
- 						<h1>Main</h1>
- 						{% for main in mains %}
- 						<p>{{ main.name }} <br/><span class="help-text">{{ main.description }}</span></p>
- 						{% endfor %}
- 					</div>
+                    <div class="main-location-textbox">
+                        <h1>Main</h1>
+                        {% for main in mains %}
+                        <p>{{ main.name }} <br/><span class="help-text">{{ main.description }}</span></p>
+                        {% endfor %}
+                    </div>
 
- 				</section>
- 			</div>
- 		</div>
+                </section>
+            </div>
+        </div>
 
- 		<div class="col-12">
- 			<div class="container">
- 				<section class="dessert-location">
+        <div class="col-12">
+            <div class="container">
+                <section class="dessert-location">
 
- 					<div class="dessert-location-textbox">
- 						<h1>Dessert</h1>
- 						{% for dessert in desserts %}
- 						<p>{{ dessert.name }} <br/><span class="help-text">{{ dessert.description }}</span></p>
- 						{% endfor %}
- 					</div>
+                    <div class="dessert-location-textbox">
+                        <h1>Dessert</h1>
+                        {% for dessert in desserts %}
+                        <p>{{ dessert.name }} <br/><span class="help-text">{{ dessert.description }}</span></p>
+                        {% endfor %}
+                    </div>
 
- 				</section>
- 			</div>
- 		</div>
- 	</div>
- </section>
+                </section>
+            </div>
+        </div>
+    </div>
+</section>
 
- {% endblock %} 
+{% endblock %}
