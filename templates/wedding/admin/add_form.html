@@ -27,6 +27,7 @@
     {% load qr_code %}
     {{ original.qr_code }}
     <b>{{ original.qr_url }}</b>
+    <b>Meal URL:</b> https:{{ original.get_meal_url }}
 {% block object-tools %}
 {% if change %}{% if not is_popup %}
   <ul class="object-tools">
