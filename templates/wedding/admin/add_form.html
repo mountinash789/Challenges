@@ -25,9 +25,20 @@
 
 {% block content %}<div id="content-main">
     {% load qr_code %}
-    {{ original.qr_code }}
-    <b>{{ original.qr_url }}</b>
-    <b>Meal URL:</b> https:{{ original.get_meal_url }}
+    <table>
+        <tr>
+            <td><b>QR Code:</b></td>
+            <td>{{ original.qr_code }}</td>
+        </tr>
+        <tr>
+            <td><b>RSVP URL:</b></td>
+            <td>{{ original.qr_url }}</td>
+        </tr>
+        <tr>
+            <td><b>Meal URL:</b></td>
+            <td>https:{{ original.get_meal_url }}</td>
+        </tr>
+    </table>
 {% block object-tools %}
 {% if change %}{% if not is_popup %}
   <ul class="object-tools">
