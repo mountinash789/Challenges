@@ -1,0 +1,15 @@
+/* hero-home =================== */
+ .home-hero {
+	 background-image: url(../../wedding/img/falcon-manor-2-2.jpg);
+	 background-size: cover;
+	 background-position: center;
+	 padding: 10em 0;
+	 padding-bottom: 5em;
+	 color: #64242e;
+}
+ @media (min-width: 60rem) {
+	 .home-hero {
+		 height: 100vh;
+		 padding-top: 15vh;
+	}
+}

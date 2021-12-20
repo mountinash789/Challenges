@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'rest_framework',
     'social_django',
-    'compressor',
+    # 'compressor',
     'qr_code',
     'bootstrap_daterangepicker',
 
@@ -87,8 +87,8 @@ ROOT_URLCONF = 'project.urls'
 ROOT_HOSTCONF = 'project.hosts'
 DEFAULT_HOST = 'www'
 PARENT_HOST = 'rknight.co'
-COMPRESS_ENABLED = True
-COMPRESS_OFFLINE = True
+# COMPRESS_ENABLED = True
+# COMPRESS_OFFLINE = True
 
 TEMPLATES = [
     {
@@ -188,12 +188,12 @@ BUGSNAG = {
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'compressor.finders.CompressorFinder',
+    # 'compressor.finders.CompressorFinder',
 ]
-
-COMPRESS_PRECOMPILERS = (
-    ('text/x-scss', 'django_libsass.SassCompiler'),
-)
+#
+# COMPRESS_PRECOMPILERS = (
+#     ('text/x-scss', 'django_libsass.SassCompiler'),
+# )
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -202,6 +202,7 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 OUR_EMAILS = []
+CAN_CHANGE_MEAL_CHOICE = False
 
 if os.getenv('GAE_APPLICATION', None):  # pragma: no cover
     try:

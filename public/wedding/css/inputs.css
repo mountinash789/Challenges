@@ -1,0 +1,15 @@
+input[type=text],
+input[type=email],
+select {
+  padding: 1em;
+  margin: 1em;
+  display: inline-block;
+  border: 1px solid $dark;
+  border-radius: .3em;
+  box-sizing: border-box;
+}
+
+input, textarea {
+  font-family:inherit;
+  font-size: inherit;
+}
