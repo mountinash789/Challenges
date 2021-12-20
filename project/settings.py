@@ -202,6 +202,7 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 OUR_EMAILS = []
+CAN_CHANGE_MEAL_CHOICE = False
 
 if os.getenv('GAE_APPLICATION', None):  # pragma: no cover
     try:

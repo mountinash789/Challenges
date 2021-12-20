@@ -1,0 +1,78 @@
+{% extends 'wedding/base.html' %}
+ {% load static %}
+ {% load crispy_forms_tags %}
+
+ {% block scss %}
+ <link href="{% static 'wedding/css/rsvp.css' %}" rel="stylesheet" media="screen">
+ {% endblock %}
+
+ {% block js %}
+ {% endblock %}
+
+ {% block body_js %}
+ <script src="{% static 'wedding/js/rsvp_menu.js' %}"></script>
+ {% endblock %}
+
+ {% block content %}
+
+
+ <section class="form-container">
+
+     <p>
+          Click the menu button in the top navigation to view the full menu.
+     </p>
+
+     <form id="id_rsvp_form" method="POST">
+         {% csrf_token %}
+         {% for guest in guests %}
+         <div class="section ">
+             <h3 style="margin-top:0;">{{ guest.get_full_name }}</h3>
+             {% if guest.is_plus_one %}
+             <span class="help-text">Please send us a message with the plus one name if not correct.</span>
+             {% endif %}
+             <div class="input-container">
+                 <label for="id_{{ guest.id }}_starter_id">Starter</label>
+                 <div class="field">
+                     <select name="{{ guest.id }}_starter_id" id="id_{{ guest.id }}_starter_id" required>
+                         <option value="--" selected disabled>--</option>
+                         {% for starter in starters %}
+                         <option value="{{ starter.id }}">{{ starter.name }}</option>
+                         {% endfor %}
+                     </select>
+                     <span class="error-text"></span>
+                 </div>
+             </div>
+             <div class="input-container">
+                 <label for="id_{{ guest.id }}_main_id">Main</label>
+                 <div class="field">
+                     <select name="{{ guest.id }}_main_id" id="id_{{ guest.id }}_main_id" required>
+                         <option value="--" selected disabled>--</option>
+                         {% for main in mains %}
+                         <option value="{{ main.id }}">{{ main.name }}</option>
+                         {% endfor %}
+                     </select>
+                     <span class="error-text"></span>
+                 </div>
+             </div>
+             <div class="input-container">
+                 <label for="id_{{ guest.id }}_dessert_id">Dessert</label>
+                 <div class="field">
+                     <select name="{{ guest.id }}_dessert_id" id="id_{{ guest.id }}_dessert_id" required>
+                         <option value="--" selected disabled>--</option>
+                         {% for dessert in desserts %}
+                         <option value="{{ dessert.id }}">{{ dessert.name }}</option>
+                         {% endfor %}
+                     </select>
+                     <span class="error-text"></span>
+                 </div>
+             </div>
+         </div>
+         {% endfor %}
+
+     </form>
+
+     <button class="button small" id="id_rsvp_form_submit" style="width:100%">Save</button>
+ </section>
+
+
+ {% endblock %} 

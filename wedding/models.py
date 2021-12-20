@@ -54,6 +54,9 @@ class Party(TimeStampedModel):
     def get_absolute_url(self):
         return reverse_lazy('rsvp', host='wedding', kwargs={'party_ref': self.reference})
 
+    def get_meal_url(self):
+        return reverse_lazy('rsvp_meal', host='wedding', kwargs={'party_ref': self.reference})
+
     def qr_url(self):
         return 'https:{}'.format(self.get_absolute_url())
 
@@ -99,7 +102,7 @@ class MealOption(TimeStampedModel):
         abstract = True
 
     def __str__(self):
-        return self.description
+        return self.name
 
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)

@@ -264,3 +264,23 @@
 		 width: 16.6666%;
 	}
 }
+
+.alert{
+    position: relative;
+    padding: 1rem;
+}
+
+.alert.danger {
+    background: darkred;
+    color: white;
+}
+
+
+.alert.success {
+    background: green;
+    color: white;
+}
+
+.alert .closebtn:hover{
+    cursor: pointer;
+}
