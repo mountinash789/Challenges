@@ -96,9 +96,9 @@ def what_percent(percentage, whole):
     return (Decimal(whole) * Decimal(percentage)) / 100
 
 
-def send_email(subject, message, recipient_list):
+def send_email(subject, message, recipient_list, html=False):
     try:
         email_from = settings.EMAIL_HOST_USER
-        send_mail(subject, message, email_from, recipient_list)
+        send_mail(subject, message, email_from, recipient_list, html_message=message if html else None)
     except Exception as e:
         bugsnag.notify(e)
