@@ -168,7 +168,7 @@ class RSVPMeal(TemplateView):
             self.party = get_object_or_404(Party, reference=self.kwargs['party_ref'])
             self.party.save()
 
-            for guest in self.party.guests():
+            for guest in self.party.guests().filter(attending=True):
                 starter_id = self.request.POST.get('{}_starter_id'.format(guest.id), None)
                 main_id = self.request.POST.get('{}_main_id'.format(guest.id), None)
                 dessert_id = self.request.POST.get('{}_dessert_id'.format(guest.id), None)
@@ -189,7 +189,7 @@ class RSVPMeal(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context['party'] = self.party
-        context['guests'] = self.party.guests().order_by('sequence')
+        context['guests'] = self.party.guests().filter(attending=True).order_by('sequence')
         context['starters'] = Starter.objects.filter(active=True)
         context['mains'] = Main.objects.filter(active=True)
         context['desserts'] = Dessert.objects.filter(active=True)
