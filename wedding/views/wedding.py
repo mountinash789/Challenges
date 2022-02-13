@@ -133,7 +133,10 @@ class NameCards(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['guests'] = Guest.objects.filter(attending=True)
+        guests = Guest.objects.filter(attending=True)
+        start = int(self.request.GET.get('start', 0))
+        max = int(self.request.GET.get('max', 100000))
+        context['guests'] = guests[start:start+max]
         return context
 
 
