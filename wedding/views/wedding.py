@@ -136,7 +136,7 @@ class NameCards(TemplateView):
         guests = Guest.objects.filter(attending=True)
         start = int(self.request.GET.get('start', 0))
         max = int(self.request.GET.get('max', 100000))
-        context['guests'] = guests[start:start+max]
+        context['guests'] = guests[start:start + max]
         return context
 
 
@@ -204,6 +204,7 @@ class Labels(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        labels = ["Apple Crumble", "Chocolate", "Coffee", "Red Velvet", "Sticky Toffee", "Vegan Chocolate", "Victoria"]
+        labels = ["Apple Crumble", "Chocolate", "Coffee", "Red Velvet", "Sticky Toffee", "Vegan Chocolate", "Victoria",
+                  "Elizabeth"]
         context['labels'] = labels
         return context
