@@ -1,0 +1,164 @@
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Raleway" rel="stylesheet">
+<style>
+
+    /* Box sizing rules */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Remove default margin */
+body,
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+
+/* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
+ul[role='list'],
+ol[role='list'] {
+  list-style: none;
+}
+
+/* Set core root defaults */
+html:focus-within {
+  scroll-behavior: smooth;
+}
+
+/* Set core body defaults */
+body {
+  min-height: 100vh;
+  text-rendering: optimizeSpeed;
+  line-height: 1.5;
+}
+
+/* A elements that don't have a class get default styles */
+a:not([class]) {
+  text-decoration-skip-ink: auto;
+}
+
+/* Make images easier to work with */
+img,
+picture {
+  max-width: 100%;
+  display: block;
+}
+
+/* Inherit fonts for inputs and buttons */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Remove all animations, transitions and smooth scroll for people that prefer not to see them */
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+   scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
+
+@import url('https://fonts.googleapis.com/css?family=Playfair+Display:300,400,700,900');
+
+
+    :root {
+        --colour-one: #2d3c51;
+        --colour-two: #64242e;
+    }
+    h1, h2, h3 {
+        color: var(--colour-one);
+        font-family: 'Playfair Display', sans-serif;
+    }
+    p {
+        font-family: 'Raleway', sans-serif;
+    }
+    .card{
+        width:105mm;
+        max-width:105mm;
+        height:130px;
+        max-height:148mm;
+        border: 2px dashed black;
+        padding: .5rem;
+        margin: 10px;
+        display: inline-block;
+        position: relative;
+        text-align:center;
+    }
+
+    .fullname{
+        margin-bottom:2rem;
+    }
+
+    .border{
+        border: 5px solid var(--colour-two);
+        padding: 1.5rem;
+        height:100%;
+    }
+
+    .course{
+        border-bottom: 2px solid var(--colour-two);
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+    }
+    .course:last-child{
+        border: none;
+    }
+
+    .option p{
+        font-size: 1.2rem;
+        margin: 0;
+        font-weight:500;
+    }
+
+    .option p:last-of-type{
+       font-weight: 400;
+       font-size: 1rem;
+    }
+
+    @media print {
+      .card {
+        break-inside: avoid;
+      }
+    }
+
+
+
+
+
+
+</style>
+<div class="wrapper">
+    {% for label in labels %}
+    <div class="card">
+        <div class="border">
+
+            <div class="fullname">
+                <h1>{{ label }}</h1>
+            </div>
+
+        </div>
+    </div>
+    {% endfor %}
+</div>

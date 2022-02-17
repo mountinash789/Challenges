@@ -197,3 +197,13 @@ class RSVPMeal(TemplateView):
         context['mains'] = Main.objects.filter(active=True)
         context['desserts'] = Dessert.objects.filter(active=True)
         return context
+
+
+class Labels(TemplateView):
+    template_name = 'wedding/test/labels.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        labels = ["Apple Crumble", "Chocolate", "Coffee", "Red Velvet", "Sticky Toffee", "Vegan Chocolate", "Victoria"]
+        context['labels'] = labels
+        return context
