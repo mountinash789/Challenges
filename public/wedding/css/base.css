@@ -1,0 +1,286 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway:300,400,700,900');
+ @import url('https://fonts.googleapis.com/css?family=Playfair+Display:300,400,700,900');
+ @import "wedding/css/inputs";
+ @import "wedding/css/messages";
+ * {
+	 box-sizing: border-box;
+}
+ body {
+	 margin: 0;
+	 font-family: 'Raleway', sans-serif;
+	 text-align: center;
+	 color: #2d3c51;
+}
+ img {
+	 max-width: 100%;
+	 height: auto;
+}
+ .container {
+	 width: 95%;
+	 max-width: 70em;
+	 margin: 0 auto;
+}
+ .clearfix::after, section::after, footer::after {
+	 content: '';
+	 display: block;
+	 clear: both;
+}
+/* typography =================== */
+ h1 {
+	 font-weight: 300;
+	 font-size: 1.7rem;
+	 margin-top: 0;
+}
+ p {
+	 margin-top: 0;
+	 line-height: 1.5;
+}
+ p:last-of-type {
+	 margin-bottom: 0;
+}
+ .small-text {
+	 font-size: 0.8em;
+}
+ .title {
+	 font-size: 2.5rem;
+	 margin-bottom: 1.5em;
+	 font-weight: 700;
+	 margin-top: 0.5em;
+	 color: #eff8e2;
+}
+ .title span {
+	 font-weight: 300;
+	 display: block;
+	 font-size: 0.9em;
+	 color: #eff8e2;
+}
+ .unstyled-list {
+	 margin: 0;
+	 padding: 0;
+	 list-style-type: none;
+}
+ @media (min-width: 60rem) {
+	 p {
+		 font-size: 1.2rem;
+		 line-height: 1.6;
+	}
+	 .title {
+		 font-size: 3.7rem;
+	}
+}
+/* buttons */
+ .button {
+	 display: inline-block;
+	 font-size: 1.15rem;
+	 text-decoration: none;
+	 text-transform: uppercase;
+	 border-width: 2px;
+	 border-style: solid;
+	 padding: 0.5em 1.75em;
+	 color: #2d3c51;
+	 background-color: transparent;
+	 border-color: #2d3c51;
+	 cursor: pointer;
+}
+ .button:hover, .button:focus {
+	 color: white;
+	 background-color: #2d3c51;
+	 border-color: #2d3c51;
+}
+ .button.small {
+	 font-size: 1rem;
+}
+ @media (min-width: 60rem) {
+	 .button {
+		 font-size: 1.5rem;
+	}
+}
+ .button-accent {
+	 color: #eff8e2;
+	 border-color: #eff8e2;
+}
+ .button-accent:hover, .button-accent:focus {
+	 color: #2d3c51;
+	 background: #eff8e2;
+}
+/* header =================== */
+ header {
+	 position: absolute;
+	 left: 0;
+	 right: 0;
+	 padding: 1em;
+	 background-color: white;
+}
+ nav ul {
+	 margin: 0;
+	 padding: 0;
+	 list-style: none;
+}
+ nav li {
+	 display: inline-block;
+	 margin: 1em;
+}
+ nav a {
+	 font-weight: 900;
+	 text-decoration: none;
+	 padding: 0.5em;
+	 text-transform: uppercase;
+	 color: #64242e;
+	 font-size: 0.8rem;
+}
+ nav a:hover, nav a:focus {
+	 color: #2d3c51;
+}
+ .logo-text {
+	 color: #2d3c51;
+	 margin: 0px;
+	 font-family: "Playfair Display";
+}
+ @media (min-width: 60rem) {
+	 .logo, .logo-text {
+		 float: left;
+	}
+	 nav {
+		 float: right;
+	}
+}
+/* hero-home =================== */
+ .home-hero {
+	 background: white;
+	 color: #64242e;
+}
+ @media (min-width: 60rem) {
+	 .home-hero {
+		 height: 10vh;
+		 padding-top: 16vh;
+	}
+}
+ .header-separator {
+	 background-color: #eff8e2;
+	 padding: 4.7em 0;
+	 color: #64242e;
+}
+ @media (min-width: 60rem) {
+	 .header-separator {
+		 height: 1vh;
+		 padding: 5.5em 0;
+		 padding-top: 1vh;
+	}
+}
+/* home-orders =================== */
+ .home-orders-textbox {
+	 background-color: #eff8e2;
+	 padding: 4em;
+	 width: 100vw;
+	 margin-left: -2.5%;
+	 outline: 2px solid #64242e;
+	 outline-offset: -2.5em;
+	 color: #64242e;
+	 position: relative;
+}
+ .home-orders-textbox h1 {
+	 color: #64242e;
+	 position: absolute;
+	 left: 50%;
+	 transform: translateX(-50%);
+	 top: 0.75em;
+	 background: #eff8e2;
+	 padding: 0 0.145em;
+}
+ .home-orders-textbox li {
+	 font-size: 1.4em;
+}
+ @media (min-width: 25rem) {
+	 h1 {
+		 font-size: 1.4rem;
+	}
+	 .home-orders-textbox {
+		 padding: 4.5em;
+	}
+	 .home-orders-textbox h1 {
+		 top: 1.1em;
+		 padding: 0 0.325em;
+	}
+}
+ @media (min-width: 70rem) {
+	 h1 {
+		 font-size: 2.5rem;
+	}
+	 .home-orders {
+		 background-image: url(../../wedding/img/PSP_5193.jpg);
+		 background-repeat: no-repeat;
+		 padding-bottom: 10em;
+	}
+	 .home-orders-textbox {
+		 width: 60%;
+		 padding: 7em;
+		 outline-offset: -3.75em;
+		 margin-left: -2.5%;
+		 top: -4em;
+		 text-align: left;
+		 box-shadow: 0 0 4em 0 rgba(0, 0, 0, .3);
+	}
+	 .home-orders-textbox h1 {
+		 top: 0.75em;
+		 left: 6rem;
+		 transform: translateX(0);
+	}
+}
+/* Footer =================== */
+ footer {
+	 background: #2d3c51;
+	 color: #eff8e2;
+	 text-align: left;
+	 padding: 2em 0;
+}
+/* Column system =================== */
+ [class^=col-] {
+	 width: 100%;
+	 margin-top: 0em;
+}
+ [class^=col-]:first-child {
+	 margin-top: 0;
+}
+ .col-1 {
+	 width: 33.333334%;
+	 float: left;
+}
+ @media (min-width: 40rem) {
+	 [class^=col-] {
+		 float: left;
+		 padding: 0 0.5em;
+		 margin-top: 0;
+	}
+	 [class^=col-]:first-child {
+		 padding-left: 0;
+	}
+	 [class^=col-]:last-child {
+		 padding-right: 0;
+	}
+	 .col-3 {
+		 width: 50%;
+	}
+	 .col-1 {
+		 width: 16.6666%;
+	}
+}
+
+.alert{
+    position: relative;
+    padding: 1rem;
+}
+
+.alert.danger {
+    background: darkred;
+    color: white;
+}
+
+
+.alert.success {
+    background: green;
+    color: white;
+}
+
+.alert .closebtn:hover{
+    cursor: pointer;
+}

@@ -109,7 +109,8 @@ class Strava(BaseConnection):
                 obj.latitude = activity['start_latlng'][0]
                 obj.longitude = activity['end_latlng'][1]
             if activity.get('map', None):
-                obj.polyline = activity['map']['summary_polyline']
+                if activity['map'].get('summary_polyline', None):
+                    obj.polyline = activity['map']['summary_polyline']
             obj.raw_json = json.dumps(activity)
             obj.connection = connection.connection
             obj.calc_pace()
@@ -129,13 +130,14 @@ class Strava(BaseConnection):
                 params = {'keys': [stream_type], 'key_by_type': True}
                 resp = self.send(endpoint, params, method='GET', headers={'Authorization': 'Bearer {}'.format(
                     user_connection.first().get_access_token())})
-                for key, values in resp.items():
-                    stream_obj, created = ActivityStream.objects.get_or_create(
-                        activity=obj,
-                        stream_type=self.get_stream_type(key),
-                        sequence=values['data'],
-                        raw_json=json.dumps(values),
-                    )
+                if not resp.get('message', None):
+                    for key, values in resp.items():
+                        stream_obj, created = ActivityStream.objects.get_or_create(
+                            activity=obj,
+                            stream_type=self.get_stream_type(key),
+                            sequence=values['data'],
+                            raw_json=json.dumps(values),
+                        )
 
     def get_update_activity(self, user_connection, activity_id):
         endpoint = 'https://www.strava.com/api/v3/activities/{}?include_all_efforts=true'.format(activity_id)
