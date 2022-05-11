@@ -4,7 +4,6 @@ from datetime import timedelta
 from decimal import Decimal
 from importlib import import_module
 
-import bugsnag
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Sum
@@ -13,6 +12,7 @@ from django.dispatch import receiver
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django_extensions.db.models import TimeStampedModel
+from sentry_sdk import capture_exception
 
 from project.utils import percent, what_percent
 
@@ -169,7 +169,7 @@ class Activity(TimeStampedModel):
                 self.has_streams = True
                 self.save()
         except Exception as e:
-            bugsnag.notify(e)
+            capture_exception(e)
 
     def lactate_trimp(self, hr_data):
         score = 0

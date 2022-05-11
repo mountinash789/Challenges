@@ -1,6 +1,6 @@
-import bugsnag
 import requests
 from django.utils import timezone
+from sentry_sdk import capture_exception
 
 from backend.models import UserConnection, ActivityType, StreamType, ServiceLog
 
@@ -33,7 +33,7 @@ class BaseConnection(object):
         try:
             resp = requests.request(method, endpoint, data=data, headers=headers).json()
         except Exception as e:
-            bugsnag.notify(e)
+            capture_exception(e)
             resp = {}
         self.log(endpoint, data, resp)
         return resp

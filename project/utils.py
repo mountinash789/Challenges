@@ -1,8 +1,8 @@
 import calendar
 import datetime
+from datetime import timedelta
 from decimal import Decimal
 
-import bugsnag
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.views import redirect_to_login
@@ -11,7 +11,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.utils.timezone import make_aware
 from rest_framework.views import APIView
-from datetime import timedelta
+from sentry_sdk import capture_exception
 
 
 class RaiseException(object):
@@ -101,4 +101,4 @@ def send_email(subject, message, recipient_list, html=False):
         email_from = settings.EMAIL_HOST_USER
         send_mail(subject, message, email_from, recipient_list, html_message=message if html else None)
     except Exception as e:
-        bugsnag.notify(e)
+        capture_exception(e)

@@ -1,15 +1,15 @@
-import bugsnag
 from django.conf import settings
+from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django_hosts import reverse_lazy
+from sentry_sdk import capture_exception
 
-from project.utils import send_email, LoginRequired
+from project.utils import send_email
 from wedding.models import Party, DietaryReq, Guest, Starter, Main, Dessert
-from django.contrib import messages
 
 
 class HomeView(TemplateView):
@@ -72,7 +72,7 @@ class RSVPParty(TemplateView):
             messages.success(self.request, 'Thank you for submitting. Your response has been saved.')
         except Exception as e:
             messages.error(self.request, 'An error occurred. It has been logged, please try later.')
-            bugsnag.notify(e)
+            capture_exception(e)
         return HttpResponseRedirect(reverse_lazy('home', host='wedding'))
 
     def get_context_data(self, **kwargs):
@@ -186,7 +186,7 @@ class RSVPMeal(TemplateView):
             messages.success(self.request, 'Thank you for submitting. Your response has been saved.', )
         except Exception as e:
             messages.error(self.request, 'An error occurred. It has been logged, please try later.')
-            bugsnag.notify(e)
+            capture_exception(e)
         return HttpResponseRedirect(reverse_lazy('home', host='wedding'))
 
     def get_context_data(self, **kwargs):
