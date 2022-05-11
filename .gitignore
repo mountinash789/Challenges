@@ -112,9 +112,11 @@ venv.bak/
 .idea/**/dynamic.xml
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
-
+.idea/*
 # IntelliJ
 out/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
+
+.idea/

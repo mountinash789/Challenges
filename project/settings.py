@@ -56,7 +56,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django_hosts.middleware.HostsRequestMiddleware',
 
-    'bugsnag.django.middleware.BugsnagMiddleware',
+    # 'bugsnag.django.middleware.BugsnagMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -180,10 +180,10 @@ DATABASES = {
     }
 }
 
-BUGSNAG = {
-    'api_key': 'XXXXXXX',
-    'project_root': BASE_DIR,
-}
+# BUGSNAG = {
+#     'api_key': 'XXXXXXX',
+#     'project_root': BASE_DIR,
+# }
 
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
