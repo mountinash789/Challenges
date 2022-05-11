@@ -21,16 +21,21 @@ class DietaryReqAdmin(admin.ModelAdmin):
     pass
 
 
+class MealOptionAdmin(admin.ModelAdmin):
+    list_display = ['name', 'description']
+    list_filter = ['active']
+
+
 @admin.register(Starter)
-class StarterAdmin(admin.ModelAdmin):
+class StarterAdmin(MealOptionAdmin):
     pass
 
 
 @admin.register(Main)
-class MainAdmin(admin.ModelAdmin):
+class MainAdmin(MealOptionAdmin):
     pass
 
 
 @admin.register(Dessert)
-class DessertAdmin(admin.ModelAdmin):
+class DessertAdmin(MealOptionAdmin):
     pass

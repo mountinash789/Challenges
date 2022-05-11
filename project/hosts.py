@@ -7,5 +7,6 @@ host_patterns = patterns(
     '',
     host(r'www', 'rowan.urls.rowan', name='www'),
     host(r'challenges', 'project.urls', name='challenges'),
-    host(r'wedding', 'wedding.urls.wedding', name='wedding'),
+    # host(r'wedding', 'wedding.urls.wedding', name='wedding'),
+    host(r'cookbook', 'cookbook.urls.cookbook', name='cookbook'),
 )

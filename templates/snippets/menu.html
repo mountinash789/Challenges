@@ -50,6 +50,13 @@
                         Fitness Trend <sup><span class="badge badge-primary">BETA</span></sup>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if view_name == 'front:activities:progression' %}active{% endif %}"
+                       href="{% url 'front:activities:progression' %}">
+                        <i class="fas fa-chart-line fa-fw"></i>
+                        Progression <sup><span class="badge badge-primary">BETA</span></sup>
+                    </a>
+                </li>
             {% endif %}
         </ul>
             </span>

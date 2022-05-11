@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load formatting %}
 {% load static %}
+{% load crispy_forms_tags %}
 {% block css %}
 
 {% endblock %}
@@ -33,6 +34,7 @@
             <span id="id_buttons">
                 <button class="btn btn-success active toggle-type" data-trimp-type="basic">BASIC TRIMP</button>
                 <button class="btn btn-success toggle-type" data-trimp-type="zonal">ZONAL TRIMP</button>
+                <button class="btn btn-success toggle-type" data-trimp-type="lactate">LACTATE THRESHOLD TRIMP</button>
             </span>
             <span id="id_progress_container" style="display:None;">
                 <div class="progress">
@@ -42,6 +44,13 @@
                 </div>
             </span>
 
+        </div>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-lg-10 offset-lg-1">
+        <div class="p-4 mb-4" style="background:white; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);">
+            {% crispy form %}
         </div>
     </div>
 </div>
@@ -94,21 +103,22 @@ function update_chart(data){
 }
 
 function get_data(){
-    progress();
-    $.getJSON({
+    progress()
+    let data = $("#id_main_form").serializeArray();
+    data.pop('date_range');
+    let date_range = $('#id_date_range').data('daterangepicker');
+    data.push({name:"start", value: date_range.startDate._d.toISOString()});
+    data.push({name:"end", value: date_range.endDate._d.toISOString()});
+
+    $.ajax({
+        method:'POST',
         url: `{% url 'api:activities:fitness' %}?type=${trimp_type}`,
-        success: function(result){
-           update_chart(result);
+        data: data,
+        success: function(data){
+            update_chart(data);
         }
     });
 }
-
-<!--function handleClick(evt){-->
-<!--    var activePoints = chart.getElementsAtXAxis(evt);-->
-<!--    var idx = activePoints[0]['_index'];-->
-<!--    current = dates[idx];-->
-<!--    get_data();-->
-<!--}-->
 
 let trimp_type = 'basic';
 const chart = new Chart(document.getElementById("chart"),{type: 'line', data: {}, options: {maintainAspectRatio: false, scales: {
@@ -122,12 +132,19 @@ const chart = new Chart(document.getElementById("chart"),{type: 'line', data: {}
 $( document ).ready(function() {
 
     $('.toggle-type').click(function(){
-        $('.toggle-type').toggleClass('active');
+        $('.toggle-type').removeClass('active');
+        $(this).addClass('active');
         trimp_type = $(this).attr('data-trimp-type');
+    });
+
+
+    $("#id_main_form").submit(function (e){
+        e.preventDefault();
+        e.stopPropagation();
         get_data();
     });
 
-    get_data()
+    get_data();
 });
 
 

@@ -1,11 +1,15 @@
+from bootstrap_daterangepicker.fields import DateRangeField
+from bootstrap_daterangepicker.widgets import DateRangeWidget
 from crispy_forms.bootstrap import FieldWithButtons, StrictButton
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Div, HTML, Field
+from dateutil.relativedelta import relativedelta
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.urls import reverse_lazy
+from django.utils import timezone
 
-from backend.models import Profile, Activity
+from backend.models import Profile, Activity, ActivityType
 
 
 class LoginForm(AuthenticationForm):
@@ -123,3 +127,122 @@ class ActivityForm(forms.ModelForm):
         )
 
         self.fields['date'].widget = forms.DateInput(attrs={'class': 'datepicker'})
+
+
+class DataSelectForm(forms.Form):
+    picker_options = None
+    date_range = DateRangeField(
+        input_formats=['%d/%m/%Y'],
+        widget=DateRangeWidget(
+            format='%d/%m/%Y',
+        )
+    )
+    activity_type = forms.ModelMultipleChoiceField(queryset=ActivityType.objects.all())
+
+    def __init__(self, *args, **kwargs):
+        self.picker_options = kwargs.pop('picker_options', None)
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'id_main_form'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-8'
+
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    'activity_type',
+                    css_class='col-lg-12',
+                ),
+                css_class='row',
+            ),
+            Div(
+                Div(
+                    'date_range',
+                    css_class='col-lg-12',
+                ),
+                css_class='row',
+            ),
+            Div(
+                Submit('submit', 'Run'),
+                css_class='',
+            ),
+        )
+        self.init_date_range()
+
+    def init_date_range(self):
+        now = timezone.now()
+        now_minus_month = now - relativedelta(months=1)
+        picker_options = {
+            'startDate': now_minus_month.strftime('%d/%m/%Y'),
+            'maxDate': now.strftime('%d/%m/%Y'),
+        }
+        if self.picker_options:
+            picker_options = self.picker_options
+
+        self.fields['date_range'].widget.picker_options = picker_options
+
+
+class ExtraSelectForm(DataSelectForm):
+    def extra(self):
+        return []
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'id_main_form'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-8'
+
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    'activity_type',
+                    css_class='col-lg-6',
+                ),
+                *self.extra(),
+                css_class='row',
+            ),
+            Div(
+                Div(
+                    'date_range',
+                    css_class='col-lg-12',
+                ),
+                css_class='row',
+            ),
+            Div(
+                Submit('submit', 'Run'),
+                css_class='',
+            ),
+        )
+        self.init_date_range()
+
+
+class GraphSelectForm(ExtraSelectForm):
+    data_points = forms.MultipleChoiceField(choices=[('Pace', 'Pace'), ('Duration', 'Duration')])
+
+    def extra(self):
+        return [
+            Div(
+                'data_points',
+                css_class='col-lg-6',
+            ),
+        ]
+
+
+class ProgressionSelectForm(ExtraSelectForm):
+    type = forms.ChoiceField(choices=[
+        ('distance_meters__sum', 'Distance'),
+        ('duration_seconds__sum', 'Time'),
+        ('total_elevation_gain__sum', 'Elevation'),
+        ('id__count', 'Count'),
+    ])
+
+    def extra(self):
+        return [
+            Div(
+                'type',
+                css_class='col-lg-6',
+            ),
+        ]

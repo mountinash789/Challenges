@@ -1,0 +1,61 @@
+@import "wedding/css/base";
+ .form-container {
+	 padding: 1em;
+	 text-align: left;
+	 min-height: 100vh;
+}
+ .section {
+	 width: 100%;
+	 display: inline-grid;
+	 background-color: #e1dfe5;
+	 padding: 1em;
+	 border-radius: 5px;
+	 -webkit-box-shadow: 1px 2px 9px 0px rgba(0, 0, 0, 0.25);
+	 -moz-box-shadow: 1px 2px 9px 0px rgba(0, 0, 0, 0.25);
+	 box-shadow: 1px 2px 9px 0px rgba(0, 0, 0, 0.25);
+	 grid-gap: 0.5em;
+	 margin-bottom: 1em;
+}
+ .section h3 {
+	 margin-bottom: 0;
+}
+ .attending-only {
+	 display: none;
+}
+ .attending-only.active {
+	 display: inline-grid;
+}
+ .input-container {
+	 display: inline-grid;
+	 grid-template-columns: auto;
+}
+ .input-container input, .input-container select {
+	 margin: 0;
+	 padding: 0.5em;
+}
+ .input-container .field {
+	 display: inline-grid;
+	 grid-template-columns: auto;
+}
+ .input-container.has-error {
+	 color: red;
+}
+ .input-container.has-error input {
+	 border-color: red;
+}
+ @media (min-width: 60rem) {
+	 .input-container {
+		 grid-template-columns: 20% auto;
+	}
+}
+ .help-text, .error-text {
+	 display: block;
+	 color: #7b93b6;
+	 font-size: 0.8em;
+}
+ .error-text {
+	 color: red;
+}
+ .hidden {
+	 display: none;
+}

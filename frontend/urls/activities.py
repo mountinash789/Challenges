@@ -1,7 +1,7 @@
 from django.urls import path
 
 from frontend.views.activities import ActivitiesPage, ActivityView, ActivitiesDistanceView, ActivitiesFitnessView, \
-    AddActivityView, EditActivityView
+    AddActivityView, EditActivityView, ActivitiesGraphs, Progression
 
 app_name = 'frontend'
 urlpatterns = [
@@ -11,4 +11,6 @@ urlpatterns = [
     path('<int:pk>/view/', ActivityView.as_view(), name='view'),
     path('distance/', ActivitiesDistanceView.as_view(), name='distance'),
     path('fitness/', ActivitiesFitnessView.as_view(), name='fitness'),
+    path('graphs/', ActivitiesGraphs.as_view(), name='graphs'),
+    path('progression/', Progression.as_view(), name='progression'),
 ]

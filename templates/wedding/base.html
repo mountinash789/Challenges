@@ -1,5 +1,4 @@
 {% load static %}
-{% load compress %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,12 +6,10 @@
     <title>{{ page_title }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {% compress css %}
-    <link type="text/x-scss" href="{% static 'wedding/css/base.scss' %}" rel="stylesheet" media="screen">
+    <link href="{% static 'wedding/css/base.css' %}" rel="stylesheet" media="screen">
     {% block scss %}
     {% endblock %}
-    {% endcompress %}
-<link href="{% static 'wedding/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'wedding/css/bootstrap.min.css' %}" rel="stylesheet">
     {% block js %}
     {% endblock %}
 
@@ -22,9 +19,9 @@
 
 </head>
 <body>
-
-{% include 'wedding/header.html' %}
 {% include 'wedding/messages.html' %}
+{% include 'wedding/header.html' %}
+
 
 <section class="header-separator">
 </section>
