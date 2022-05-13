@@ -34,6 +34,6 @@ django_compressor==2.4
 django-libsass==0.8
 django-qr-code==2.1.0
 django-bootstrap-daterangepicker==1.0.6
-nltk==3.6.5
+nltk==3.6.6
 sentry-sdk==1.5.12
 django-hijack==3.2.0
