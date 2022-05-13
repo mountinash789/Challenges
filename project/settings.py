@@ -204,6 +204,9 @@ EMAIL_HOST_PASSWORD = ''
 OUR_EMAILS = []
 CAN_CHANGE_MEAL_CHOICE = False
 
+LOCAL_INSTALLED_APPS = []
+LOCAL_MIDDLEWARE = []
+
 if os.getenv('GAE_APPLICATION', None):  # pragma: no cover
     try:
         from project.gae_settings import *
@@ -212,5 +215,7 @@ if os.getenv('GAE_APPLICATION', None):  # pragma: no cover
 else:
     try:
         from project.local_settings import *
+        INSTALLED_APPS += LOCAL_INSTALLED_APPS
+        MIDDLEWARE += LOCAL_MIDDLEWARE
     except ImportError:  # pragma: no cover
         pass

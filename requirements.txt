@@ -36,3 +36,4 @@ django-qr-code==2.1.0
 django-bootstrap-daterangepicker==1.0.6
 nltk==3.6.5
 sentry-sdk==1.5.12
+django-hijack==3.2.0

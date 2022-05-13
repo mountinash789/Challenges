@@ -13,4 +13,5 @@ urlpatterns = [
     path('profile/', ProfilePage.as_view(), name='profile'),
     path('challenge/', include('frontend.urls.challenge', namespace='challenge')),
     path('activities/', include('frontend.urls.activities', namespace='activities')),
+
 ]
