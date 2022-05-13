@@ -50,6 +50,9 @@ class UserConnection(TimeStampedModel):
     last_pulled = models.DateTimeField(blank=True, null=True)
     external_id = models.CharField(max_length=255, blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.user} - {self.connection}"
+
     def get_access_token(self):
         module = import_module(self.connection.library)
         Lib = getattr(module, self.connection.class_str)

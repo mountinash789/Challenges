@@ -68,7 +68,7 @@ class Strava(BaseConnection):
 
     def get_data(self, user_connection_id, all_time=False):
         connection = UserConnection.objects.get(pk=user_connection_id)
-        endpoint = 'https://www.strava.com/api/v3/athlete/activities'
+        base_endpoint = 'https://www.strava.com/api/v3/athlete/activities?'
 
         data = []
         complete = False
@@ -76,12 +76,14 @@ class Strava(BaseConnection):
         if connection.last_pulled and not all_time:
             params['after'] = connection.last_pulled.timestamp()
         while not complete:
-            resp = self.send(endpoint, params, method='GET',
+            endpoint = base_endpoint
+            for k, v in params.items():
+                endpoint += f"{k}={v}&"
+            resp = self.send(endpoint, {}, method='GET',
                              headers={'Authorization': 'Bearer {}'.format(connection.get_access_token())})
             data.extend(resp)
             if len(resp) == 100:
                 params['page'] = params['page'] + 1
-                print(params)
             else:
                 complete = True
         connection.last_pulled = timezone.now()
