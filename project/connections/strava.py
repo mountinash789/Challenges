@@ -124,13 +124,16 @@ class Strava(BaseConnection):
     def get_streams(self, connection, obj):
         user_connection = UserConnection.objects.filter(connection=connection, user_id=obj.user_id)
         if user_connection.first():
-            endpoint = 'https://www.strava.com/api/v3/activities/{}/streams'.format(obj.third_party_id)
+            base_endpoint = 'https://www.strava.com/api/v3/activities/{}/streams?'.format(obj.third_party_id)
             all_keys = ["time", "latlng", "distance", "altitude", "velocity_smooth", "heartrate", "cadence", "watts",
                         "temp", "moving", "grade_smooth"]
 
             for stream_type in all_keys:
                 params = {'keys': [stream_type], 'key_by_type': True}
-                resp = self.send(endpoint, params, method='GET', headers={'Authorization': 'Bearer {}'.format(
+                endpoint = base_endpoint
+                for k, v in params.items():
+                    endpoint += f"{k}={v}&"
+                resp = self.send(endpoint, {}, method='GET', headers={'Authorization': 'Bearer {}'.format(
                     user_connection.first().get_access_token())})
                 if not resp.get('message', None):
                     for key, values in resp.items():
